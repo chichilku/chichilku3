@@ -32,6 +32,8 @@ class Gui < Gosu::Window
       net_request[0] = '1'
     elsif button_down?(7) # d
       net_request[1] = '1'
+    elsif button_down?(Gosu::KB_SPACE)
+      net_request[2] = '1'
     end
 
     # Networking

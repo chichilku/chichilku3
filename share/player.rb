@@ -7,6 +7,7 @@ class Player
     @x = x
     @y = y
     @name = name
+
   end
 
   def self.get_player_index_by_id(players, id)

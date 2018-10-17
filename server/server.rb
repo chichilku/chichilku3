@@ -46,10 +46,10 @@ class ServerCore
     packet.ljust(SERVER_PACKAGE_LEN - 1, '0') # implicit return
   end
 
-  def update_pck(data)
+  def update_pck(data, dt)
     id = data[0..1].to_i
     @console.dbg "got player with id: #{id}"
-    @players = @gamelogic.handle_client_requests(data[2..-1], id, @players)
+    @players = @gamelogic.handle_client_requests(data[2..-1], id, @players, dt)
     nil # defaults to normal update pck
   end
 
@@ -66,14 +66,14 @@ class ServerCore
     format('200%02d0000000000000000000000', id).to_s
   end
 
-  def handle_protocol(protocol, data)
+  def handle_protocol(protocol, data, dt)
     @console.dbg "HANDLE PROTOCOL=#{protocol}"
     if protocol.zero? # error pck
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
       return id_pck(data)
     elsif protocol == 2 # update pck
-      return update_pck(data)
+      return update_pck(data, dt)
     elsif protocol == 3 # initial request names
       return create_name_package
     else
@@ -81,8 +81,8 @@ class ServerCore
     end
   end
 
-  def handle_client_data(data)
-    response = handle_protocol(data[0].to_i, data[1..-1])
+  def handle_client_data(data, dt)
+    response = handle_protocol(data[0].to_i, data[1..-1], dt)
     return response unless response.nil?
 
     if (@tick % 100).zero?
@@ -98,12 +98,12 @@ class ServerCore
 
   # TODO: this func and it dependencies should be new file
   # Handles each client
-  def client_tick(cli)
+  def client_tick(cli, dt)
     client_data = save_read(cli, CLIENT_PACKAGE_LEN)
     return if client_data == ''
 
     @console.dbg "recv: #{client_data}"
-    server_response = handle_client_data(client_data)
+    server_response = handle_client_data(client_data, dt)
     # server_response = '103011001010220020203300303'
     net_write(server_response, cli)
   end
@@ -147,12 +147,17 @@ class ServerCore
 
   def accept(server)
     Thread.start(server.accept) do |client|
+      diff = 0
       loop do
+        start = Time.now
         @tick += 1
         # sleep(1)
         # client.write("123")
         # @console.dbg "im here client: #{client}"
-        client_tick(client)
+        client_tick(client, diff)
+        stop = Time.now
+        diff = stop - start
+        # @console.log "TirmelDetat: #{diff}"
       end
       client.close
     end
