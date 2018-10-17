@@ -5,6 +5,8 @@ MAX_CLIENTS = 3
 CLIENT_PACKAGE_LEN = 6                    # used by server
 SERVER_PACKAGE_LEN = MAX_CLIENTS * 8 + 3  # used by client
 
+MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
+
 # Client packages:
 # Update package
 # Error package (not used yet)

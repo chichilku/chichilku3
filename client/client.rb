@@ -26,9 +26,9 @@ class Client
     @flags = { skip: false, state: @state }
   end
 
-  def tick(client_data)
+  def tick(client_data, tick)
     # sleep(1)
-    @tick += 1
+    @tick = tick
     @flags[:skip] = false
 
     # send data to the server

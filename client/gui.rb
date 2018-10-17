@@ -3,6 +3,15 @@ require_relative 'client'
 require_relative '../share/console'
 require_relative '../share/player'
 
+$time_point=Time.now
+$time_buffer=0
+
+def get_frame_time
+  diff = Time.now - $time_point
+  $time_point = Time.now
+  return diff
+end
+
 # Main Game getting gui form gosu
 class Gui < Gosu::Window
   def initialize(cfg)
@@ -14,6 +23,7 @@ class Gui < Gosu::Window
     @y = 0
     @players = []
     @cfg = cfg
+    @tick = 0
     @state = STATE_CONNECTING
     @console = Console.new
     @net_client = Client.new(@console, @cfg)
@@ -26,7 +36,7 @@ class Gui < Gosu::Window
   #   @y = server_data[1].to_i * 20
   # end
 
-  def update
+  def main_tick
     net_request = '000'.split('')
     if button_down?(4)    # a
       net_request[0] = '1'
@@ -37,13 +47,22 @@ class Gui < Gosu::Window
     end
 
     # Networking
-    net_data = @net_client.tick(net_request)
+    net_data = @net_client.tick(net_request, @tick)
     return if net_data.nil?
 
     @state = net_data[1][:state]
     return if net_data[1][:skip]
 
     @players = net_data[0]
+  end
+
+  def update
+    $time_buffer += get_frame_time
+    if ($time_buffer > MAX_TICK_SPEED)
+      @tick += 1
+      main_tick
+      $time_buffer = 0
+    end
   end
 
   def draw

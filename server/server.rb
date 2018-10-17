@@ -6,6 +6,15 @@ require_relative '../share/console'
 
 require_relative 'gamelogic'
 
+$time_point=Time.now
+$time_buffer=0
+
+def get_frame_time
+  diff = Time.now - $time_point
+  $time_point = Time.now
+  return diff
+end
+
 # ServerCore: should only cotain the networking
 # and no gamelogic
 class ServerCore
@@ -149,12 +158,16 @@ class ServerCore
     Thread.start(server.accept) do |client|
       diff = 0
       loop do
+        $time_buffer += get_frame_time
         start = Time.now
-        @tick += 1
-        # sleep(1)
-        # client.write("123")
-        # @console.dbg "im here client: #{client}"
-        client_tick(client, diff)
+        if ($time_buffer > MAX_TICK_SPEED)
+          @tick += 1
+          # sleep(1)
+          # client.write("123")
+          # @console.dbg "im here client: #{client}"
+          client_tick(client, diff)
+          $time_buffer = 0
+        end
         stop = Time.now
         diff = stop - start
         # @console.log "TirmelDetat: #{diff}"

@@ -20,7 +20,7 @@ class GameLogic
       @console.log "player=#{id} wants to jump"
     end
 
-    @console.log "dt: #{dt}"
+    # @console.log "dt: #{dt}"
     gravity(player, dt)
     players
   end
@@ -28,8 +28,8 @@ class GameLogic
   def gravity(player, dt)
     return if player.y > 400
 
-    grav = 100000 * dt
-    @console.log "grav: #{grav}"
+    # grav = 100000 * dt
+    # @console.log "grav: #{grav}"
     # player.y += grav
     player.y += 1
   end
