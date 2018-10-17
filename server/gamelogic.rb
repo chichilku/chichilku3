@@ -31,6 +31,6 @@ class GameLogic
     # grav = 100000 * dt
     # @console.log "grav: #{grav}"
     # player.y += grav
-    player.y += 1
+    player.y += 16
   end
 end

@@ -26,11 +26,11 @@ class Player
   end
 
   def move_left
-    @x -= 20
+    @x -= 8
   end
 
   def move_right
-    @x += 20
+    @x += 8
   end
 
   # create name package str
