@@ -6,6 +6,9 @@ class GameLogic
   def handle_client_requests(data, id, players, dt)
     player = Player.get_player_by_id(players, id)
 
+    # reset values
+    player.reset_collide
+
 
     # move requets
     if data[0] == '1'
@@ -18,19 +21,25 @@ class GameLogic
     end
     if data[2] == '1'
       @console.log "player=#{id} wants to jump"
+      player.do_jump
     end
 
-    # @console.log "dt: #{dt}"
     gravity(player, dt)
+    player.tick
     players
   end
 
   def gravity(player, dt)
-    return if player.y > 400
+    if player.y > 400
+      # player.collide[:down] = true
+      player.do_collide(:down, true)
+      return
+    end
+
 
     # grav = 100000 * dt
     # @console.log "grav: #{grav}"
     # player.y += grav
-    player.y += 16
+    player.dy += 2 if player.dy < 16
   end
 end

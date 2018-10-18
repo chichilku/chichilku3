@@ -14,3 +14,5 @@ class Console
     puts "[#{t.hour}:#{t.min}:#{t.sec}][debug] #{message}"
   end
 end
+
+$console = Console.new
