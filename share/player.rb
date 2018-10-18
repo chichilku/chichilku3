@@ -41,7 +41,6 @@ class Player
   # server only #
   ###############
   def tick
-    puts "tick pos (#{@x}/#{@y}) dy: #{@dy}"
     move_x(@dx)
     move_y(@dy)
     @dx = normalize_zero(@dx)

@@ -28,6 +28,9 @@ class Gui < Gosu::Window
     @console = Console.new
     @net_client = Client.new(@console, @cfg)
     @font = Gosu::Font.new(20)
+    @is_debug = false
+    
+    @last_key_press = Time.now
   end
 
   # def update_pos(server_data)
@@ -44,12 +47,18 @@ class Gui < Gosu::Window
       net_request[1] = '1'
     elsif button_down?(Gosu::KB_SPACE)
       net_request[2] = '1'
+    elsif button_down?(16) # m
+      if @last_key_press < Time.now - 0.09
+        @is_debug = !@is_debug
+        @last_key_press = Time.now
+      end
     end
 
     # Networking
     net_data = @net_client.tick(net_request, @tick)
     return if net_data.nil?
 
+    @flags = net_data[1] # TODO: make this code nicer
     @state = net_data[1][:state]
     return if net_data[1][:skip]
 
@@ -76,6 +85,13 @@ class Gui < Gosu::Window
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         @stick.draw(player.x, player.y, 0)
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE, 0, 1, 1)
+      end
+
+      if @is_debug
+        player = Player.get_player_by_id(@players, @flags[:id])
+        @font.draw_text("Press m to deactivate debug mode", 10, 10, 0, 1, 1)
+        @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
+        @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
       end
     else
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)

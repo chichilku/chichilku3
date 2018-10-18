@@ -23,7 +23,7 @@ class Client
 
     # return values
     @players = []
-    @flags = { skip: false, state: @state }
+    @flags = { skip: false, state: @state, id: nil }
   end
 
   def tick(client_data, tick)
@@ -92,16 +92,22 @@ class Client
     net_write(data)
   end
 
+  def set_id(id)
+    if id > MAX_CLIENTS || id < 1
+      @console.log "Errornous id=#{id}"
+      return false
+    end
+    @id = id
+    @console.log "Set ID=#{@id}"
+    @flags[:id] = @id
+    true
+  end
+
   def grab_id(data)
     @console.log 'Trying to read id...'
     @playercount = data[0..1]
     id = data[2..3].to_i
-    if id > MAX_CLIENTS || id < 1
-      @console.log "Errornous id=#{id}"
-      return
-    end
-    @id = id
-    @console.log "Got ID=#{@id}"
+    set_id(id)
     update_state(STATE_INGAME)
   end
 
