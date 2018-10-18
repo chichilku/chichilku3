@@ -29,7 +29,7 @@ class ServerCore
 
   def create_name_package
     # protocol 3 name prot
-    pck = format('3%02d', @players.count)
+    pck = format('3l%02d', @players.count)
     @players.each do |player|
       pck += player.to_n_pck
       @console.dbg "pname=#{player.name}"
@@ -52,7 +52,7 @@ class ServerCore
       packet += player.to_s
     end
     # fill with zeros if less than 3 players online
-    packet.ljust(SERVER_PACKAGE_LEN - 1, '0') # implicit return
+    packet.ljust(SERVER_PACKAGE_LEN - 2, '0') # implicit return
   end
 
   def update_pck(data, dt)
@@ -68,15 +68,15 @@ class ServerCore
     if id == -1
       puts "'#{name}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
-      return '040400000000000000000000000'
+      return '0l40400000000000000000000000'
     end
     @console.log "'#{name}' joined the game"
     # protocol 2 (id)
-    format('200%02d0000000000000000000000', id).to_s
+    format('2l00%02d0000000000000000000000', id).to_s
   end
 
-  def handle_protocol(protocol, data, dt)
-    @console.dbg "HANDLE PROTOCOL=#{protocol}"
+  def handle_protocol(protocol, p_status, data, dt)
+    @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol.zero? # error pck
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
@@ -91,18 +91,18 @@ class ServerCore
   end
 
   def handle_client_data(data, dt)
-    response = handle_protocol(data[0].to_i, data[1..-1], dt)
+    response = handle_protocol(data[0].to_i, data[1], data[2..-1], dt)
     return response unless response.nil?
 
     if (@tick % 100).zero?
-      # return '30301hello02x0x0x03hax0r000'
+      # return '3l0301hello02x0x0x03hax0r000'
       return create_name_package
     end
 
     # if error occurs or something unexpected
     # just send regular update pck
     # protocol 1 (update)
-    "1#{players_to_packet}" # implicit return
+    "1l#{players_to_packet}" # implicit return
   end
 
   # TODO: this func and it dependencies should be new file
@@ -113,7 +113,7 @@ class ServerCore
 
     @console.dbg "recv: #{client_data}"
     server_response = handle_client_data(client_data, dt)
-    # server_response = '103011001010220020203300303'
+    # server_response = '1l03011001010220020203300303'
     net_write(server_response, cli)
   end
 
@@ -141,14 +141,14 @@ class ServerCore
   #     client_id = 1 # TODO: get client id as package
   #     @clients.each do |other_client|
   #       if client_id == other_client.id || client == other_client
-  #         net_write('0404_id_taken____0000000000', client)
+  #         net_write('0l404_id_taken____0000000000', client)
   #         Thread.kill self
   #       end
   #     end
   #     @console.log "#{client} joined the game"
   #     @clients = client
   #     # client joined the game (set hardcodet id to 1)
-  #     net_write('200010000000000000000000000', client)
+  #     net_write('2l00010000000000000000000000', client)
 
   #     tick(client)
   #   end

@@ -42,7 +42,7 @@ class Client
     return nil if data.length != SERVER_PACKAGE_LEN
 
     # save protocol and cut it off
-    handle_protocol(data[0].to_i, data[1..-1])
+    handle_protocol(data[0].to_i, data[1], data[2..-1])
     [@players, @flags]
   end
 
@@ -53,8 +53,8 @@ class Client
     @state = state
   end
 
-  def handle_protocol(protocol, data)
-    @console.dbg "HANDLE PROTOCOL=#{protocol}"
+  def handle_protocol(protocol, p_status, data)
+    @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol == 1 # update package
       server_package_to_player_array(data)
     elsif protocol == 2 # id packet
@@ -75,20 +75,20 @@ class Client
       # request id has priority
       # resend after 100 ticks if no respond
       name = @cfg.data['username'].ljust(5, '-')
-      net_write("1#{name}") if (@tick % 200).zero?
+      net_write("1l#{name}") if (@tick % 200).zero?
       return
     end
 
     # if no playerlist yet -> request one
     if @players == []
-      net_write('300000')
+      net_write('3l00000')
       @console.log('requesting a playerlist')
       return
     end
 
     # prefix data with id
     # prot 2 = update pck
-    data = format("2%02d#{data.join('')}", @id)
+    data = format("2l%02d#{data.join('')}", @id)
     net_write(data)
   end
 
