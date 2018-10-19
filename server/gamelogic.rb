@@ -20,7 +20,7 @@ class GameLogic
       player.move_right
     end
     if data[2] == '1'
-      @console.log "player=#{id} wants to jump"
+      @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
 

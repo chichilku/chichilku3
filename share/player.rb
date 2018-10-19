@@ -1,4 +1,5 @@
 # Player used by Client and Server
+require_relative 'console'
 
 SPAWN_X = 200
 SPAWN_Y = 100
@@ -57,7 +58,7 @@ class Player
   end
 
   def die
-    $console.log("[death] name=#{player.name} id=#{player.id}")
+    $console.log("[death] name=#{@name} id=#{@id}")
     @x = SPAWN_X
     @y = SPAWN_Y
   end

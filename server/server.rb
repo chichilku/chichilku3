@@ -1,8 +1,8 @@
 require 'socket'
 
+require_relative '../share/console'
 require_relative '../share/network'
 require_relative '../share/player'
-require_relative '../share/console'
 
 require_relative 'gamelogic'
 
