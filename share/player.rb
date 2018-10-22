@@ -79,6 +79,13 @@ class Player
     @dy = -20
   end
 
+  def collide_string
+    str = "collide:\n"
+    str += "down: #{@collide[:down]} up: #{@collide[:up]}\n"
+    str += "left: #{@collide[:left]} right: #{@collide[:right]}"
+    str
+  end
+
   def do_collide(position, value)
     if position == :right && @dx > 0
       @dx = 0

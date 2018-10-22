@@ -95,6 +95,7 @@ class Gui < Gosu::Window
         @font.draw_text("Press m to deactivate debug mode", 10, 10, 0, 1, 1)
         @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
         @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
+        @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
       end
     else
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)
