@@ -63,6 +63,10 @@ class Player
     @y = SPAWN_Y
   end
 
+  #TODO: check for collision before update
+  # if move_left or move_right set u on a collided field
+  # dont update the position or slow down speed
+  # idk make sure to not get stuck in walls
   def move_left
     # @dx = -8
     @x -= 8
@@ -74,7 +78,7 @@ class Player
   end
 
   def do_jump
-    return if !@collide[:down] # TODO: fix me
+    return if !@collide[:down]
 
     @dy = -25
   end

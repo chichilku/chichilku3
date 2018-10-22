@@ -26,13 +26,13 @@ class Client
     @flags = { skip: false, state: @state, id: nil }
   end
 
-  def tick(client_data, tick)
+  def tick(client_data, protocol, tick)
     # sleep(1)
     @tick = tick
     @flags[:skip] = false
 
     # send data to the server
-    send_data(client_data)
+    send_data(client_data, protocol)
 
     # get data from the server + implicit return
     data = fetch_server_data
@@ -65,12 +65,14 @@ class Client
       end
     elsif protocol == 3 # name packet
       protocol_names(data)
+    elsif protocol == 4 # command respond
+      @console.log "server respond: #{data}"
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end
   end
 
-  def send_data(data)
+  def send_data(data, protocol)
     if @id.nil?
       # request id has priority
       # resend after 100 ticks if no respond
@@ -88,7 +90,8 @@ class Client
 
     # prefix data with id
     # prot 2 = update pck
-    data = format("2l%02d#{data.join('')}", @id)
+    # prot updated to dynamic becuase we now also send cmds
+    data = format("#{protocol}l%02d#{data.join('')}", @id)
     net_write(data)
   end
 

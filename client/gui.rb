@@ -29,6 +29,11 @@ class Gui < Gosu::Window
     @net_client = Client.new(@console, @cfg)
     @font = Gosu::Font.new(20)
     @is_debug = false
+    @is_chat = false
+    @chat_msg = ""
+    @last_key = nil
+    # @chat_inp_stream = nil #TextInput.new
+    # @chat_inp_stream.text # didnt get it working
     
     @last_key_press = Time.now
   end
@@ -39,26 +44,73 @@ class Gui < Gosu::Window
   #   @y = server_data[1].to_i * 20
   # end
 
+  def chat_tick
+    if button_down?(Gosu::KB_ESCAPE)
+      @is_chat = false
+    elsif button_down?(Gosu::KB_RETURN)
+      @is_chat = false
+      return @chat_msg
+    else
+      if !button_down?(@last_key)
+        @last_key = nil # refresh blocker
+      end
+      if button_down?(Gosu::KB_BACKSPACE)
+        # press shift to fast delete
+        if button_down?(Gosu::KB_LEFT_SHIFT) || @last_key != Gosu::KB_BACKSPACE
+          @chat_msg = @chat_msg[0..-2]
+          @last_key = Gosu::KB_BACKSPACE
+        end
+      end
+      for key in 4..30 do # alphabet lowercase
+        if button_down?(key)
+          if @last_key != key
+            @chat_msg += button_id_to_char(key)
+            @last_key = key
+          end
+        end
+      end
+    end
+    nil
+  end
+
   def main_tick
     net_request = '000'.split('')
-    if button_down?(4)    # a
-      net_request[0] = '1'
-    end
-    if button_down?(7) # d
-      net_request[1] = '1'
-    end
-    if button_down?(Gosu::KB_SPACE)
-      net_request[2] = '1'
-    end
-    if button_down?(16) # m
-      if @last_key_press < Time.now - 0.09
-        @is_debug = !@is_debug
-        @last_key_press = Time.now
+    protocol = 2
+
+    if @is_chat
+      msg = chat_tick
+      if !msg.nil?
+        # @console.dbg "rawmsg: #{msg}"
+        msg = msg.ljust(3, '0')
+        net_request = msg[0..2].split('')
+        # @console.dbg "prepedmsg: #{net_request}"
+        protocol = 4
+      end
+    else
+      if button_down?(4) # a
+        net_request[0] = '1'
+      end
+      if button_down?(7) # d
+        net_request[1] = '1'
+      end
+      if button_down?(Gosu::KB_SPACE)
+        net_request[2] = '1'
+      end
+      if button_down?(16) # m
+        if @last_key_press < Time.now - 0.09
+          @is_debug = !@is_debug
+          @last_key_press = Time.now
+        end
+      end
+      if button_down?(23) # t
+        @last_key = 23
+        @is_chat = true
+        @chat_msg = ""
       end
     end
 
     # Networking
-    net_data = @net_client.tick(net_request, @tick)
+    net_data = @net_client.tick(net_request, protocol, @tick)
     return if net_data.nil?
 
     @flags = net_data[1] # TODO: make this code nicer
@@ -88,6 +140,10 @@ class Gui < Gosu::Window
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         @stick.draw(player.x, player.y, 0)
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE, 0, 1, 1)
+      end
+
+      if @is_chat
+        @font.draw_text("> #{@chat_msg}", 10, 450, 0, 1, 1)
       end
 
       if @is_debug

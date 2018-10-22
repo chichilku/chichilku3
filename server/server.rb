@@ -75,6 +75,14 @@ class ServerCore
     format('2l00%02d0000000000000000000000', id).to_s
   end
 
+  def command_package(data)
+    @console.log "command: #{data}"
+    msg = "hello world"
+    msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
+    msg = msg[0..SERVER_PACKAGE_LEN - 2]
+    "4l#{msg}"
+  end
+
   def handle_protocol(protocol, p_status, data, dt)
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol.zero? # error pck
@@ -85,6 +93,8 @@ class ServerCore
       return update_pck(data, dt)
     elsif protocol == 3 # initial request names
       return create_name_package
+    elsif protocol == 4 # command
+      return command_package(data)
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end

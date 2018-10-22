@@ -6,6 +6,7 @@ CLIENT_PACKAGE_LEN = 7                    # used by server
 SERVER_PACKAGE_LEN = MAX_CLIENTS * 8 + 4  # used by client
 
 MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
+# MAX_TICK_SPEED = 0.005
 
 # Client packages:
 # Update package
@@ -24,6 +25,10 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 # request usernames (resets positions ->  should happen 1time at join)
 # prot  pSTATUS space(for maybe an auth key or something)
 # 3     l       00000
+#
+# cmd send
+# prot  pSTATUS id  message
+# 4     l       00  000
 
 # Server packages:
 # Error package (404=server full)
@@ -43,7 +48,10 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 #                                 player1  player2  player3
 # prot  pSTATUS     playercount id name  id name  id name  empty
 # 3     l           03          00 00000 00 00000 00 00000 000
-
+#
+# cmd response ( TODO: implement it client side only prints in console for now )
+# prot  pSTATUS     response
+# 4     l           00000000000000000000000000
 
 # pSTATUS is a status of the current protocol
 # Different status codes:
