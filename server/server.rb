@@ -76,10 +76,12 @@ class ServerCore
   end
 
   def command_package(data)
-    @console.log "command: #{data}"
-    msg = "hello world"
+    id = data[0..1].to_i
+    cmd = data[2..-1]
+    @console.log "[chat] ID=#{id} command='#{data}'"
+    msg = "server_recived_ur_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
-    msg = msg[0..SERVER_PACKAGE_LEN - 2]
+    msg = msg[0..SERVER_PACKAGE_LEN - 3]
     "4l#{msg}"
   end
 
