@@ -43,11 +43,14 @@ class Gui < Gosu::Window
     net_request = '000'.split('')
     if button_down?(4)    # a
       net_request[0] = '1'
-    elsif button_down?(7) # d
+    end
+    if button_down?(7) # d
       net_request[1] = '1'
-    elsif button_down?(Gosu::KB_SPACE)
+    end
+    if button_down?(Gosu::KB_SPACE)
       net_request[2] = '1'
-    elsif button_down?(16) # m
+    end
+    if button_down?(16) # m
       if @last_key_press < Time.now - 0.09
         @is_debug = !@is_debug
         @last_key_press = Time.now

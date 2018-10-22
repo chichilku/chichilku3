@@ -74,6 +74,8 @@ class Player
   end
 
   def do_jump
+    # return if !@collide[:down] # TODO: fix me
+
     @dy = -20
   end
 
