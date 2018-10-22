@@ -16,7 +16,7 @@ end
 class Gui < Gosu::Window
   def initialize(cfg)
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
-    self.caption = 'Gui Game'
+    self.caption = 'chichilku3 client'
     @background_image = Gosu::Image.new("client/img/background1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
     @x = 0
