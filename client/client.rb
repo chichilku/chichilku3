@@ -10,7 +10,6 @@ STATE_INGAME = 2
 class Client
   attr_reader :id
   def initialize(console, cfg)
-    @hostname = 'localhost'
     @id = nil
     @tick = 0
     @state = STATE_OFFLINE

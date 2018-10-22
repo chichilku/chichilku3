@@ -18,6 +18,7 @@ class Gui < Gosu::Window
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
     self.caption = 'chichilku3 client'
     @background_image = Gosu::Image.new("client/img/background1024x512.png")
+    @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
     @x = 0
     @y = 0
@@ -36,6 +37,8 @@ class Gui < Gosu::Window
     # @chat_inp_stream.text # didnt get it working
     
     @last_key_press = Time.now
+
+    @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
   end
 
   # def update_pos(server_data)
@@ -130,11 +133,13 @@ class Gui < Gosu::Window
   end
 
   def draw
-    @background_image.draw(0, 0, 0)
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
     if @state == STATE_CONNECTING
-      @font.draw_text("connecting to #{@cfg.data['ip']}...", 20, 20, 0, 2, 5)
+      @connecting_image.draw(0, 0, 0)
+      # @font.draw_text("connecting to #{@cfg.data['ip']}...", 20, 20, 0, 2, 5)
+      @con_msg.draw(100,200,0)
     elsif @state == STATE_INGAME
+      @background_image.draw(0, 0, 0)
       @players.each do |player|
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
@@ -155,6 +160,7 @@ class Gui < Gosu::Window
         # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
       end
     else
+      @connecting_image.draw(0, 0, 0)
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)
     end
   end
