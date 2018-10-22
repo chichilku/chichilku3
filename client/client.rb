@@ -11,14 +11,13 @@ class Client
   attr_reader :id
   def initialize(console, cfg)
     @hostname = 'localhost'
-    @port = 2000
     @id = nil
     @tick = 0
     @state = STATE_OFFLINE
     @cfg = cfg
 
     @console = console
-    @s = TCPSocket.open(@cfg.data['ip'], @port)
+    @s = TCPSocket.open(@cfg.data['ip'], @cfg.data['port'])
     @console.log "LOAD #{@s}"
 
     # return values

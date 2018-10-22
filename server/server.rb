@@ -5,6 +5,7 @@ require_relative '../share/network'
 require_relative '../share/player'
 
 require_relative 'gamelogic'
+require_relative 'server_cfg'
 
 $time_point=Time.now
 $time_buffer=0
@@ -24,6 +25,7 @@ class ServerCore
     @current_id = 0
     @tick = 0
     @console = Console.new
+    @cfg = ServerCfg.new(@console)
     @gamelogic = GameLogic.new(@console)
   end
 
@@ -130,7 +132,7 @@ class ServerCore
   end
 
   def run
-    server = TCPServer.open(2000)
+    server = TCPServer.open(@cfg.data['port'])
     loop do
       accept(server)
       # accept_and_tick(server) # experimental
