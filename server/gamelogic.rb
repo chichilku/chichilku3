@@ -6,9 +6,8 @@ class GameLogic
   def handle_client_requests(data, id, players, dt)
     player = Player.get_player_by_id(players, id)
 
-    # reset values
-    player.reset_collide
-
+    gravity(player, dt)
+    player.tick
 
     # move requets
     if data[0] == '1'
@@ -24,8 +23,10 @@ class GameLogic
       player.do_jump
     end
 
-    gravity(player, dt)
-    player.tick
+    # reset values (should stay last)
+    player.reset_collide
+
+    # return updated players
     players
   end
 

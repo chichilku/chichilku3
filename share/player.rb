@@ -6,7 +6,7 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name
-  attr_reader :collide
+  attr_reader :collide, :collide_str
 
   def initialize(id, x = nil, y = nil, name = 'def')
     @id = id
@@ -74,9 +74,9 @@ class Player
   end
 
   def do_jump
-    # return if !@collide[:down] # TODO: fix me
+    return if !@collide[:down] # TODO: fix me
 
-    @dy = -20
+    @dy = -25
   end
 
   def collide_string
