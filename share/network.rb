@@ -1,5 +1,14 @@
 require 'socket'
 
+# game
+
+TILE_SIZE = 32
+WINDOW_SIZE_X = TILE_SIZE * 32
+WINDOW_SIZE_Y = TILE_SIZE * 16
+SPEED = TILE_SIZE
+
+# networking
+
 NAME_LEN = 5
 MAX_CLIENTS = 3
 CLIENT_PACKAGE_LEN = 7                    # used by server

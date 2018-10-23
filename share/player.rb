@@ -50,9 +50,16 @@ class Player
   end
 
   def check_out_of_world
+    # y
     if @y < 0
       die
     elsif @y > 500 # TODO: unhardcode me
+      die
+    end
+    # x ( comment me out to add the glitch feature agian )
+    if @x < 0
+      die
+    elsif @x > WINDOW_SIZE_X - TILE_SIZE - 1
       die
     end
   end
