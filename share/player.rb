@@ -24,6 +24,7 @@ class Player
     @last_x = 0
     @last_y = 0
     @tick = 0
+    @not_changed_y = 0
   end
 
   ###############
@@ -37,13 +38,27 @@ class Player
 
   def update_img
     return if @tick % 5 != 0
-    if @x != @last_x || @y != @last_y
+    if @x != @last_x
+      new_x = true
+    end
+    if @y != @last_y
+      new_y = true
+      @not_changed_y = 0
+    else
+      @not_changed_y += 1
+    end
+
+    if new_x || new_y
       @img_index += 1
       @img_index = 0 if @img_index > 4
       # $console.log "img updated to: #{@img_index}"
     end
     @last_x = @x
     @last_y = @y
+    # if @not_changed_y > 10
+    #   $console.log "player is chillin"
+    #   @img_index = 5
+    # end
   end
 
   #####################
@@ -79,7 +94,7 @@ class Player
     # y
     if @y < 0
       die
-    elsif @y > 500 # TODO: unhardcode me
+    elsif @y > WINDOW_SIZE_Y
       die
     end
     # x ( comment me out to add the glitch feature agian )

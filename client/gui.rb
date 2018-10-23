@@ -27,7 +27,7 @@ class Gui < Gosu::Window
     @stick_images << Gosu::Image.new("client/img/stick64/stick2.png")
     @stick_images << Gosu::Image.new("client/img/stick64/stick3.png")
     @stick_images << Gosu::Image.new("client/img/stick64/stick4.png")
-    # @stick_images << Gosu::Image.new("client/img/stick64/stick5.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick5.png")
 
     # @stick_images << Gosu::Image.new("client/img/stick32/stick0.png")
     # @stick_images << Gosu::Image.new("client/img/stick32/stick1.png")
