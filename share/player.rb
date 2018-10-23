@@ -6,7 +6,7 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name
-  attr_reader :collide, :collide_str
+  attr_reader :collide, :collide_str, :img_index
 
   def initialize(id, x = nil, y = nil, name = 'def')
     @id = id
@@ -18,6 +18,30 @@ class Player
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
     @name = name
+
+    # used by client
+    @img_index = 0
+    @last_x = 0
+    @last_y = 0
+  end
+
+  ###############
+  # client only #
+  ###############
+
+  def draw_tick
+    update_img
+  end
+
+  def update_img
+    $console
+    if @x != @last_x || @y != @last_y
+      @img_index += 1
+      @img_index = 0 if @img_index > 2
+      # $console.log "img updated to: #{@img_index}"
+    end
+    @last_x = @x
+    @last_y = @y
   end
 
   #####################

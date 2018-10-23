@@ -17,9 +17,15 @@ class Gui < Gosu::Window
   def initialize(cfg)
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
     self.caption = 'chichilku3 client'
-    @background_image = Gosu::Image.new("client/img/background1024x512.png")
+    # images
+    @background_image = Gosu::Image.new("client/img/grass1024x512.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
+    @stick_images = []
+    @stick_images << Gosu::Image.new("client/img/stick32/stick0.png")
+    @stick_images << Gosu::Image.new("client/img/stick32/stick1.png")
+    @stick_images << Gosu::Image.new("client/img/stick32/stick2.png")
+    # data
     @x = 0
     @y = 0
     @players = []
@@ -142,11 +148,14 @@ class Gui < Gosu::Window
     elsif @state == STATE_INGAME
       @background_image.draw(0, 0, 0)
       @players.each do |player|
+        player.draw_tick
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
-        @stick.draw(player.x, player.y, 0)
+        # @stick.draw(player.x, player.y, 0)
+        @stick_images[player.img_index].draw(player.x, player.y, 0)
         if @is_debug # print id
-          @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
+          # @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
+          @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
         end
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE, 0, 1, 1)
       end
