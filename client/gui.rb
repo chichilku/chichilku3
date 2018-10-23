@@ -22,9 +22,16 @@ class Gui < Gosu::Window
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
     @stick_images = []
-    @stick_images << Gosu::Image.new("client/img/stick32/stick0.png")
-    @stick_images << Gosu::Image.new("client/img/stick32/stick1.png")
-    @stick_images << Gosu::Image.new("client/img/stick32/stick2.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick0.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick1.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick2.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick3.png")
+    @stick_images << Gosu::Image.new("client/img/stick64/stick4.png")
+    # @stick_images << Gosu::Image.new("client/img/stick64/stick5.png")
+
+    # @stick_images << Gosu::Image.new("client/img/stick32/stick0.png")
+    # @stick_images << Gosu::Image.new("client/img/stick32/stick1.png")
+    # @stick_images << Gosu::Image.new("client/img/stick32/stick2.png")
     # data
     @x = 0
     @y = 0

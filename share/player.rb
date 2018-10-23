@@ -23,6 +23,7 @@ class Player
     @img_index = 0
     @last_x = 0
     @last_y = 0
+    @tick = 0
   end
 
   ###############
@@ -30,14 +31,15 @@ class Player
   ###############
 
   def draw_tick
+    @tick += 1
     update_img
   end
 
   def update_img
-    $console
+    return if @tick % 5 != 0
     if @x != @last_x || @y != @last_y
       @img_index += 1
-      @img_index = 0 if @img_index > 2
+      @img_index = 0 if @img_index > 4
       # $console.log "img updated to: #{@img_index}"
     end
     @last_x = @x
@@ -111,7 +113,7 @@ class Player
   def do_jump
     return if !@collide[:down]
 
-    @dy = -25
+    @dy = -30
   end
 
   def collide_string

@@ -31,7 +31,7 @@ class GameLogic
   end
 
   def gravity(player, dt)
-    if player.y > 420
+    if player.y > 400
       # player.collide[:down] = true
       player.do_collide(:down, true)
       return
