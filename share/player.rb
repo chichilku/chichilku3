@@ -90,6 +90,18 @@ class Player
     check_out_of_world
   end
 
+  def check_player_collide(other)
+    # $console.log "x: #{@x} y: #{@y} ox: #{other.x} oy: #{other.y}"
+    # x crash is more rare so make it the outer condition
+    if other.x + TILE_SIZE > @x && other.x < @x + TILE_SIZE
+      if other.y + TILE_SIZE > @y && other.y < @y + TILE_SIZE
+        # $console.log "collide!"
+        return @x < other.x ? -7 : 7
+      end
+    end
+    return 0
+  end
+
   def check_out_of_world
     # y
     if @y < 0
@@ -123,6 +135,11 @@ class Player
   def move_right
     # @dx = 8
     @x += 8
+  end
+
+  def apply_force(x, y)
+    @dx += x
+    @dy += y
   end
 
   def do_jump
