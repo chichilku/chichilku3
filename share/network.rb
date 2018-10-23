@@ -20,7 +20,7 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 # 1     l        00000
 #
 # id move requests
-# prot  pSTATUS id lrx (left/right/x=place for more)
+# prot  pSTATUS id lrj (left/right/jump)
 # 2     l       01 000
 #
 # request usernames (resets positions ->  should happen 1time at join)
