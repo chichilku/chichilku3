@@ -38,7 +38,8 @@ class Gui < Gosu::Window
     
     @last_key_press = Time.now
 
-    @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
+    # depreciated ._.
+    # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
   end
 
   # def update_pos(server_data)
@@ -136,8 +137,8 @@ class Gui < Gosu::Window
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
     if @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
-      # @font.draw_text("connecting to #{@cfg.data['ip']}...", 20, 20, 0, 2, 5)
-      @con_msg.draw(100,200,0)
+      @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 2, 5)
+      # @con_msg.draw(100,200,0)
     elsif @state == STATE_INGAME
       @background_image.draw(0, 0, 0)
       @players.each do |player|

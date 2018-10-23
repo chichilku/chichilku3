@@ -24,6 +24,7 @@ class ServerCore
     @clients = []
     @current_id = 0
     @tick = 0
+    @last_alive_pck_by_client = Time.now
     @console = Console.new
     @cfg = ServerCfg.new(@console)
     @gamelogic = GameLogic.new(@console)
@@ -123,9 +124,16 @@ class ServerCore
   # Handles each client
   def client_tick(cli, dt)
     client_data = save_read(cli, CLIENT_PACKAGE_LEN)
-    return if client_data == ''
+    if client_data == ''
+      # diff = Time.now - @last_alive_pck_by_client
+      # if (diff > MAX_TIMEOUT)
+      #   @console.log "sombody timed out"
+      # end
+      return
+    end
 
     @console.dbg "recv: #{client_data}"
+    @last_alive_pck_by_client = Time.now
     server_response = handle_client_data(client_data, dt)
     # server_response = '1l03011001010220020203300303'
     net_write(server_response, cli)
@@ -171,22 +179,27 @@ class ServerCore
   def accept(server)
     Thread.start(server.accept) do |client|
       diff = 0
-      loop do
-        $time_buffer += get_frame_time
-        start = Time.now
-        if ($time_buffer > MAX_TICK_SPEED)
-          @tick += 1
-          # sleep(1)
-          # client.write("123")
-          # @console.dbg "im here client: #{client}"
-          client_tick(client, diff)
-          $time_buffer = 0
+      # begin
+        loop do
+          $time_buffer += get_frame_time
+          start = Time.now
+          if ($time_buffer > MAX_TICK_SPEED)
+            @tick += 1
+            # sleep(1)
+            # client.write("123")
+            # @console.dbg "im here client: #{client}"
+            client_tick(client, diff)
+            $time_buffer = 0
+          end
+          stop = Time.now
+          diff = stop - start
+          # @console.log "TirmelDetat: #{diff}"
         end
-        stop = Time.now
-        diff = stop - start
-        # @console.log "TirmelDetat: #{diff}"
-      end
-      client.close
+        client.close
+      # rescue
+      #   @console.log "sombody left the game"
+      #   @current_id -= 1
+      # end
     end
   end
 
