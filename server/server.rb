@@ -28,6 +28,7 @@ class ServerCore
     @console = Console.new
     @cfg = ServerCfg.new(@console)
     @gamelogic = GameLogic.new(@console)
+    @global_pack = nil
   end
 
   def create_name_package
@@ -74,6 +75,7 @@ class ServerCore
       return '0l40400000000000000000000000'
     end
     @console.log "'#{name}' joined the game"
+    @global_pack = "true"
     # protocol 2 (id)
     format('2l00%02d0000000000000000000000', id).to_s
   end
@@ -107,12 +109,28 @@ class ServerCore
 
   def handle_client_data(data, dt)
     response = handle_protocol(data[0].to_i, data[1], data[2..-1], dt)
+    # the response is a direct respond to an protocol
+    # everything above this could override important responds
+    # like id assignment
+    # every think that is after this guad case just overrides update pcks
     return response unless response.nil?
 
     if (@tick % 100).zero?
       # return '3l0301hello02x0x0x03hax0r000'
       return create_name_package
     end
+
+    # some debug suff for class vars
+    # if (@tick % 50).zero?
+    #   puts ""
+    #   @console.log "id=#{data[0].to_i} currentid=#{@current_id}"
+    # end
+
+    # if @global_pack.nil?
+    #   @global_pack = nil
+    #   @console.log "sending an global pck"
+    #   return "5l#{players_to_packet}"
+    # end
 
     # if error occurs or something unexpected
     # just send regular update pck

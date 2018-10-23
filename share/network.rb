@@ -50,9 +50,16 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 # prot  pSTATUS     playercount id name  id name  id name  empty
 # 3     l           03          00 00000 00 00000 00 00000 000
 #
-# cmd response ( TODO: implement it client side only prints in console for now )
+# cmd response package ( TODO: implement it client side only prints in console for now )
 # prot  pSTATUS     response
 # 4     l           00000000000000000000000000
+#
+# Event package
+# prot  pSTATUS eventcode event-details
+# 5     l       x         0000000000000000000000000
+#               EVENTS:
+#  death:       eventcode x   y   place-for-more
+#               d         000 000 0000000000000000000
 
 # pSTATUS is a status of the current protocol
 # Different status codes:

@@ -145,6 +145,9 @@ class Gui < Gosu::Window
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         @stick.draw(player.x, player.y, 0)
+        if @is_debug # print id
+          @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
+        end
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE, 0, 1, 1)
       end
 
