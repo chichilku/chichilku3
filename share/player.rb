@@ -5,7 +5,7 @@ SPAWN_X = 200
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score
   attr_reader :collide, :collide_str, :img_index
 
   def initialize(id, x = nil, y = nil, name = 'def')
@@ -18,6 +18,7 @@ class Player
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
     @name = name
+    @score = 0
 
     # used by client
     @img_index = 0
@@ -175,11 +176,13 @@ class Player
   # create name package str
   def to_n_pck
     name = @name.ljust(5, '_')
-    format("%02d#{name}", @id)
+    # format("%02d#{name}", @id) # old 2 byte ids
+    "#{@id}#{name}" # new 2 byte id
   end
 
   def to_s
-    "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}"
+    # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 byte ids
+    "#{@id}#{@score}#{'%03d' % @x}#{'%03d' % @y}" # new 1 byte id
   end
 
   private

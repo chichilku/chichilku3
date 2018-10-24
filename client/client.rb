@@ -137,8 +137,9 @@ class Client
   # playername package
   # And its dependencies:
   def protocol_names(data)
-    #     03          00 00000 00 00000 00 00000 000
-    playercount = data[0..1].to_i
+    #     3 0          00 00000 00 00000 00 00000 000
+    playercount = data[0].to_i
+    gamestate = data[1].to_i
     data = data[2..-1]
     p_strs = protocol_names_to_player_strs(playercount, data)
     protocol_names_strs_to_objs(p_strs)
@@ -154,13 +155,15 @@ class Client
 
   def protocol_names_strs_to_objs(player_strs)
     players = []
+    @console.log "players: #{player_strs}"
     player_strs.each do |player_str|
-      id = player_str[0..1].to_i
+      id = player_str[0].to_i
+      score = player_str[1].to_i
       name = player_str[2..-1]
       players << Player.new(id, 0, 0, name) unless id.zero?
     end
     # debug
-    players.each { |p| @console.dbg "player=#{p.id} name=#{p.name}" }
+    players.each { |p| @console.dbg "player=#{p.id} score=#{p.score} name=#{p.name}" }
     @flags[:skip] = true # dont redner players at position zer0
     @players = players
   end
@@ -170,8 +173,9 @@ class Client
   def server_package_to_player_array(data)
     # /(?<count>\d{2})(?<player>(?<id>\d{2})(?<x>\d{3})(?<y>\d{3}))/
     # @console.log "data: #{data}"
-    slots = data[0..1].to_i # save slots
-    data = data[2..-1] # cut slots off
+    slots = data[0].to_i # save occupado slots
+    gamestate = data[1].to_i # save gamestate
+    data = data[2..-1] # cut slots and gamestate off
     players = server_package_to_player_strs(slots, data)
     # @console.log "players: \n#{players}"
     player_strs_to_objects(players)
@@ -188,13 +192,14 @@ class Client
   def player_strs_to_objects(player_strs)
     players = []
     player_strs.each do |player_str|
-      id = player_str[0..1].to_i
+      id = player_str[0].to_i
+      score = player_str[1].to_i
       x = player_str[2..4].to_i
       y = player_str[5..7].to_i
       # puts "id: #{id} x: #{x} y: #{y}"
       # players << Player.new(id, x, y) unless id.zero?
 
-      @console.dbg "-- updt player id=#{id} --"
+      @console.dbg "-- updt player id=#{id} score=#{score}--"
       p_index = Player.get_player_index_by_id(@players, id)
       @console.dbg "@players index=#{p_index}"
       @console.dbg "players: \n #{@players}"

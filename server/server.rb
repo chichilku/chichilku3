@@ -33,7 +33,11 @@ class ServerCore
 
   def create_name_package
     # protocol 3 name prot
-    pck = format('3l%02d', @players.count)
+    
+    #                      gamestate
+    #                         |
+    pck = "3l#{@players.count}g"
+    # pck = format('3l%02d', @players.count) # old 2 digit player count
     @players.each do |player|
       pck += player.to_n_pck
       @console.dbg "pname=#{player.name}"
@@ -51,7 +55,10 @@ class ServerCore
   end
 
   def players_to_packet
-    packet = @players.empty? ? '00' : format('%02d', @players.count)
+    # old 2 digit player count
+    # packet = @players.empty? ? '00' : format('%02d', @players.count)
+    packet = @players.empty? ? '0' : @players.count.to_s
+    packet += 'g' # gamestate
     @players.each do |player|
       packet += player.to_s
     end
