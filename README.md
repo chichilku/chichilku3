@@ -1,5 +1,6 @@
 # chichilku3
 The stick game in the 3rd generation written in ruby
+![Demo](screenshots/chichilku3.png)
 
 # Setup
 
