@@ -24,15 +24,18 @@ class GameLogic
 
     # move requets
     if data[0] == '1'
+      @console.log "player=#{id} space for more"
+    end
+    if data[1] == '1'
       @console.dbg "player=#{id} wants to walk left"
       player.move_left
     end
-    if data[1] == '1'
+    if data[2] == '1'
       @console.dbg "player=#{id} wants to walk right"
       player.move_right
     end
-    if data[2] == '1'
-      @console.dbg "player=#{id} wants to jump"
+    if data[3] == '1'
+      @console.log "player=#{id} wants to jump"
       player.do_jump
     end
 

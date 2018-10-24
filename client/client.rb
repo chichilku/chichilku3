@@ -89,7 +89,8 @@ class Client
     # prefix data with id
     # prot 2 = update pck
     # prot updated to dynamic becuase we now also send cmds
-    data = format("#{protocol}l%02d#{data.join('')}", @id)
+    # data = format("#{protocol}l%02d#{data.join('')}", @id) # old 2byte id
+    data = "#{protocol}l#{@id}#{data.join('')}" # new 1byte id
     net_write(data)
   end
 
@@ -122,7 +123,7 @@ class Client
 
   def net_write(data)
     if data.length != CLIENT_PACKAGE_LEN
-      @console.log "ERROR wrong pack len: #{data.length} pck: #{data}"
+      @console.log "ERROR wrong pack len: #{data.length}/#{CLIENT_PACKAGE_LEN} pck: #{data}"
       exit
     end
     @s.write(data)

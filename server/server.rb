@@ -60,9 +60,9 @@ class ServerCore
   end
 
   def update_pck(data, dt)
-    id = data[0..1].to_i
+    id = data[0].to_i
     @console.dbg "got player with id: #{id}"
-    @players = @gamelogic.handle_client_requests(data[2..-1], id, @players, dt)
+    @players = @gamelogic.handle_client_requests(data[1..-1], id, @players, dt)
     nil # defaults to normal update pck
   end
 

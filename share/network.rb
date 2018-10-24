@@ -29,8 +29,8 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 # 1     l        00000
 #
 # id move requests
-# prot  pSTATUS id lrj (left/right/jump)
-# 2     l       01 000
+# prot  pSTATUS id xlrj (x = spaceformore/left/right/jump)
+# 2     l       0  0000
 #
 # request usernames (resets positions ->  should happen 1time at join)
 # prot  pSTATUS space(for maybe an auth key or something)
@@ -38,7 +38,7 @@ MAX_TICK_SPEED = 0.0001 # the lower the fast client and server tick
 #
 # cmd send
 # prot  pSTATUS id  message
-# 4     l       00  000
+# 4     l       0   0000
 
 # Server packages:
 # Error package (404=server full)

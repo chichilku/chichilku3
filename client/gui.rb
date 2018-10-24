@@ -91,7 +91,7 @@ class Gui < Gosu::Window
   end
 
   def main_tick
-    net_request = '000'.split('')
+    net_request = '0000'.split('')
     protocol = 2
 
     if @is_chat
@@ -104,14 +104,15 @@ class Gui < Gosu::Window
         protocol = 4
       end
     else
+      net_request[0] = '0' # space for more
       if button_down?(4) # a
-        net_request[0] = '1'
-      end
-      if button_down?(7) # d
         net_request[1] = '1'
       end
-      if button_down?(Gosu::KB_SPACE)
+      if button_down?(7) # d
         net_request[2] = '1'
+      end
+      if button_down?(Gosu::KB_SPACE)
+        net_request[3] = '1'
       end
       if button_down?(16) # m
         if @last_key_press < Time.now - 0.09
