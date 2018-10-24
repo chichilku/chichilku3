@@ -18,7 +18,7 @@ class Gui < Gosu::Window
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
     self.caption = 'chichilku3 client'
     # images
-    @background_image = Gosu::Image.new("client/img/grass1024x512.png")
+    @background_image = Gosu::Image.new("client/img/battle1024x512.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
     @stick_images = []
@@ -166,7 +166,7 @@ class Gui < Gosu::Window
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
         end
-        @font.draw_text(player.name, player.x, player.y - TILE_SIZE, 0, 1, 1)
+        @font.draw_text(player.name, player.x, player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end
 
       if @is_chat

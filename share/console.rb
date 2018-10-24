@@ -1,4 +1,4 @@
-DEBUG = true
+DEBUG = false
 
 # Console used by Client and Server
 class Console

@@ -1,11 +1,11 @@
 # Player used by Client and Server
 require_relative 'console'
 
-SPAWN_X = 200
+SPAWN_X = 512
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :dead, :dead_ticks
   attr_reader :collide, :collide_str, :img_index
 
   def initialize(id, score, x = nil, y = nil, name = 'def')
@@ -19,6 +19,8 @@ class Player
     @collide = {up: false, down: false, right: false, left: false}
     @name = name
     @score = score
+    @dead = false # only used by server for now
+    @dead_ticks = 0
 
     # used by client
     @img_index = 0
@@ -104,7 +106,21 @@ class Player
     return 0
   end
 
-  def check_out_of_world
+  # def check_out_of_world #die
+  #   # y
+  #   if @y < 0
+  #     die
+  #   elsif @y > WINDOW_SIZE_Y
+  #     die
+  #   end
+  #   # x ( comment me out to add the glitch feature agian )
+  #   if @x < 0
+  #     die
+  #   elsif @x > WINDOW_SIZE_X - TILE_SIZE - 1
+  #     die
+  #   end
+  # end
+  def check_out_of_world # swap size
     # y
     if @y < 0
       die
@@ -113,9 +129,9 @@ class Player
     end
     # x ( comment me out to add the glitch feature agian )
     if @x < 0
-      die
+      @x = WINDOW_SIZE_X - TILE_SIZE - 2
     elsif @x > WINDOW_SIZE_X - TILE_SIZE - 1
-      die
+      @x = 0
     end
   end
 
@@ -147,8 +163,11 @@ class Player
   def do_jump
     return if !@collide[:down]
 
-    @dy = -30
-    add_score
+    if @dead 
+      @dy = -5
+    else
+      @dy = -30
+    end
   end
 
   def add_score

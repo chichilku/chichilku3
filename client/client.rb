@@ -155,7 +155,6 @@ class Client
 
   def protocol_names_strs_to_objs(player_strs)
     players = []
-    @console.log "players: #{player_strs}"
     player_strs.each do |player_str|
       id = player_str[0].to_i
       score = player_str[1].to_i
@@ -176,7 +175,7 @@ class Client
     slots = data[0].to_i # save occupado slots
     # gamestate = data[1].to_i # save gamestate
     @flags[:gamestate] = data[1]
-    @console.log "gamestate: " + @flags[:gamestate]
+    # @console.log "gamestate: " + @flags[:gamestate]
     data = data[2..-1] # cut slots and gamestate off
     players = server_package_to_player_strs(slots, data)
     # @console.log "players: \n#{players}"

@@ -1,6 +1,7 @@
 class GameLogic
   def initialize(console)
     @console = console
+    @alive_players = 0
   end
 
   def check_collide(players, player)
@@ -35,7 +36,7 @@ class GameLogic
       player.move_right
     end
     if data[3] == '1'
-      @console.log "player=#{id} wants to jump"
+      @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
 
@@ -47,12 +48,33 @@ class GameLogic
   end
 
   def gravity(player, dt)
-    if player.y > 400
-      # player.collide[:down] = true
-      player.do_collide(:down, true)
-      return
+    if player.dead
+      player.dead_ticks += 1
+      if player.dead_ticks > 100
+        player.dead = false
+        player.die
+      end
+    else
+      if player.y > 320 # too far down --> die
+        player.dead = true
+        player.dead_ticks = 0
+      end
     end
 
+    # outside of the save zone
+    if player.x < 214 || player.x > 818 || player.dead
+      if player.y > 420
+        # player.collide[:down] = true
+        player.do_collide(:down, true)
+        return
+      end
+    else # on the save zone
+      if player.y > 260
+        # player.collide[:down] = true
+        player.do_collide(:down, true)
+        return
+      end
+    end
 
     # grav = 100000 * dt
     # @console.log "grav: #{grav}"
