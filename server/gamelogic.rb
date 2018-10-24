@@ -20,7 +20,7 @@ class GameLogic
     player.tick
     # player collsions works
     # but it eats performance and delays jumping
-    # check_collide(players, player)
+    check_collide(players, player)
 
     # move requets
     if data[0] == '1'
