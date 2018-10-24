@@ -8,7 +8,7 @@ class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score
   attr_reader :collide, :collide_str, :img_index
 
-  def initialize(id, x = nil, y = nil, name = 'def')
+  def initialize(id, score, x = nil, y = nil, name = 'def')
     @id = id
     # @x = x
     # @y = y
@@ -18,7 +18,7 @@ class Player
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
     @name = name
-    @score = 0
+    @score = score
 
     # used by client
     @img_index = 0
@@ -73,10 +73,11 @@ class Player
     players.find { |player| id == player.id }
   end
 
-  def self.update_player(players, id, x, y)
+  def self.update_player(players, id, x, y, score)
     player = get_player_by_id(players, id)
     player.x = x
     player.y = y
+    player.score = score
     player
   end
 
@@ -147,6 +148,11 @@ class Player
     return if !@collide[:down]
 
     @dy = -30
+    add_score
+  end
+
+  def add_score
+    @score += 1 if @score < 9
   end
 
   def collide_string
@@ -177,7 +183,7 @@ class Player
   def to_n_pck
     name = @name.ljust(5, '_')
     # format("%02d#{name}", @id) # old 2 byte ids
-    "#{@id}#{name}" # new 2 byte id
+    "#{@id}#{@score}#{name}" # new 1 byte id
   end
 
   def to_s

@@ -50,7 +50,7 @@ class ServerCore
     return -1 if @current_id > MAX_CLIENTS
 
     @console.log "Added player #{@current_id}"
-    @players << Player.new(@current_id, nil, nil, name)
+    @players << Player.new(@current_id, 0, nil, nil, name)
     @current_id # implicit return
   end
 

@@ -5,6 +5,10 @@
 # 'e' end of a series
 # '1','2','3',..,'9' index of current series
 
+# gamestates:
+# g = default ingame state
+# f = failure/error gamestate
+# e = round end gamestate (somebody won)
 
 ####################
 # Client packages: #

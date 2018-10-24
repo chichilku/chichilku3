@@ -21,7 +21,7 @@ class Client
 
     # return values
     @players = []
-    @flags = { skip: false, state: @state, id: nil }
+    @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
   end
 
   def tick(client_data, protocol, tick)
@@ -139,7 +139,7 @@ class Client
   def protocol_names(data)
     #     3 0          00 00000 00 00000 00 00000 000
     playercount = data[0].to_i
-    gamestate = data[1].to_i
+    @flags[:gamestate] = data[1]
     data = data[2..-1]
     p_strs = protocol_names_to_player_strs(playercount, data)
     protocol_names_strs_to_objs(p_strs)
@@ -160,7 +160,7 @@ class Client
       id = player_str[0].to_i
       score = player_str[1].to_i
       name = player_str[2..-1]
-      players << Player.new(id, 0, 0, name) unless id.zero?
+      players << Player.new(id, 0, 0, score, name) unless id.zero?
     end
     # debug
     players.each { |p| @console.dbg "player=#{p.id} score=#{p.score} name=#{p.name}" }
@@ -174,7 +174,9 @@ class Client
     # /(?<count>\d{2})(?<player>(?<id>\d{2})(?<x>\d{3})(?<y>\d{3}))/
     # @console.log "data: #{data}"
     slots = data[0].to_i # save occupado slots
-    gamestate = data[1].to_i # save gamestate
+    # gamestate = data[1].to_i # save gamestate
+    @flags[:gamestate] = data[1]
+    @console.log "gamestate: " + @flags[:gamestate]
     data = data[2..-1] # cut slots and gamestate off
     players = server_package_to_player_strs(slots, data)
     # @console.log "players: \n#{players}"
@@ -206,7 +208,7 @@ class Client
       next if p_index.nil?
 
       @console.dbg "got player: #{@players[p_index]}"
-      new_player = Player.update_player(@players, id, x, y)
+      new_player = Player.update_player(@players, id, x, y, score)
       @players[Player.get_player_index_by_id(@players, id)] = new_player
     end
     # debug
