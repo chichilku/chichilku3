@@ -219,6 +219,7 @@ class ServerCore
           end
           stop = Time.now
           diff = stop - start
+          sleep 0 # sleep 0 to switch threads
           # @console.log "TirmelDetat: #{diff}"
         end
         client.close
