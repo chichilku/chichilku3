@@ -17,6 +17,7 @@ class Client
 
     @console = console
     @s = TCPSocket.open(@cfg.data['ip'], @cfg.data['port'])
+    @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm
     @console.log "LOAD #{@s}"
 
     # return values

@@ -166,6 +166,7 @@ class ServerCore
 
   def run
     server = TCPServer.open(@cfg.data['port'])
+    server.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm
     loop do
       accept(server)
       # accept_and_tick(server) # experimental
