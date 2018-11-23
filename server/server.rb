@@ -200,13 +200,12 @@ class ServerCore
       diff = 0
       # begin
         loop do
-          diff = $next_tick - Time.now
-          diff = 0 if diff.negative?
-          sleep diff
+          t = Time.now
+          sleep $next_tick - t if $next_tick > t
           @tick += 1
           # @console.dbg "im here client: #{client}"
-          client_tick(client, diff)
           $next_tick = Time.now + MAX_TICK_SPEED
+          client_tick(client, diff)
         end
         client.close
       # rescue
