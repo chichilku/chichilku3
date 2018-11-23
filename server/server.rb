@@ -7,14 +7,7 @@ require_relative '../share/player'
 require_relative 'gamelogic'
 require_relative 'server_cfg'
 
-$time_point=Time.now
-$time_buffer=0
-
-def get_frame_time
-  diff = Time.now - $time_point
-  $time_point = Time.now
-  return diff
-end
+$next_tick = Time.now
 
 # ServerCore: should only cotain the networking
 # and no gamelogic
@@ -207,20 +200,13 @@ class ServerCore
       diff = 0
       # begin
         loop do
-          $time_buffer += get_frame_time
-          start = Time.now
-          if ($time_buffer > MAX_TICK_SPEED)
-            @tick += 1
-            # sleep(1)
-            # client.write("123")
-            # @console.dbg "im here client: #{client}"
-            client_tick(client, diff)
-            $time_buffer = 0
-          end
-          stop = Time.now
-          diff = stop - start
-          sleep 0 # sleep 0 to switch threads
-          # @console.log "TirmelDetat: #{diff}"
+          diff = $next_tick - Time.now
+          diff = 0 if diff.negative?
+          sleep diff
+          @tick += 1
+          # @console.dbg "im here client: #{client}"
+          client_tick(client, diff)
+          $next_tick = Time.now + MAX_TICK_SPEED
         end
         client.close
       # rescue
