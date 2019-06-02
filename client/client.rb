@@ -61,7 +61,7 @@ class Client
       server_package_to_player_array(data)
     elsif protocol == 2 # id packet
       if @id.nil?
-        grab_id(data)
+        id_packet(data)
       else
         @console.log "WARNING got unexpected id packet=#{data}"
       end
@@ -116,6 +116,19 @@ class Client
     id = data[2..3].to_i
     set_id(id)
     update_state(STATE_INGAME)
+  end
+
+  def id_packet(data)
+    # protcol 2
+    # the id protocol contains fresh client id
+    # and server version
+    grab_id(data)
+    get_server_version(data)
+  end
+
+  def get_server_version(data)
+    server_version = data[4..8]
+    @console.log "server version='#{server_version}'"
   end
 
   def fetch_server_data

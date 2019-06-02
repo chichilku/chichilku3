@@ -59,8 +59,8 @@
 #
 # ----------------------------------------------------------------------------------------
 # Set ID package
-# prot  pSTATUS     playercount ID  Place for more info
-# 2     l           03          01  0000000000000000000000
+# prot  pSTATUS     playercount ID  version Place for more info
+# 2     l           03          01  0000    000000000000000000
 #
 # ----------------------------------------------------------------------------------------
 # Username package
