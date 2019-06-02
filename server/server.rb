@@ -53,12 +53,12 @@ class ServerCore
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
 
-  def add_player(name)
+  def add_player(name, ip)
     @current_id += 1
     return -1 if @current_id > MAX_CLIENTS
 
-    @console.log "Added player #{@current_id}"
-    @players << Player.new(@current_id, 0, nil, nil, name)
+    @console.log "Added player id='#{@current_id}' ip='#{ip}'"
+    @players << Player.new(@current_id, 0, nil, nil, name, ip)
     @current_id # implicit return
   end
 
@@ -81,15 +81,15 @@ class ServerCore
     nil # defaults to normal update pck
   end
 
-  def id_pck(data)
+  def id_pck(data, ip)
     name = data[0..5]
-    id = add_player(name)
+    id = add_player(name, ip)
     if id == -1
       puts "'#{name}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
       return '0l40400000000000000000000000'
     end
-    # @console.log "id='#{id}' name='#{name}' joined the game"
+    @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
     format('2l00%02d0000000000000000000000', id).to_s
@@ -105,12 +105,12 @@ class ServerCore
     "4l#{msg}"
   end
 
-  def handle_protocol(protocol, p_status, data, dt)
+  def handle_protocol(protocol, p_status, data, ip, dt)
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol.zero? # error pck
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
-      return id_pck(data)
+      return id_pck(data, ip)
     elsif protocol == 2 # update pck
       return update_pck(data, dt)
     elsif protocol == 3 # initial request names
@@ -122,8 +122,8 @@ class ServerCore
     end
   end
 
-  def handle_client_data(data, dt)
-    response = handle_protocol(data[0].to_i, data[1], data[2..-1], dt)
+  def handle_client_data(data, ip, dt)
+    response = handle_protocol(data[0].to_i, data[1], data[2..-1], ip, dt)
     # the response is a direct respond to an protocol
     # everything above this could override important responds
     # like id assignment
@@ -167,7 +167,8 @@ class ServerCore
 
     @console.dbg "recv: #{client_data}"
     @last_alive_pck_by_client = Time.now
-    server_response = handle_client_data(client_data, dt)
+    port, ip = Socket.unpack_sockaddr_in(cli.getpeername)
+    server_response = handle_client_data(client_data, ip, dt)
     # server_response = '1l03011001010220020203300303'
     net_write(server_response, cli)
   end

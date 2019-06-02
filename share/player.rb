@@ -8,7 +8,7 @@ class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :dead, :dead_ticks
   attr_reader :collide, :collide_str, :img_index
 
-  def initialize(id, score, x = nil, y = nil, name = 'def')
+  def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
     @id = id
     # @x = x
     # @y = y
@@ -31,6 +31,7 @@ class Player
 
     # used by server
     @version = nil
+    @ip = ip
   end
 
   ###############
