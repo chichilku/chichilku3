@@ -32,6 +32,7 @@ class ServerCore
     player = Player.get_player_by_id(@players, id)
     if player
       @console.log "name req id='#{id}' name='#{player.name}' vrs='#{version}'"
+      player.set_version(version)
     else
       @console.log "error parsing version data=#{data}"
     end

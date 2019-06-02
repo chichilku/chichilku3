@@ -1,6 +1,8 @@
 require 'socket'
 # check doc_network.rb for documentation
 
+GAME_VERSION = '0000'
+
 # game
 
 TILE_SIZE = 64

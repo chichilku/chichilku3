@@ -85,7 +85,7 @@ class Client
 
     # if no playerlist yet -> request one
     if @players == [] && @req_playerlist < Time.now - 4
-      net_write("3l#{id}0000")
+      net_write("3l#{id}#{GAME_VERSION}")
       @console.log('requesting a playerlist')
       @req_playerlist = Time.now
       return

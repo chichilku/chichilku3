@@ -28,6 +28,9 @@ class Player
     @last_y = 0
     @tick = 0
     @not_changed_y = 0
+
+    # used by server
+    @version = nil
   end
 
   ###############
@@ -86,6 +89,11 @@ class Player
   ###############
   # server only #
   ###############
+
+  def set_version(version)
+    @version = version
+  end
+
   def tick
     move_x(@dx)
     move_y(@dy)
