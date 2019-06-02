@@ -31,8 +31,8 @@
 #
 # ----------------------------------------------------------------------------------------
 # request usernames (resets positions ->  should happen 1time at join)
-# prot  pSTATUS space(for maybe an auth key or something)
-# 3     l       00000
+# prot  pSTATUS id version
+# 3     l       0  0000
 #
 # ----------------------------------------------------------------------------------------
 # cmd send

@@ -20,6 +20,9 @@ class Client
     @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm
     @console.log "LOAD #{@s}"
 
+    # state variables
+    @req_playerlist = Time.now - 8
+
     # return values
     @players = []
     @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
@@ -81,9 +84,10 @@ class Client
     end
 
     # if no playerlist yet -> request one
-    if @players == []
-      net_write('3l00000')
+    if @players == [] && @req_playerlist < Time.now - 4
+      net_write("3l#{id}0000")
       @console.log('requesting a playerlist')
+      @req_playerlist = Time.now
       return
     end
 

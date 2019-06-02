@@ -24,16 +24,30 @@ class ServerCore
     @global_pack = nil
   end
 
-  def create_name_package
+  def parse_client_version(data)
+    return if data.nil?
+
+    id = data[0].to_i
+    version = data[1..-1]
+    player = Player.get_player_by_id(@players, id)
+    if player
+      @console.log "name req id='#{id}' name='#{player.name}' vrs='#{version}'"
+    else
+      @console.log "error parsing version data=#{data}"
+    end
+  end
+
+  def create_name_package(data)
     # protocol 3 name prot
-    
+    # also includes client version
+    parse_client_version(data)
     #                      gamestate
     #                         |
     pck = "3l#{@players.count}g"
     # pck = format('3l%02d', @players.count) # old 2 digit player count
-    @players.each do |player|
-      pck += player.to_n_pck
-      @console.dbg "pname=#{player.name}"
+    @players.each do |p|
+      pck += p.to_n_pck
+      @console.dbg "pname=#{p.name}"
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -74,7 +88,7 @@ class ServerCore
       # protocol 0 (error) code=404 slot not found
       return '0l40400000000000000000000000'
     end
-    @console.log "'#{name}' joined the game"
+    # @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
     format('2l00%02d0000000000000000000000', id).to_s
@@ -99,7 +113,7 @@ class ServerCore
     elsif protocol == 2 # update pck
       return update_pck(data, dt)
     elsif protocol == 3 # initial request names
-      return create_name_package
+      return create_name_package(data)
     elsif protocol == 4 # command
       return command_package(data)
     else
@@ -117,7 +131,7 @@ class ServerCore
 
     if (@tick % 100).zero?
       # return '3l0301hello02x0x0x03hax0r000'
-      return create_name_package
+      return create_name_package(nil)
     end
 
     # some debug suff for class vars
