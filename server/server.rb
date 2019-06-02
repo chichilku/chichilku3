@@ -19,7 +19,7 @@ class ServerCore
     @tick = 0
     @last_alive_pck_by_client = Time.now
     @console = Console.new
-    @cfg = ServerCfg.new(@console)
+    @cfg = ServerCfg.new(@console, "server.json")
     @gamelogic = GameLogic.new(@console)
     @global_pack = nil
   end

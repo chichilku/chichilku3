@@ -9,7 +9,7 @@ require_relative 'client_cfg'
 class Game
   def initialize
     console = Console.new
-    cfg = ClientCfg.new(console)
+    cfg = ClientCfg.new(console, "client.json")
     gui = Gui.new(cfg)
     gui.show
   end
