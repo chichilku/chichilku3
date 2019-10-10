@@ -3,6 +3,23 @@ require_relative 'client'
 require_relative '../share/console'
 require_relative '../share/player'
 
+KEY_A = 4
+KEY_C = 6
+KEY_D = 7
+KEY_H = 11
+KEY_J = 13
+KEY_K = 14
+KEY_L = 15
+KEY_M = 16
+KEY_Q = 20
+KEY_S = 22
+KEY_T = 23
+KEY_W = 26
+KEY_RIGHT = 79
+KEY_LEFT = 80
+KEY_DOWN = 81
+KEY_UP = 82
+
 $time_point=Time.now
 $time_buffer=0
 
@@ -38,14 +55,16 @@ class Gui < Gosu::Window
     @players = []
     @cfg = cfg
     @tick = 0
-    @state = STATE_CONNECTING
     @console = Console.new
     @net_client = Client.new(@console, @cfg)
+    @state = @net_client.state
     @font = Gosu::Font.new(20)
     @is_debug = false
     @is_chat = false
     @chat_msg = ""
     @last_key = nil
+    @menu_items = []
+    @selected_menu_item = 0
     # @chat_inp_stream = nil #TextInput.new
     # @chat_inp_stream.text # didnt get it working
     
@@ -53,6 +72,7 @@ class Gui < Gosu::Window
 
     # depreciated ._.
     # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
+    init_menu()
   end
 
   # def update_pos(server_data)
@@ -91,6 +111,31 @@ class Gui < Gosu::Window
   end
 
   def main_tick
+    if @state == STATE_MENU
+      menu_tick
+    else
+      game_tick
+    end
+  end
+
+  def menu_tick
+    if button_down?(KEY_Q)
+      puts "quitting the game."
+      exit
+    elsif button_down?(KEY_C)
+      connect
+      return
+    end
+    if button_down?(KEY_DOWN) or button_down?(KEY_S) or button_down?(KEY_J) or button_down?(Gosu::MS_WHEEL_DOWN)
+      @selected_menu_item += 1 if @selected_menu_item < @menu_items.length - 1
+    elsif button_down?(KEY_UP) or button_down?(KEY_W) or button_down?(KEY_K) or button_down?(Gosu::MS_WHEEL_UP)
+      @selected_menu_item -= 1 if @selected_menu_item > 0
+    elsif button_down?(Gosu::KB_RETURN)
+      @menu_items[@selected_menu_item][1].call
+    end
+  end
+
+  def game_tick
     net_request = '0000'.split('')
     protocol = 2
 
@@ -105,23 +150,23 @@ class Gui < Gosu::Window
       end
     else
       net_request[0] = '0' # space for more
-      if button_down?(4) # a
+      if button_down?(KEY_A)
         net_request[1] = '1'
       end
-      if button_down?(7) # d
+      if button_down?(KEY_D)
         net_request[2] = '1'
       end
       if button_down?(Gosu::KB_SPACE)
         net_request[3] = '1'
       end
-      if button_down?(16) # m
+      if button_down?(KEY_M)
         if @last_key_press < Time.now - 0.09
           @is_debug = !@is_debug
           @last_key_press = Time.now
         end
       end
-      if button_down?(23) # t
-        @last_key = 23
+      if button_down?(KEY_T)
+        @last_key = KEY_T
         @is_chat = true
         @chat_msg = ""
       end
@@ -149,7 +194,19 @@ class Gui < Gosu::Window
 
   def draw
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
-    if @state == STATE_CONNECTING
+    if @state == STATE_MENU
+      @connecting_image.draw(0, 0, 0)
+      offset = 0
+      size = 2
+      @menu_items.each_with_index do |menu_item, index|
+        offset += 20 * size
+        if index == @selected_menu_item
+          @font.draw_text("> #{menu_item[0]} <", 20, 20 + offset, 0, size, size, Gosu::Color::GREEN)
+        else
+          @font.draw_text("   #{menu_item[0]}   ", 20, 20 + offset, 0, size, size)
+        end
+      end
+    elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 2, 5)
       # @con_msg.draw(100,200,0)
@@ -186,5 +243,22 @@ class Gui < Gosu::Window
       @connecting_image.draw(0, 0, 0)
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)
     end
+  end
+
+  private
+
+  def connect()
+    @net_client.connect(@cfg.data['ip'], @cfg.data['port'])
+    @state = STATE_CONNECTING;
+  end
+
+  def init_menu()
+    @menu_items = []
+    add_menu_item("[c]onnect", Proc.new { connect })
+    add_menu_item("[q]uit", Proc.new { exit })
+  end
+
+  def add_menu_item(name, callback)
+    @menu_items.push([name, callback])
   end
 end

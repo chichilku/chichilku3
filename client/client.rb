@@ -2,23 +2,24 @@ require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
 
+STATE_MENU = -1
 STATE_OFFLINE = 0
 STATE_CONNECTING = 1
 STATE_INGAME = 2
 
 # Networking part of the game clientside
 class Client
-  attr_reader :id
+  attr_reader :id, :state
   def initialize(console, cfg)
     @id = nil
     @tick = 0
-    @state = STATE_OFFLINE
+    @state = STATE_MENU
     @cfg = cfg
 
     @console = console
-    @s = TCPSocket.open(@cfg.data['ip'], @cfg.data['port'])
-    @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm
     @console.log "LOAD #{@s}"
+
+    @s = nil # network socket (set in connect() method)
 
     # state variables
     @req_playerlist = Time.now - 8
@@ -28,7 +29,15 @@ class Client
     @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
   end
 
+  def connect(ip, port)
+    @s = TCPSocket.open(ip, port)
+    @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm-
+    @state = STATE_CONNECTING
+  end
+
   def tick(client_data, protocol, tick)
+    return nil if @state == STATE_MENU
+
     # sleep(1)
     @tick = tick
     @flags[:skip] = false
