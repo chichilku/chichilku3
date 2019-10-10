@@ -44,4 +44,10 @@ class Config
     data = sanitize_data(data)
     data
   end
+
+  def save
+    File.open(@file, "w") do |f|
+      f.write(JSON.pretty_generate(data))
+    end
+  end
 end

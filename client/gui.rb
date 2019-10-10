@@ -131,21 +131,24 @@ class Gui < Gosu::Window
       @cfg.data['port'] = ip[1] if ip.length > 1
       @state = STATE_MENU
     elsif button_down?(Gosu::KB_RETURN)
-      ip = @ip_textfield.text.split(":")
-      @cfg.data['ip'] = ip[0]
-      @cfg.data['port'] = ip[1] if ip.length > 1
-      @state = STATE_CONNECTING
+      if @last_key != Gosu::KB_RETURN
+        ip = @ip_textfield.text.split(":")
+        @cfg.data['ip'] = ip[0]
+        @cfg.data['port'] = ip[1] if ip.length > 1
+        connect
+      end
+    else
+      @last_key = nil
     end
   end
 
   def menu_tick
     if button_down?(KEY_Q)
       puts "quitting the game."
+      @cfg.save
       exit
     elsif button_down?(KEY_C)
-      self.text_input = @ip_textfield
-      @ip_textfield.text = "#{@cfg.data['ip']}:#{@cfg.data['port']}"
-      @state = STATE_ENTER_IP
+      connect_menu
       return
     end
     if button_down?(KEY_DOWN) or button_down?(KEY_S) or button_down?(KEY_J) or button_down?(Gosu::MS_WHEEL_DOWN)
@@ -283,10 +286,17 @@ class Gui < Gosu::Window
     @state = STATE_CONNECTING;
   end
 
+  def connect_menu()
+    @last_key = Gosu::KB_RETURN
+    self.text_input = @ip_textfield
+    @ip_textfield.text = "#{@cfg.data['ip']}:#{@cfg.data['port']}"
+    @state = STATE_ENTER_IP
+  end
+
   def init_menu()
     @menu_items = []
-    add_menu_item("[c]onnect", Proc.new { connect })
-    add_menu_item("[q]uit", Proc.new { exit })
+    add_menu_item("[c]onnect", Proc.new { connect_menu() })
+    add_menu_item("[q]uit", Proc.new { exit() })
   end
 
   def add_menu_item(name, callback)
