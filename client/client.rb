@@ -2,6 +2,7 @@ require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
 
+STATE_ERROR = -3
 STATE_ENTER_IP = -2
 STATE_MENU = -1
 STATE_OFFLINE = 0
@@ -54,8 +55,8 @@ class Client
     return nil if data.length != SERVER_PACKAGE_LEN
 
     # save protocol and cut it off
-    handle_protocol(data[0].to_i, data[1], data[2..-1])
-    [@players, @flags]
+    err = handle_protocol(data[0].to_i, data[1], data[2..-1])
+    [@players, @flags, err]
   end
 
   private
@@ -67,7 +68,16 @@ class Client
 
   def handle_protocol(protocol, p_status, data)
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
-    if protocol == 1 # update package
+    if protocol == 0 # error packet
+      code = data[0..2]
+      if code == "404"
+        @console.log "server is full."
+        @state = STATE_ERROR
+        return "server is full"
+      else
+        @console.log "ERROR unkown error code code=#{code} data#{data}"
+      end
+    elsif protocol == 1 # update package
       server_package_to_player_array(data)
     elsif protocol == 2 # id packet
       if @id.nil?
@@ -82,6 +92,7 @@ class Client
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end
+    nil
   end
 
   def send_data(data, protocol)
@@ -129,7 +140,7 @@ class Client
   end
 
   def id_packet(data)
-    # protcol 2
+    # protocol 2
     # the id protocol contains fresh client id
     # and server version
     grab_id(data)

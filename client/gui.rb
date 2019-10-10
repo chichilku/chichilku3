@@ -58,6 +58,7 @@ class Gui < Gosu::Window
     @tick = 0
     @console = Console.new
     @net_client = Client.new(@console, @cfg)
+    @net_err = nil
     @state = @net_client.state
     @font = Gosu::Font.new(20)
     @is_debug = false
@@ -117,6 +118,10 @@ class Gui < Gosu::Window
       enter_ip_tick
     elsif @state == STATE_MENU
       menu_tick
+    elsif @state == STATE_ERROR
+      if button_down?(Gosu::KB_ESCAPE)
+        @state = STATE_MENU
+      end
     else
       game_tick
     end
@@ -210,6 +215,10 @@ class Gui < Gosu::Window
 
     @flags = net_data[1]
     @state = @flags[:state]
+    @net_err = net_data[2]
+    if @net_err
+      @state = STATE_ERROR
+    end
     return if @flags[:skip]
 
     @players = net_data[0]
@@ -274,6 +283,9 @@ class Gui < Gosu::Window
         # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
         # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
       end
+    elsif @state == STATE_ERROR
+      @connecting_image.draw(0, 0, 0)
+      @font.draw_text("Error: #{@net_err}", 20, 20, 0, 2, 5)
     else
       @connecting_image.draw(0, 0, 0)
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)
