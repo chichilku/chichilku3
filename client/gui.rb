@@ -117,8 +117,6 @@ class Gui < Gosu::Window
       enter_ip_tick
     elsif @state == STATE_MENU
       menu_tick
-    elsif @state == STATE_CONNECTING
-      connecting_tick
     else
       game_tick
     end
@@ -160,13 +158,16 @@ class Gui < Gosu::Window
     end
   end
 
-  def connecting_tick
-    if button_down?(Gosu::KB_ESCAPE)
-      @state = STATE_MENU
-    end
-  end
-
   def game_tick
+    if button_down?(Gosu::KB_ESCAPE)
+      if @state == STATE_CONNECTING
+        @state = STATE_MENU
+      elsif @state == STATE_INGAME
+        # TODO: do some disconnect stuff here
+        @state = STATE_MENU
+        return
+      end
+    end
     net_request = '0000'.split('')
     protocol = 2
 
