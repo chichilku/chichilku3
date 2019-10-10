@@ -1,5 +1,6 @@
 require 'gosu'
 require_relative 'client'
+require_relative 'text'
 require_relative '../share/console'
 require_relative '../share/player'
 
@@ -65,8 +66,9 @@ class Gui < Gosu::Window
     @last_key = nil
     @menu_items = []
     @selected_menu_item = 0
+    @ip_textfield = TextField.new(self, 60, 200)
     # @chat_inp_stream = nil #TextInput.new
-    # @chat_inp_stream.text # didnt get it working
+    # @chat_inp_stream.text # didnt get it working <--- nobo xd
     
     @last_key_press = Time.now
 
@@ -111,10 +113,28 @@ class Gui < Gosu::Window
   end
 
   def main_tick
-    if @state == STATE_MENU
+    if @state == STATE_ENTER_IP
+      enter_ip_tick
+    elsif @state == STATE_MENU
       menu_tick
+    elsif @state == STATE_CONNECTING
+      connecting_tick
     else
       game_tick
+    end
+  end
+
+  def enter_ip_tick
+    if button_down?(Gosu::KB_ESCAPE)
+      ip = @ip_textfield.text.split(":")
+      @cfg.data['ip'] = ip[0]
+      @cfg.data['port'] = ip[1] if ip.length > 1
+      @state = STATE_MENU
+    elsif button_down?(Gosu::KB_RETURN)
+      ip = @ip_textfield.text.split(":")
+      @cfg.data['ip'] = ip[0]
+      @cfg.data['port'] = ip[1] if ip.length > 1
+      @state = STATE_CONNECTING
     end
   end
 
@@ -123,7 +143,9 @@ class Gui < Gosu::Window
       puts "quitting the game."
       exit
     elsif button_down?(KEY_C)
-      connect
+      self.text_input = @ip_textfield
+      @ip_textfield.text = "#{@cfg.data['ip']}:#{@cfg.data['port']}"
+      @state = STATE_ENTER_IP
       return
     end
     if button_down?(KEY_DOWN) or button_down?(KEY_S) or button_down?(KEY_J) or button_down?(Gosu::MS_WHEEL_DOWN)
@@ -132,6 +154,12 @@ class Gui < Gosu::Window
       @selected_menu_item -= 1 if @selected_menu_item > 0
     elsif button_down?(Gosu::KB_RETURN)
       @menu_items[@selected_menu_item][1].call
+    end
+  end
+
+  def connecting_tick
+    if button_down?(Gosu::KB_ESCAPE)
+      @state = STATE_MENU
     end
   end
 
@@ -194,7 +222,10 @@ class Gui < Gosu::Window
 
   def draw
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
-    if @state == STATE_MENU
+    if @state == STATE_ENTER_IP
+      @connecting_image.draw(0, 0, 0)
+      @ip_textfield.draw(0)
+    elsif @state == STATE_MENU
       @connecting_image.draw(0, 0, 0)
       offset = 0
       size = 2
