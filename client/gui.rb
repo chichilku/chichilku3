@@ -1,6 +1,7 @@
 require 'gosu'
 require_relative 'client'
 require_relative 'text'
+require_relative 'scoreboard'
 require_relative '../share/console'
 require_relative '../share/player'
 
@@ -63,6 +64,7 @@ class Gui < Gosu::Window
     @font = Gosu::Font.new(20)
     @is_debug = false
     @is_chat = false
+    @is_scoreboard = false
     @chat_msg = ""
     @last_key = nil
     @menu_items = []
@@ -207,6 +209,7 @@ class Gui < Gosu::Window
         @is_chat = true
         @chat_msg = ""
       end
+      @is_scoreboard = button_down?(Gosu::KB_TAB)
     end
 
     # Networking
@@ -282,6 +285,10 @@ class Gui < Gosu::Window
         # thats useless because collide/delta speed is not sent over the network
         # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
         # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
+      end
+
+      if @is_scoreboard
+        draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font)
       end
     elsif @state == STATE_ERROR
       @connecting_image.draw(0, 0, 0)
