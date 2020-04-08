@@ -10,19 +10,19 @@ macOS
 
 ```
 brew install sdl2
-bundle install
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
+bundle install
 ```
 
-linux
------
+linux (debian/ubuntu)
+---------------------
 
 ```
 sudo apt install libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
-bundle install
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
+bundle install
 ```
 
 # client
