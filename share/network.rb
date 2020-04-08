@@ -19,7 +19,7 @@ CLIENT_PACKAGE_LEN = 7                    # used by server
 SERVER_PACKAGE_LEN = MAX_CLIENTS * 8 + 4  # used by client
 
 MAX_TIMEOUT = 5
-MAX_TICK_SPEED = 0.01 # the lower the fast client and server tick
+MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
 # MAX_TICK_SPEED = 0.005
 
 def save_read(socket, size)

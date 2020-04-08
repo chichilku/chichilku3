@@ -23,7 +23,7 @@ class GameLogic
     # but it eats performance and delays jumping
     check_collide(players, player)
 
-    # move requets
+    # move request
     if data[0] == '1'
       @console.log "player=#{id} space for more"
     end

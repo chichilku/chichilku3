@@ -9,7 +9,7 @@ require_relative 'server_cfg'
 
 $next_tick = Time.now
 
-# ServerCore: should only cotain the networking
+# ServerCore: should only contain the networking
 # and no gamelogic
 class ServerCore
   def initialize
@@ -225,7 +225,7 @@ class ServerCore
         end
         client.close
       # rescue
-      #   @console.log "sombody left the game"
+      #   @console.log "somebody left the game"
       #   @current_id -= 1
       # end
     end
