@@ -53,13 +53,29 @@ class ServerCore
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
 
+  def get_free_id
+    # TODO: do this smarter
+    used_ids = @players.map{ |p| p.id }
+    id = 0
+    while id < MAX_CLIENTS do
+      id += 1
+      return id unless used_ids.include? id
+    end
+    -1
+  end
+
   def add_player(name, ip)
-    @current_id += 1
-    return -1 if @current_id > MAX_CLIENTS
+    @current_id = get_free_id()
+    return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
     @console.log "Added player id='#{@current_id}' ip='#{ip}'"
     @players << Player.new(@current_id, 0, nil, nil, name, ip)
     @current_id # implicit return
+  end
+
+  def delete_player(id)
+    @console.log "Deleted player id='#{id}'"
+    @players.delete(Player.get_player_by_id(@players, id))
   end
 
   def players_to_packet
@@ -186,7 +202,16 @@ class ServerCore
       @tick += 1
       $next_tick = Time.now + MAX_TICK_SPEED
       @clients.each do |client|
-        client_tick(client, diff)
+        begin
+          client_tick(client, diff)
+        rescue
+          client_id = @clients.index(client) + 1 # client ids start from 1
+          @console.log "player left the game (id=#{client_id})."
+          client.close
+          delete_player(client_id)
+          @clients.delete(client)
+          @current_id -= 1
+        end
       end
     end
   end
