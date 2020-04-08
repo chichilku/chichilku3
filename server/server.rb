@@ -176,58 +176,27 @@ class ServerCore
   def run
     server = TCPServer.open(@cfg.data['port'])
     server.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm
-    loop do
+    Thread.new do
       accept(server)
-      # accept_and_tick(server) # experimental
+    end
+    loop do
+      diff = 0 # TODO: unused lmao traced it through the half source
+      t = Time.now
+      sleep $next_tick - t if $next_tick > t
+      @tick += 1
+      $next_tick = Time.now + MAX_TICK_SPEED
+      @clients.each do |client|
+        client_tick(client, diff)
+      end
     end
   end
 
   private
 
-  def tick(client)
-    # TODO: implement me as a global tick iterating over all clients
-    # get the client connections from the accept() method
-    # and then store them into an array
-    # then iterate over the array in this tick function
-    # this allows communication bewteen the clients
-    # because they are no longer in speperate threads
-  end
-
-  # def accept_and_tick(server)
-  #   Thread.start(server.accept) do |client|
-  #     client_id = 1 # TODO: get client id as package
-  #     @clients.each do |other_client|
-  #       if client_id == other_client.id || client == other_client
-  #         net_write('0l404_id_taken____0000000000', client)
-  #         Thread.kill self
-  #       end
-  #     end
-  #     @console.log "#{client} joined the game"
-  #     @clients = client
-  #     # client joined the game (set hardcodet id to 1)
-  #     net_write('2l00010000000000000000000000', client)
-
-  #     tick(client)
-  #   end
-  # end
-
   def accept(server)
-    Thread.start(server.accept) do |client|
-      diff = 0
-      # begin
-        loop do
-          t = Time.now
-          sleep $next_tick - t if $next_tick > t
-          @tick += 1
-          # @console.dbg "im here client: #{client}"
-          $next_tick = Time.now + MAX_TICK_SPEED
-          client_tick(client, diff)
-        end
-        client.close
-      # rescue
-      #   @console.log "somebody left the game"
-      #   @current_id -= 1
-      # end
+    Socket.accept_loop(server) do |client|
+      @clients << client
+      @console.log "client joined. clients connected: #{@clients}"
     end
   end
 
