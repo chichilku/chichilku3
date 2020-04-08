@@ -2,8 +2,7 @@ require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
 
-STATE_ERROR = -3
-STATE_ENTER_IP = -2
+STATE_ERROR = -2
 STATE_MENU = -1
 STATE_OFFLINE = 0
 STATE_CONNECTING = 1

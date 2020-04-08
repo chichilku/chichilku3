@@ -22,6 +22,10 @@ KEY_LEFT = 80
 KEY_DOWN = 81
 KEY_UP = 82
 
+MENU_MAIN = 0
+MENU_CONNECT = 1
+MENU_SETTINGS = 2
+
 $time_point=Time.now
 $time_buffer=0
 
@@ -61,6 +65,7 @@ class Gui < Gosu::Window
     @net_client = Client.new(@console, @cfg)
     @net_err = nil
     @state = @net_client.state
+    @menu_page = MENU_MAIN
     @font = Gosu::Font.new(20)
     @is_debug = false
     @is_chat = false
@@ -69,15 +74,23 @@ class Gui < Gosu::Window
     @last_key = nil
     @menu_items = []
     @selected_menu_item = 0
-    @ip_textfield = TextField.new(self, 60, 200)
+    @menu_textfield = TextField.new(self, 60, 200)
     # @chat_inp_stream = nil #TextInput.new
     # @chat_inp_stream.text # didnt get it working <--- nobo xd
     
     @last_key_press = Time.now
+    @last_pressed_button = {}
 
     # depreciated ._.
     # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
     init_menu()
+  end
+
+  def button_press?(button)
+    last_btn = @last_pressed_button[button]
+    @last_pressed_button[button] = button_down?(button)
+    return false if last_btn == true
+    button_down?(button)
   end
 
   # def update_pos(server_data)
@@ -116,10 +129,14 @@ class Gui < Gosu::Window
   end
 
   def main_tick
-    if @state == STATE_ENTER_IP
-      enter_ip_tick
-    elsif @state == STATE_MENU
-      menu_tick
+    if @state == STATE_MENU
+      if @menu_page == MENU_CONNECT
+        enter_ip_tick
+      elsif @menu_page == MENU_SETTINGS
+        enter_name_tick
+      else
+        menu_tick
+      end
     elsif @state == STATE_ERROR
       if button_down?(Gosu::KB_ESCAPE)
         @state = STATE_MENU
@@ -129,15 +146,31 @@ class Gui < Gosu::Window
     end
   end
 
+  def enter_name_tick
+    if button_down?(Gosu::KB_ESCAPE)
+      @state = STATE_MENU
+      @menu_page = MENU_MAIN
+    elsif button_down?(Gosu::KB_RETURN)
+      if @last_key != Gosu::KB_RETURN
+        @cfg.data['username'] = @menu_textfield.text[0...NAME_LEN]
+        @state = STATE_MENU
+        @menu_page = MENU_MAIN
+      end
+    else
+      @last_key = nil
+    end
+  end
+
   def enter_ip_tick
     if button_down?(Gosu::KB_ESCAPE)
-      ip = @ip_textfield.text.split(":")
+      ip = @menu_textfield.text.split(":")
       @cfg.data['ip'] = ip[0]
       @cfg.data['port'] = ip[1] if ip.length > 1
       @state = STATE_MENU
-    elsif button_down?(Gosu::KB_RETURN)
+      @menu_page = MENU_MAIN
+    elsif button_press?(Gosu::KB_RETURN)
       if @last_key != Gosu::KB_RETURN
-        ip = @ip_textfield.text.split(":")
+        ip = @menu_textfield.text.split(":")
         @cfg.data['ip'] = ip[0]
         @cfg.data['port'] = ip[1] if ip.length > 1
         connect
@@ -156,11 +189,11 @@ class Gui < Gosu::Window
       connect_menu
       return
     end
-    if button_down?(KEY_DOWN) or button_down?(KEY_S) or button_down?(KEY_J) or button_down?(Gosu::MS_WHEEL_DOWN)
+    if button_press?(KEY_DOWN) or button_press?(KEY_S) or button_press?(KEY_J) or button_press?(Gosu::MS_WHEEL_DOWN)
       @selected_menu_item += 1 if @selected_menu_item < @menu_items.length - 1
-    elsif button_down?(KEY_UP) or button_down?(KEY_W) or button_down?(KEY_K) or button_down?(Gosu::MS_WHEEL_UP)
+    elsif button_press?(KEY_UP) or button_press?(KEY_W) or button_press?(KEY_K) or button_press?(Gosu::MS_WHEEL_UP)
       @selected_menu_item -= 1 if @selected_menu_item > 0
-    elsif button_down?(Gosu::KB_RETURN)
+    elsif button_press?(Gosu::KB_RETURN)
       @menu_items[@selected_menu_item][1].call
     end
   end
@@ -236,22 +269,33 @@ class Gui < Gosu::Window
     end
   end
 
+  def draw_main_menu
+    @connecting_image.draw(0, 0, 0)
+    offset = 0
+    size = 2
+    @menu_items.each_with_index do |menu_item, index|
+      offset += 20 * size
+      if index == @selected_menu_item
+        @font.draw_text("> #{menu_item[0]} <", 20, 20 + offset, 0, size, size, Gosu::Color::GREEN)
+      else
+        @font.draw_text("   #{menu_item[0]}   ", 20, 20 + offset, 0, size, size)
+      end
+    end
+  end
+
   def draw
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
-    if @state == STATE_ENTER_IP
-      @connecting_image.draw(0, 0, 0)
-      @ip_textfield.draw(0)
-    elsif @state == STATE_MENU
-      @connecting_image.draw(0, 0, 0)
-      offset = 0
-      size = 2
-      @menu_items.each_with_index do |menu_item, index|
-        offset += 20 * size
-        if index == @selected_menu_item
-          @font.draw_text("> #{menu_item[0]} <", 20, 20 + offset, 0, size, size, Gosu::Color::GREEN)
-        else
-          @font.draw_text("   #{menu_item[0]}   ", 20, 20 + offset, 0, size, size)
-        end
+    if @state == STATE_MENU
+      if @menu_page == MENU_CONNECT
+        @connecting_image.draw(0, 0, 0)
+        @font.draw_text("Enter server ip", 20, 20, 0, 5, 5)
+        @menu_textfield.draw(0)
+      elsif @menu_page == MENU_SETTINGS
+        @connecting_image.draw(0, 0, 0)
+        @font.draw_text("Choose a username", 20, 20, 0, 5, 5)
+        @menu_textfield.draw(0)
+      else
+        draw_main_menu()
       end
     elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
@@ -304,18 +348,29 @@ class Gui < Gosu::Window
   def connect()
     @net_client.connect(@cfg.data['ip'], @cfg.data['port'])
     @state = STATE_CONNECTING;
+    @menu_page = MENU_MAIN
   end
 
   def connect_menu()
     @last_key = Gosu::KB_RETURN
-    self.text_input = @ip_textfield
-    @ip_textfield.text = "#{@cfg.data['ip']}:#{@cfg.data['port']}"
-    @state = STATE_ENTER_IP
+    self.text_input = @menu_textfield
+    @menu_textfield.text = "#{@cfg.data['ip']}:#{@cfg.data['port']}"
+    @state = STATE_MENU
+    @menu_page = MENU_CONNECT
+  end
+
+  def settings_menu()
+    @last_key = Gosu::KB_RETURN
+    self.text_input = @menu_textfield
+    @menu_textfield.text = "#{@cfg.data['username']}"
+    @state = STATE_MENU
+    @menu_page = MENU_SETTINGS
   end
 
   def init_menu()
     @menu_items = []
     add_menu_item("[c]onnect", Proc.new { connect_menu() })
+    add_menu_item("settings", Proc.new { settings_menu() })
     add_menu_item("[q]uit", Proc.new { exit() })
   end
 
