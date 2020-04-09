@@ -31,7 +31,7 @@ class ServerCore
     version = data[1..-1]
     player = Player.get_player_by_id(@players, id)
     if player
-      @console.log "name req id='#{id}' name='#{player.name}' vrs='#{version}'"
+      @console.log "name req id='#{id}' vrs='#{version}' name='#{player.name}'"
       player.set_version(version)
     else
       @console.log "error parsing version data=#{data}"
@@ -48,7 +48,7 @@ class ServerCore
     # pck = format('3l%02d', @players.count) # old 2 digit player count
     @players.each do |p|
       pck += p.to_n_pck
-      @console.dbg "pname=#{p.name}"
+      @console.dbg "pname='#{p.name}'"
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end

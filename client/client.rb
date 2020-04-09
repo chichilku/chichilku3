@@ -200,7 +200,7 @@ class Client
       players << Player.new(id, 0, 0, score, name) unless id.zero?
     end
     # debug
-    players.each { |p| @console.dbg "player=#{p.id} score=#{p.score} name=#{p.name}" }
+    players.each { |p| @console.dbg "player=#{p.id} score=#{p.score} name='#{p.name}'" }
     @flags[:skip] = true # dont redner players at position zer0
     @players = players
   end

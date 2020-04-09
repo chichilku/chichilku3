@@ -145,7 +145,7 @@ class Player
   end
 
   def die
-    $console.log("[death] name=#{@name} id=#{@id}")
+    $console.log("[death] id=#{@id} name='#{@name}'")
     @x = SPAWN_X
     @y = SPAWN_Y
   end
