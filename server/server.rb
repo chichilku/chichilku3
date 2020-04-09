@@ -204,7 +204,7 @@ class ServerCore
       @clients.each do |client|
         begin
           client_tick(client, diff)
-        rescue
+        rescue Errno::ECONNRESET
           client_id = @clients.index(client) + 1 # client ids start from 1
           @console.log "player left the game (id=#{client_id})."
           client.close
