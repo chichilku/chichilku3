@@ -50,7 +50,7 @@ class GameLogic
   def gravity(player, dt)
     if player.dead
       player.dead_ticks += 1
-      if player.dead_ticks > 100
+      if player.dead_ticks > 3
         player.dead = false
         player.die
       end
