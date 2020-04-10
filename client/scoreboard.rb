@@ -18,7 +18,8 @@ def draw_scoreboard(win_size_x, win_size_y, players, font)
     draw_rect(padX + 3, padY + (i * slot_height), sizeX - 6, 3, 0xaa000000)
     end
     players.each_with_index do | player, i |
+        score_offset = text_scale * 10 * player.score.to_s.length
         font.draw_text(player.name, padX + 5, padY + (i * slot_height), 0, text_scale, text_scale)
-        font.draw_text(player.score, padX + sizeX - slot_height, padY + (i * slot_height), 0, text_scale, text_scale)
+        font.draw_text(player.score, padX + sizeX - score_offset, padY + (i * slot_height), 0, text_scale, text_scale)
     end
 end

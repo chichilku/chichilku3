@@ -1,5 +1,6 @@
 # Player used by Client and Server
 require_relative 'console'
+require_relative 'network'
 
 SPAWN_X = 512
 SPAWN_Y = 100
@@ -148,6 +149,7 @@ class Player
     $console.log("[death] id=#{@id} name='#{@name}'")
     @x = SPAWN_X
     @y = SPAWN_Y
+    add_score(88)
   end
 
   #TODO: check for collision before update
@@ -179,8 +181,8 @@ class Player
     end
   end
 
-  def add_score
-    @score += 1 if @score < 9
+  def add_score(score = 1)
+    @score = (@score + score).clamp(NET_MIN_SCORE, NET_MAX_SCORE)
   end
 
   def collide_string
@@ -207,16 +209,17 @@ class Player
     @collide = {up: false, down: false, right: false, left: false}
   end
 
+  # only sent by server
   # create name package str
   def to_n_pck
     name = @name.ljust(5, '_')
     # format("%02d#{name}", @id) # old 2 byte ids
-    "#{@id}#{@score}#{name}" # new 1 byte id
+    "#{@id}#{net_pack_int(@score)}#{name}" # new 1 byte id
   end
 
   def to_s
     # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 byte ids
-    "#{@id}#{@score}#{'%03d' % @x}#{'%03d' % @y}" # new 1 byte id
+    "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # new 1 byte id
   end
 
   private

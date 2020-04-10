@@ -195,7 +195,7 @@ class Client
     players = []
     player_strs.each do |player_str|
       id = player_str[0].to_i
-      score = player_str[1].to_i
+      score = net_unpack_int(player_str[1])
       name = player_str[2..-1]
       players << Player.new(id, 0, 0, score, name) unless id.zero?
     end
@@ -232,7 +232,7 @@ class Client
     players = []
     player_strs.each do |player_str|
       id = player_str[0].to_i
-      score = player_str[1].to_i
+      score = net_unpack_int(player_str[1])
       x = player_str[2..4].to_i
       y = player_str[5..7].to_i
       # puts "id: #{id} x: #{x} y: #{y}"
