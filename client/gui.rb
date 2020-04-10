@@ -336,7 +336,8 @@ class Gui < Gosu::Window
       end
     elsif @state == STATE_ERROR
       @connecting_image.draw(0, 0, 0)
-      @font.draw_text("Error: #{@net_err}", 20, 20, 0, 2, 5)
+      @font.draw_text("#{NET_ERR[@net_err[0]]}", 50, 30, 0, 5, 5)
+      @font.draw_text("#{@net_err[1]}", 50, 120, 0, 2, 2)
     else
       @connecting_image.draw(0, 0, 0)
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)

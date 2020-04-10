@@ -43,7 +43,7 @@ prot  pSTATUS id  message
 Server packages:
 ###################
 Error package (404=server full)
-prot  pSTATUS   errorcode place for more
+prot  pSTATUS   errorcode error message
 0     l         404       00000000000000000000000
 
 ----------------------------------------------------------------------------------------

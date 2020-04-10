@@ -69,10 +69,10 @@ class Client
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol == 0 # error packet
       code = data[0..2]
-      if code == "404"
+      if code == NET_ERR_FULL
         @console.log "server is full."
         @state = STATE_ERROR
-        return "server is full"
+        return [code, data[3..-1]]
       else
         @console.log "ERROR unkown error code code=#{code} data#{data}"
       end

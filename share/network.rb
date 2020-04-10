@@ -25,6 +25,12 @@ MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
 NET_MAX_SCORE = 255
 NET_MIN_SCORE = 0
 
+NET_ERR_FULL = "404"
+
+NET_ERR = {
+  "404" => "SERVER FULL"
+}
+
 def save_read(socket, size)
   begin
     return socket.read_nonblock(size)

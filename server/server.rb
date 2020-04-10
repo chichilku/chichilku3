@@ -101,9 +101,9 @@ class ServerCore
     name = data[0..5]
     id = add_player(name, ip)
     if id == -1
-      puts "'#{name}' failed to connect (server full)"
+      @console.log "'#{name}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
-      return '0l40400000000000000000000000'
+      return "0l#{NET_ERR_FULL}                       "
     end
     @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
