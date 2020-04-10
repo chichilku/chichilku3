@@ -26,9 +26,15 @@ NET_MAX_SCORE = 255
 NET_MIN_SCORE = 0
 
 NET_ERR_FULL = "404"
+NET_ERR_DISCONNECT = "001"
+NET_ERR_KICK = "002"
+NET_ERR_BAN = "003"
 
 NET_ERR = {
-  "404" => "SERVER FULL"
+  "404" => "SERVER FULL",
+  "001" => "DISCONNECTED",
+  "002" => "KICKED",
+  "003" => "BANNED"
 }
 
 def save_read(socket, size)

@@ -69,13 +69,21 @@ class Client
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol == 0 # error packet
       code = data[0..2]
+      error_msg = data[3..-1]
       if code == NET_ERR_FULL
         @console.log "server is full."
-        @state = STATE_ERROR
-        return [code, data[3..-1]]
+      elsif code == NET_ERR_DISCONNECT
+        @console.log "disconnected by server."
+      elsif code == NET_ERR_KICK
+        @console.log "kicked by server."
+      elsif code == NET_ERR_BAN
+        @console.log "banned by server."
       else
         @console.log "ERROR unkown error code code=#{code} data#{data}"
+        return
       end
+      @state = STATE_ERROR
+      return [code, error_msg]
     elsif protocol == 1 # update package
       server_package_to_player_array(data)
     elsif protocol == 2 # id packet

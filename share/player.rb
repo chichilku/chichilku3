@@ -149,7 +149,6 @@ class Player
     $console.log("[death] id=#{@id} name='#{@name}'")
     @x = SPAWN_X
     @y = SPAWN_Y
-    add_score(88)
   end
 
   #TODO: check for collision before update

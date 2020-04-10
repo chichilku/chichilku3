@@ -115,9 +115,12 @@ class ServerCore
     id = data[0..1].to_i
     cmd = data[1..-1]
     @console.log "[chat] ID=#{id} command='#{cmd}'"
-    msg = "server_recived_ur_cmd: #{cmd}"
+    msg = "server_recived_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
     msg = msg[0..SERVER_PACKAGE_LEN - 3]
+    if cmd == "test"
+      return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
+    end
     "4l#{msg}"
   end
 
