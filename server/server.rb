@@ -149,14 +149,23 @@ class ServerCore
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
       return id_pck(data, client, ip)
-    elsif protocol == 2 # update pck
-      return update_pck(data, dt)
-    elsif protocol == 3 # initial request names
-      return create_name_package(data)
-    elsif protocol == 4 # command
-      return command_package(data, client)
     else
-      @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
+      # all other types require id
+      id = data[0].to_i
+      if id != client[PLAYER_ID]
+        @console.log("id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}")
+        disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id      ")
+        return nil
+      end
+      if protocol == 2 # update pck
+        return update_pck(data, dt)
+      elsif protocol == 3 # initial request names
+        return create_name_package(data)
+      elsif protocol == 4 # command
+        return command_package(data, client)
+      else
+        @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
+      end
     end
   end
 
@@ -210,19 +219,16 @@ class ServerCore
     # server_response = '1l03011001010220020203300303'
     pck_type = server_response[0]
     if pck_type == SERVER_PCK_TYPE[:error]
-      disconnect_player(cli[PLAYER_ID], server_response)
+      disconnect_client(cli, server_response)
     else
       net_write(server_response, cli[NET_CLIENT])
     end
   end
 
-  def disconnect_player(player_id, server_response = nil)
-    @console.log "player left the game (player_id=#{player_id})."
-    client = client_by_playerid(player_id)
-    if client.nil?
-      @console.log "client_by_playerid(#{player_id}) is nil and can't be disconnected."
-      exit 1
-    end
+  def disconnect_client(client, server_response = nil)
+    player_id = client[PLAYER_ID]
+    @console.log "player id=#{player_id} left the game." if player_id != -1
+    @console.dbg "client disconnected.#{" (" + server_response + ")" unless server_response.nil?}"
     net_write(server_response, client[NET_CLIENT]) unless server_response.nil?
     client[NET_CLIENT].close
     delete_player(player_id)
@@ -251,8 +257,8 @@ class ServerCore
       @clients.each do |client|
         begin
           client_tick(client, diff)
-        rescue Errno::ECONNRESET, EOFError
-          disconnect_player(client[PLAYER_ID])
+        rescue Errno::ECONNRESET, EOFError, IOError
+          disconnect_client(client)
         end
       end
     end
