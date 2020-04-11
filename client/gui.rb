@@ -335,9 +335,16 @@ class Gui < Gosu::Window
         draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font)
       end
     elsif @state == STATE_ERROR
+      net_err_code = @net_err[0]
+      net_err_msg = @net_err[1]
       @connecting_image.draw(0, 0, 0)
-      @font.draw_text("#{NET_ERR[@net_err[0]]}", 50, 30, 0, 5, 5)
-      @font.draw_text("#{@net_err[1]}", 50, 120, 0, 2, 2)
+      if net_err_code == NET_ERR_SERVER_OUTDATED || net_err_code == NET_ERR_CLIENT_OUTDATED
+        server_version = net_err_msg[0..4]
+        net_err_msg = net_err_msg[5..-1]
+        @font.draw_text("Server version: #{server_version} Your version: #{GAME_VERSION}", 50, 150, 0, 2, 2)
+      end
+      @font.draw_text("#{NET_ERR[net_err_code]}", 50, 30, 0, 5, 5)
+      @font.draw_text("#{net_err_msg}", 50, 200, 0, 2, 2)
     else
       @connecting_image.draw(0, 0, 0)
       @font.draw_text('UNKOWN CLIENT STATE!!!', 20, 20, 0, 2, 10)

@@ -78,8 +78,13 @@ class Client
         @console.log "kicked by server."
       elsif code == NET_ERR_BAN
         @console.log "banned by server."
+      elsif code == NET_ERR_SERVER_OUTDATED
+        @console.log "failed to connect to server: server is outdated."
+        @console.log error_msg
+      elsif code == NET_ERR_CLIENT_OUTDATED
+        @console.log "failed to connect to server: your client is outdated."
       else
-        @console.log "ERROR unkown error code code=#{code} data#{data}"
+        @console.log "ERROR unkown error code code=#{code} data=#{data}"
         return
       end
       @state = STATE_ERROR

@@ -2,7 +2,7 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0002'
+GAME_VERSION = '0003'
 
 # game
 
@@ -29,12 +29,33 @@ NET_ERR_FULL = "404"
 NET_ERR_DISCONNECT = "001"
 NET_ERR_KICK = "002"
 NET_ERR_BAN = "003"
+NET_ERR_SERVER_OUTDATED = "004"
+NET_ERR_CLIENT_OUTDATED = "005"
 
 NET_ERR = {
   "404" => "SERVER FULL",
   "001" => "DISCONNECTED",
   "002" => "KICKED",
-  "003" => "BANNED"
+  "003" => "BANNED",
+  "004" => "SERVER OUTDATED",
+  "005" => "CLIENT OUTDATED"
+}
+
+CLIENT_PCK_TYPE = {
+  :error => "0",
+  :join => "1",
+  :move => "2",
+  :info => "3",
+  :cmd => "4"
+}
+
+SERVER_PCK_TYPE = {
+  :error => "0",
+  :update => "1",
+  # TODO: find a good name here
+  :info => "3",
+  :cmd => "4",
+  :event => "5"
 }
 
 def save_read(socket, size)

@@ -1,4 +1,4 @@
-pSTATUS is a status of the current protocol
+pSTATUS is a status of the current typeocol
 Different status codes:
 'l' lonley single packet
 's' start package of a series
@@ -16,35 +16,43 @@ Client packages:
 ----------------------------------------------------------------------------------------
 Update package
 Error package (not used yet)
-prot  pSTATUS errorcode
+type  pSTATUS errorcode
 0     l       00000
 
 ----------------------------------------------------------------------------------------
 ID request package
-prot pSTATUS  username (prot=0 is the join protocol)
+type pSTATUS  username (type=0 is the join type)
 1     l        00000
 
 ----------------------------------------------------------------------------------------
 id move requests
-prot  pSTATUS id xlrj (x = spaceformore/left/right/jump)
+type  pSTATUS id xlrj (x = spaceformore/left/right/jump)
 2     l       0  0000
 
 ----------------------------------------------------------------------------------------
 request usernames (resets positions ->  should happen 1time at join)
-prot  pSTATUS id version
+type  pSTATUS id version
 3     l       0  0000
 
 ----------------------------------------------------------------------------------------
 cmd send
-prot  pSTATUS id  message
+type  pSTATUS id  message
 4     l       0   0000
 
 ###################
 Server packages:
 ###################
 Error package (404=server full)
-prot  pSTATUS   errorcode error message
+type  pSTATUS   errorcode error message
 0     l         404       00000000000000000000000
+
+Error package (004=server outdated)
+type  pSTATUS   errorcode server version    error message
+0     l         004       0002              0000000000000000000
+
+Error package (005=client outdated)
+type  pSTATUS   errorcode server version    error message
+0     l         005       0002              0000000000000000000
 
 ----------------------------------------------------------------------------------------
 Update package
@@ -52,14 +60,14 @@ Update package
                                     |                  |                 |
                                 ___/ \_______     ____/ \______     ____/ \______
                                /             \   /             \   /             \
-prot  pSTATUS     playercount  id    posx posy   id    posx posy   id    posx posy
+type  pSTATUS     playercount  id    posx posy   id    posx posy   id    posx posy
 |     |           |  gamestate | score |   |     | score |   |     | score |
 |     |           |  |         | |     |   |     | |     |   |     | |     | 
 1     l           0  g         1 0   000  000    2 0   000  000    3 0   000  000
 
 ----------------------------------------------------------------------------------------
 Set ID package
-prot  pSTATUS     playercount ID  version Place for more info
+type  pSTATUS     playercount ID  version Place for more info
 2     l           03          01  0000    000000000000000000
 
 ----------------------------------------------------------------------------------------
@@ -68,19 +76,19 @@ Username package
                                     |          |           |
                                 ___/ \__    __/ \___    __/ \___
                                /        \  /        \  /        \
-prot  pSTATUS     playercount  id    name  id    name  id    name  empty
+type  pSTATUS     playercount  id    name  id    name  id    name  empty
 |     |           |  gamestate | score |   | score |   | score |    |
 |     |           |  |         | |     |   | |     |   | |     |    |
 3     l           3  g         1 0   00000 2 0   00000 3 0   00000 000
 
 ----------------------------------------------------------------------------------------
 cmd response package ( TODO: implement it client side only prints in console for now )
-prot  pSTATUS     response
+type  pSTATUS     response
 4     l           00000000000000000000000000
 
 ----------------------------------------------------------------------------------------
 Event package
-prot  pSTATUS eventcode event-details
+type  pSTATUS eventcode event-details
 5     l       x         0000000000000000000000000
               EVENTS:
  death:       eventcode x   y   place-for-more

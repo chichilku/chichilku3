@@ -36,12 +36,13 @@ class ServerCore
     else
       @console.log "error parsing version data=#{data}"
     end
+    player
   end
 
   def create_name_package(data)
     # protocol 3 name prot
     # also includes client version
-    parse_client_version(data)
+    player = parse_client_version(data)
     #                      gamestate
     #                         |
     pck = "3l#{@players.count}g"
@@ -49,6 +50,13 @@ class ServerCore
     @players.each do |p|
       pck += p.to_n_pck
       @console.dbg "pname='#{p.name}'"
+    end
+    unless player.nil?
+      if player.version.to_i < GAME_VERSION.to_i
+        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}                   "
+      elsif player.version.to_i > GAME_VERSION.to_i
+        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}                   "
+      end
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -189,7 +197,27 @@ class ServerCore
     port, ip = Socket.unpack_sockaddr_in(cli.getpeername)
     server_response = handle_client_data(client_data, ip, dt)
     # server_response = '1l03011001010220020203300303'
-    net_write(server_response, cli)
+    pck_type = server_response[0]
+    if pck_type == SERVER_PCK_TYPE[:error]
+      player_id = @clients.index(cli) + 1 # player ids start from 1
+      disconnect_player(player_id, server_response)
+    else
+      net_write(server_response, cli)
+    end
+  end
+
+  def disconnect_player(player_id, server_response = nil)
+    @console.log "player left the game (player_id=#{player_id})."
+    client = @clients[player_id-1]
+    if client.nil?
+      @console.log "@clients[#{player_id-1}] is nil and can't be disconnected."
+      exit 1
+    end
+    net_write(server_response, client) unless server_response.nil?
+    client.close
+    delete_player(player_id)
+    @clients.delete(client)
+    @current_id -= 1
   end
 
   def run
@@ -208,12 +236,8 @@ class ServerCore
         begin
           client_tick(client, diff)
         rescue Errno::ECONNRESET
-          client_id = @clients.index(client) + 1 # client ids start from 1
-          @console.log "player left the game (id=#{client_id})."
-          client.close
-          delete_player(client_id)
-          @clients.delete(client)
-          @current_id -= 1
+          player_id = @clients.index(client) + 1 # player ids start from 1
+          disconnect_player(player_id)
         end
       end
     end
