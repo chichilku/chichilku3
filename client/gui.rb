@@ -143,6 +143,7 @@ class Gui < Gosu::Window
     elsif @state == STATE_ERROR
       if button_down?(Gosu::KB_ESCAPE)
         @state = STATE_MENU
+        @net_client.disconnect
       end
     else
       game_tick
@@ -205,9 +206,10 @@ class Gui < Gosu::Window
     if button_down?(Gosu::KB_ESCAPE)
       if @state == STATE_CONNECTING
         @state = STATE_MENU
+        @net_client.disconnect
       elsif @state == STATE_INGAME
-        # TODO: do some disconnect stuff here
         @state = STATE_MENU
+        @net_client.disconnect
         return
       end
     end

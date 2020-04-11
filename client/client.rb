@@ -30,10 +30,27 @@ class Client
     @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
   end
 
+  def reset()
+    @id = nil
+    @tick = 0
+    @state = STATE_MENU
+    @players = []
+    @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
+  end
+
   def connect(ip, port)
+    reset
     @s = TCPSocket.open(ip, port)
     @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm-
     @state = STATE_CONNECTING
+  end
+
+  def disconnect()
+    return if @state == STATE_MENU
+    @console.log "disconnecting from server."
+    @s.close
+    @s = nil
+    reset
   end
 
   def tick(client_data, protocol, tick)
