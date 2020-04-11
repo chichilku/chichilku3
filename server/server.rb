@@ -127,7 +127,7 @@ class ServerCore
     format('2l00%02d0000000000000000000000', id).to_s
   end
 
-  def command_package(data)
+  def command_package(data, client)
     id = data[0..1].to_i
     cmd = data[1..-1]
     @console.log "[chat] ID=#{id} command='#{cmd}'"
@@ -135,8 +135,11 @@ class ServerCore
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
     msg = msg[0..SERVER_PACKAGE_LEN - 3]
     if cmd == "test"
-      return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
+      # return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
+      msg = "id=#{client[PLAYER_ID]}"
     end
+    msg = msg.ljust(SERVER_PACKAGE_LEN - 2, ' ')
+    msg = msg[0..SERVER_PACKAGE_LEN - 3]
     "4l#{msg}"
   end
 
@@ -151,7 +154,7 @@ class ServerCore
     elsif protocol == 3 # initial request names
       return create_name_package(data)
     elsif protocol == 4 # command
-      return command_package(data)
+      return command_package(data, client)
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end

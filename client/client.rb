@@ -54,8 +54,8 @@ class Client
     return nil if data.length != SERVER_PACKAGE_LEN
 
     # save protocol and cut it off
-    err = handle_protocol(data[0].to_i, data[1], data[2..-1])
-    [@players, @flags, err]
+    msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
+    [@players, @flags, msg]
   end
 
   private
@@ -88,7 +88,7 @@ class Client
         return
       end
       @state = STATE_ERROR
-      return [code, error_msg]
+      return [0, code, error_msg]
     elsif protocol == 1 # update package
       server_package_to_player_array(data)
     elsif protocol == 2 # id packet
@@ -101,6 +101,7 @@ class Client
       protocol_names(data)
     elsif protocol == 4 # command respond
       @console.log "server respond: #{data}"
+      return [1, data]
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end

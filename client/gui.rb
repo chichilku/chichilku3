@@ -70,7 +70,10 @@ class Gui < Gosu::Window
     @is_debug = false
     @is_chat = false
     @is_scoreboard = false
-    @chat_msg = ""
+    @chat_msg = "" # what we type
+    @server_chat_msg = "" # what we get from server
+    @chat_show_time = 4
+    @server_chat_recv = Time.now - @chat_show_time
     @last_key = nil
     @menu_items = []
     @selected_menu_item = 0
@@ -251,9 +254,16 @@ class Gui < Gosu::Window
 
     @flags = net_data[1]
     @state = @flags[:state]
-    @net_err = net_data[2]
-    if @net_err
-      @state = STATE_ERROR
+    msg = net_data[2]
+    if msg
+      type = msg[0]
+      if type == 0
+        @net_err = msg[1..-1]
+        @state = STATE_ERROR
+      elsif type == 1
+        @server_chat_msg = msg[1]
+        @server_chat_recv = Time.now
+      end
     end
     return if @flags[:skip]
 
@@ -317,8 +327,14 @@ class Gui < Gosu::Window
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end
 
+      # chat input
       if @is_chat
-        @font.draw_text("> #{@chat_msg}", 10, 450, 0, 1, 1)
+        @font.draw_text("> #{@chat_msg}", 10, WINDOW_SIZE_Y - 30, 0, 1, 1)
+      end
+
+      # chat output
+      if @server_chat_recv + @chat_show_time > Time.now
+        @font.draw_text(@server_chat_msg, 10, WINDOW_SIZE_Y - 60, 0, 1, 1)
       end
 
       if @is_debug
