@@ -9,11 +9,18 @@ require_relative 'server_cfg'
 
 $next_tick = Time.now
 
+NET_CLIENT = 0
+PLAYER_ID = 1
+
 # ServerCore: should only contain the networking
 # and no gamelogic
 class ServerCore
   def initialize
+    # single dimension array holding player objects
     @players = []
+    # multi dimensional array
+    # 0 - client network socket
+    # 1 - player id
     @clients = []
     @current_id = 0
     @tick = 0
@@ -63,7 +70,7 @@ class ServerCore
 
   def get_free_id
     # TODO: do this smarter
-    used_ids = @players.map{ |p| p.id }
+    used_ids = @clients.map{ |c| c[1] }
     id = 0
     while id < MAX_CLIENTS do
       id += 1
@@ -72,12 +79,13 @@ class ServerCore
     -1
   end
 
-  def add_player(name, ip)
+  def add_player(name, client, ip)
     @current_id = get_free_id()
     return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
     @console.log "Added player id='#{@current_id}' ip='#{ip}'"
     @players << Player.new(@current_id, 0, nil, nil, name, ip)
+    client[PLAYER_ID] = @current_id
     @current_id # implicit return
   end
 
@@ -105,9 +113,9 @@ class ServerCore
     nil # defaults to normal update pck
   end
 
-  def id_pck(data, ip)
+  def id_pck(data, client, ip)
     name = data[0..5]
-    id = add_player(name, ip)
+    id = add_player(name, client, ip)
     if id == -1
       @console.log "'#{name}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
@@ -132,12 +140,12 @@ class ServerCore
     "4l#{msg}"
   end
 
-  def handle_protocol(protocol, p_status, data, ip, dt)
+  def handle_protocol(client, protocol, p_status, data, ip, dt)
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
     if protocol.zero? # error pck
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
-      return id_pck(data, ip)
+      return id_pck(data, client, ip)
     elsif protocol == 2 # update pck
       return update_pck(data, dt)
     elsif protocol == 3 # initial request names
@@ -149,8 +157,8 @@ class ServerCore
     end
   end
 
-  def handle_client_data(data, ip, dt)
-    response = handle_protocol(data[0].to_i, data[1], data[2..-1], ip, dt)
+  def handle_client_data(client, data, ip, dt)
+    response = handle_protocol(client, data[0].to_i, data[1], data[2..-1], ip, dt)
     # the response is a direct respond to an protocol
     # everything above this could override important responds
     # like id assignment
@@ -183,7 +191,7 @@ class ServerCore
   # TODO: this func and it dependencies should be new file
   # Handles each client
   def client_tick(cli, dt)
-    client_data = save_read(cli, CLIENT_PACKAGE_LEN)
+    client_data = save_read(cli[NET_CLIENT], CLIENT_PACKAGE_LEN)
     if client_data == ''
       # diff = Time.now - @last_alive_pck_by_client
       # if (diff > MAX_TIMEOUT)
@@ -194,30 +202,35 @@ class ServerCore
 
     @console.dbg "recv: #{client_data}"
     @last_alive_pck_by_client = Time.now
-    port, ip = Socket.unpack_sockaddr_in(cli.getpeername)
-    server_response = handle_client_data(client_data, ip, dt)
+    port, ip = Socket.unpack_sockaddr_in(cli[NET_CLIENT].getpeername)
+    server_response = handle_client_data(cli, client_data, ip, dt)
     # server_response = '1l03011001010220020203300303'
     pck_type = server_response[0]
     if pck_type == SERVER_PCK_TYPE[:error]
-      player_id = @clients.index(cli) + 1 # player ids start from 1
-      disconnect_player(player_id, server_response)
+      disconnect_player(cli[PLAYER_ID], server_response)
     else
-      net_write(server_response, cli)
+      net_write(server_response, cli[NET_CLIENT])
     end
   end
 
   def disconnect_player(player_id, server_response = nil)
     @console.log "player left the game (player_id=#{player_id})."
-    client = @clients[player_id-1]
+    client = client_by_playerid(player_id)
     if client.nil?
-      @console.log "@clients[#{player_id-1}] is nil and can't be disconnected."
+      @console.log "client_by_playerid(#{player_id}) is nil and can't be disconnected."
       exit 1
     end
-    net_write(server_response, client) unless server_response.nil?
-    client.close
+    net_write(server_response, client[NET_CLIENT]) unless server_response.nil?
+    client[NET_CLIENT].close
     delete_player(player_id)
     @clients.delete(client)
     @current_id -= 1
+  end
+
+  def client_by_playerid(player_id)
+    @clients.find do |client|
+      client[PLAYER_ID] == player_id
+    end
   end
 
   def run
@@ -236,8 +249,7 @@ class ServerCore
         begin
           client_tick(client, diff)
         rescue Errno::ECONNRESET, EOFError
-          player_id = @clients.index(client) + 1 # player ids start from 1
-          disconnect_player(player_id)
+          disconnect_player(client[PLAYER_ID])
         end
       end
     end
@@ -247,8 +259,8 @@ class ServerCore
 
   def accept(server)
     Socket.accept_loop(server) do |client|
-      @clients << client
-      @console.log "client joined. clients connected: #{@clients.count}"
+      @clients << [client, -1]
+      @console.log "client connected. clients connected: #{@clients.count}"
     end
   end
 
