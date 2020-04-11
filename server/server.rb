@@ -235,7 +235,7 @@ class ServerCore
       @clients.each do |client|
         begin
           client_tick(client, diff)
-        rescue Errno::ECONNRESET
+        rescue Errno::ECONNRESET, EOFError
           player_id = @clients.index(client) + 1 # player ids start from 1
           disconnect_player(player_id)
         end
@@ -248,7 +248,7 @@ class ServerCore
   def accept(server)
     Socket.accept_loop(server) do |client|
       @clients << client
-      @console.log "client joined. clients connected: #{@clients}"
+      @console.log "client joined. clients connected: #{@clients.count}"
     end
   end
 

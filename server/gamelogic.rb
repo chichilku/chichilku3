@@ -16,6 +16,18 @@ class GameLogic
 
   def handle_client_requests(data, id, players, dt)
     player = Player.get_player_by_id(players, id)
+    if player.nil?
+      @console.log "WARNING failed to update nil player with id=#{id}"
+      if players.count > 0
+        @console.log "connected players:"
+      else
+        @console.log "no players currently connected!"
+      end
+      players.each do |p|
+        @console.log "id=#{p.id} name='#{p.name}'"
+      end
+      return players
+    end
 
     gravity(player, dt)
     player.tick
