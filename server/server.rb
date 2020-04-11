@@ -261,6 +261,7 @@ class ServerCore
           disconnect_client(client)
         end
       end
+      @players = @gamelogic.tick(@players, diff)
     end
   end
 

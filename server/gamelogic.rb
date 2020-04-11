@@ -14,6 +14,18 @@ class GameLogic
     end
   end
 
+  def tick(players, dt)
+    players.each do |player|
+      # reset values (should stay first)
+      player.reset_collide
+      gravity(player, dt)
+      player.tick
+      # player collsions works
+      # but it eats performance and delays jumping
+      check_collide(players, player)
+    end
+  end
+
   def handle_client_requests(data, id, players, dt)
     player = Player.get_player_by_id(players, id)
     if player.nil?
@@ -28,12 +40,6 @@ class GameLogic
       end
       return players
     end
-
-    gravity(player, dt)
-    player.tick
-    # player collsions works
-    # but it eats performance and delays jumping
-    check_collide(players, player)
 
     # move request
     if data[0] == '1'
@@ -51,9 +57,6 @@ class GameLogic
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
-
-    # reset values (should stay last)
-    player.reset_collide
 
     # return updated players
     players
