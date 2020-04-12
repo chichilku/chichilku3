@@ -83,7 +83,7 @@ type  pSTATUS     playercount  id    name  id    name  id    name  empty
 3     l           3  g         1 0   00000 2 0   00000 3 0   00000 000
 
 ----------------------------------------------------------------------------------------
-cmd response package ( TODO: implement it client side only prints in console for now )
+cmd response package
 type  pSTATUS     response
 4     l           00000000000000000000000000
 

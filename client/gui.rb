@@ -75,6 +75,9 @@ class Gui < Gosu::Window
     @chat_show_time = 4
     @server_chat_recv = Time.now - @chat_show_time
     @last_key = nil
+    @events = {
+      :blood => []
+    }
     @menu_items = []
     @selected_menu_item = 0
     @menu_textfield = TextField.new(self, 60, 200)
@@ -300,6 +303,49 @@ class Gui < Gosu::Window
     end
   end
 
+  def event_blood(x, y)
+    @events[:blood] << [
+      x,
+      y,
+      0,
+      [
+        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
+        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
+        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
+        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
+        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)]
+      ]
+    ]
+  end
+
+  def draw_events
+    bloods = []
+    @events[:blood].each do |blood|
+      x = blood[0]
+      y = blood[1]
+      tick = blood[2]
+      splashes = blood[3]
+      new_splashes = []
+      splashes.each do |splash|
+        sx = splash[0]
+        sy = splash[1]
+        dx = splash[2]
+        dy = splash[3]
+        sw = splash[4]
+        sh = splash[5]
+        sx += dx
+        sy += dy
+        dy += 1 # gravity
+        draw_rect(sx, sy, sw, sh, 0xAAFF0000)
+        new_splashes << [sx, sy, dx, dy, sw, sh]
+      end
+      unless tick > 200
+        bloods << [x, y, tick + 1, new_splashes]
+      end
+    end
+    @events[:blood] = bloods
+  end
+
   def draw
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
     if @state == STATE_MENU
@@ -353,6 +399,8 @@ class Gui < Gosu::Window
         # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
         # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
       end
+
+      draw_events()
 
       if @is_scoreboard
         draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font)
