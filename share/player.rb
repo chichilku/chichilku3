@@ -181,7 +181,7 @@ class Player
   end
 
   def add_score(score = 1)
-    @score = (@score + score).clamp(NET_MIN_SCORE, NET_MAX_SCORE)
+    @score = (@score + score).clamp(NET_MIN_INT, NET_MAX_INT)
   end
 
   def collide_string
@@ -208,17 +208,25 @@ class Player
     @collide = {up: false, down: false, right: false, left: false}
   end
 
-  # only sent by server
-  # create name package str
+  ##
+  # Creates name package str
+  #
+  # only used by server
+  #
+  # @return [String] partial network packet
+
   def to_n_pck
     name = @name.ljust(5, '_')
-    # format("%02d#{name}", @id) # old 2 byte ids
-    "#{@id}#{net_pack_int(@score)}#{name}" # new 1 byte id
+    # format("%02d#{name}", @id) # old 2 char ids
+    "#{@id}#{net_pack_int(@score)}#{name}" # new 1 char id
   end
 
   def to_s
-    # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 byte ids
-    "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # new 1 byte id
+    # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 char ids
+    # "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # old 3 char coords
+    #                            unused
+    #                             V
+    "#{@id}#{net_pack_int(@score)}00#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}" # new 2 char coords
   end
 
   private

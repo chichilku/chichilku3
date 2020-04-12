@@ -56,14 +56,15 @@ type  pSTATUS   errorcode server version    error message
 
 ----------------------------------------------------------------------------------------
 Update package
-                               player1           player2           player3
-                                    |                  |                 |
-                                ___/ \_______     ____/ \______     ____/ \______
-                               /             \   /             \   /             \
-type  pSTATUS     playercount  id    posx posy   id    posx posy   id    posx posy
-|     |           |  gamestate | score |   |     | score |   |     | score |
-|     |           |  |         | |     |   |     | |     |   |     | |     | 
-1     l           0  g         1 0   000  000    2 0   000  000    3 0   000  000
+                               player1            player2            player3
+                                    |                   |                  |
+                                ___/ \________     ____/ \_______     ____/ \______
+                               /              \   /              \   /             \
+type  pSTATUS     playercount  id     posx posy   id     posx posy   id     posx posy
+|     |           |  gamestate | score  |   |     | score  |   |     | score  |  |
+|     |           |  |         | |unused|   |     | |unused|   |     | |unused|  |
+|     |           |  |         | |   |  |   |     | |   |  |   |     | |   |  |  |
+1     l           0  g         1 0   00 00 00     2 0   00 00 00     3 0   00 00 00
 
 ----------------------------------------------------------------------------------------
 Set ID package

@@ -264,8 +264,8 @@ class Client
     player_strs.each do |player_str|
       id = player_str[0].to_i
       score = net_unpack_int(player_str[1])
-      x = player_str[2..4].to_i
-      y = player_str[5..7].to_i
+      x = net_unpack_bigint(player_str[4..5])
+      y = net_unpack_bigint(player_str[6..7])
       # puts "id: #{id} x: #{x} y: #{y}"
       # players << Player.new(id, x, y) unless id.zero?
 

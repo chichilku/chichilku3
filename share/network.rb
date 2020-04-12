@@ -2,7 +2,7 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0003'
+GAME_VERSION = '0004'
 
 # game
 
@@ -21,9 +21,6 @@ SERVER_PACKAGE_LEN = MAX_CLIENTS * 8 + 4  # used by client
 MAX_TIMEOUT = 5
 MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
 # MAX_TICK_SPEED = 0.005
-
-NET_MAX_SCORE = 255
-NET_MIN_SCORE = 0
 
 NET_ERR_FULL = "404"
 NET_ERR_DISCONNECT = "001"
@@ -58,6 +55,80 @@ SERVER_PCK_TYPE = {
   :event => "5"
 }
 
+NET_INT_OFFSET = 33
+NET_INT_BASE = 93
+NET_MAX_INT = NET_INT_BASE
+NET_MIN_INT = 0
+
+##
+# Converts a integer to single character network string
+#
+# the base of the network is NET_INT_BASE
+# so the number 93 is the last single character number represented as '~'
+#
+# @param [Integer, #chr] int decimal based number 
+# @return [String] the int converted to base NET_INT_BASE
+
+def net_pack_int(int)
+  net_error "#{__method__}: '#{int}' is too low allowed range #{NET_MIN_INT}-#{NET_MAX_INT}" if int < NET_MIN_INT
+  net_error "#{__method__}: '#{int}' is too high allowed range #{NET_MIN_INT}-#{NET_MAX_INT}" if int > NET_MAX_INT
+  int = int + NET_INT_OFFSET
+  int.chr
+end
+
+##
+# Converts a single character network string to integer
+#
+# the base of the network is NET_INT_BASE
+# so the number 93 is the last single character number represented as '~'
+#
+# @param [String, #ord] net_int network packed string
+# @return [Integer] the net_int converted to decimal based number
+
+def net_unpack_int(net_int)
+  net_int.ord - NET_INT_OFFSET
+end
+
+##
+# Converts a integer to multi character network string
+#
+# @param [Integer, #net_pack_int] int decimal based number
+# @param [Integer] size max length of the network string
+# @return [String] the int converted to base NET_INT_BASE
+
+def net_pack_bigint(int, size)
+  sum = ""
+  div = size - 1
+  (size - 1).times do
+    buf = int / (NET_MAX_INT ** div)
+    sum += net_pack_int(buf)
+    int = int % (NET_MAX_INT ** div)
+  end
+  sum += net_pack_int(int)
+  # TODO: check reminder and so on
+  # throw and error when int is too big for size
+  int = int / NET_MAX_INT
+  sum
+end
+
+##
+# Converts a multi character network string to integer
+#
+# @param [String, #net_unpack_int] net_int network packed int
+# @return [Integer] the net_int converted to decimal based number
+
+def net_unpack_bigint(net_int)
+  sum = 0
+  net_int.chars.reverse.each_with_index do |c, i|
+    if sum.zero?
+      sum = net_unpack_int(c)
+    else
+      sum += net_unpack_int(c) * i * NET_MAX_INT
+    end
+  end
+  sum
+end
+
 def save_read(socket, size)
   begin
     return socket.read_nonblock(size)
@@ -67,16 +138,6 @@ def save_read(socket, size)
 end
 
 def net_error(err)
-  puts "Error: #{err}"
+  puts "NetError: #{err}"
   exit 1
-end
-
-def net_pack_int(int)
-  net_error "#{__method__}: '#{int}' is too low allowed range #{NET_MIN_SCORE}-#{NET_MAX_SCORE}" if int < NET_MIN_SCORE
-  net_error "#{__method__}: '#{int}' is too high allowed range #{NET_MIN_SCORE}-#{NET_MAX_SCORE}" if int > NET_MAX_SCORE
-  int.chr
-end
-
-def net_unpack_int(pack_int)
-  pack_int.ord
 end
