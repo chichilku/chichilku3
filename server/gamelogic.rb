@@ -65,8 +65,10 @@ class GameLogic
   def gravity(player, dt)
     if player.dead
       player.dead_ticks += 1
+      player.state[:bleeding] = true
       if player.dead_ticks > 3
         player.dead = false
+        player.state[:bleeding] = false
         player.die
       end
     else

@@ -56,15 +56,19 @@ type  pSTATUS   errorcode server version    error message
 
 ----------------------------------------------------------------------------------------
 Update package
-                               player1            player2            player3
-                                    |                   |                  |
-                                ___/ \________     ____/ \_______     ____/ \______
-                               /              \   /              \   /             \
-type  pSTATUS     playercount  id     posx posy   id     posx posy   id     posx posy
-|     |           |  gamestate | score  |   |     | score  |   |     | score  |  |
-|     |           |  |         | |unused|   |     | |unused|   |     | |unused|  |
-|     |           |  |         | |   |  |   |     | |   |  |   |     | |   |  |  |
-1     l           0  g         1 0   00 00 00     2 0   00 00 00     3 0   00 00 00
+                                 player1                    player2              player3
+                                    |                         |                      |
+                                ___/ \______________     ____/ \__________      ____/ \___________
+                               /                    \   /                 \    /                  \
+type  pSTATUS     playercount  id          posx posy    id         posx posy   id          posx posy
+|     |           |  gamestate | score       |   |       | score       |   |    | score       |  |
+|     |           |  |         | |unused     |   |       | |unused     |   |    | |unused     |  |
+|     |           |  |         | |   |state  |   |       | |   |state  |   |    | |   |state  |  |
+|     |           |  |         | |   ||      |   |       | |   ||      |   |    | |   ||      |  |
+1     l           0  g         1 0   00      00 00       2 0   00      00 00    3 0   00      00 00
+
+player states:
+b - blood splash
 
 ----------------------------------------------------------------------------------------
 Set ID package
@@ -86,11 +90,3 @@ type  pSTATUS     playercount  id    name  id    name  id    name  empty
 cmd response package
 type  pSTATUS     response
 4     l           00000000000000000000000000
-
-----------------------------------------------------------------------------------------
-Event package
-type  pSTATUS eventcode event-details
-5     l       x         0000000000000000000000000
-              EVENTS:
- death:       eventcode x   y   place-for-more
-              d         000 000 0000000000000000000

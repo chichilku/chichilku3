@@ -6,7 +6,7 @@ SPAWN_X = 512
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :dead, :dead_ticks
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks
   attr_reader :collide, :collide_str, :img_index, :version
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
@@ -18,6 +18,7 @@ class Player
     @dx = 0
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
+    @state = {bleeding: false}
     @name = name
     @score = score
     @dead = false # only used by server for now
@@ -226,7 +227,23 @@ class Player
     # "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # old 3 char coords
     #                            unused
     #                             V
-    "#{@id}#{net_pack_int(@score)}00#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}" # new 2 char coords
+    "#{@id}#{net_pack_int(@score)}0#{state_to_net()}#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}" # new 2 char coords
+  end
+
+  def state_to_net
+    if @state[:bleeding]
+      "b"
+    else
+      "0"
+    end
+  end
+
+  def net_to_state(net)
+    if net == "b"
+      @state = {bleeding: true}
+    else
+      @state = {bleeding: false}
+    end
   end
 
   private
@@ -244,8 +261,6 @@ class Player
 
     @y += y
   end
-
-  private
 
   # This method puts the value towards zero
   # used to normalize speed

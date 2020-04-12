@@ -264,6 +264,8 @@ class Client
     player_strs.each do |player_str|
       id = player_str[0].to_i
       score = net_unpack_int(player_str[1])
+      unused = player_str[2]
+      net_state = player_str[3]
       x = net_unpack_bigint(player_str[4..5])
       y = net_unpack_bigint(player_str[6..7])
       # puts "id: #{id} x: #{x} y: #{y}"
@@ -277,6 +279,7 @@ class Client
 
       @console.dbg "got player: #{@players[p_index]}"
       new_player = Player.update_player(@players, id, x, y, score)
+      new_player.net_to_state(net_state)
       @players[Player.get_player_index_by_id(@players, id)] = new_player
     end
     # debug

@@ -367,6 +367,7 @@ class Gui < Gosu::Window
     elsif @state == STATE_INGAME
       @background_image.draw(0, 0, 0)
       @players.each do |player|
+        event_blood(player.x, player.y) if player.state[:bleeding]
         player.draw_tick
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
