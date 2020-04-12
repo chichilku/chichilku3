@@ -251,7 +251,12 @@ class Gui < Gosu::Window
     end
 
     # Networking
-    net_data = @net_client.tick(net_request, protocol, @tick)
+    begin
+      net_data = @net_client.tick(net_request, protocol, @tick)
+    rescue Errno::ECONNRESET, Errno::EPIPE
+      net_data = [@players, @flags, [0, NET_ERR_DISCONNECT, "connection to server lost"]]
+      @net_client.disconnect
+    end
     return if net_data.nil?
 
     @flags = net_data[1]
@@ -372,9 +377,16 @@ class Gui < Gosu::Window
   private
 
   def connect()
-    @net_client.connect(@cfg.data['ip'], @cfg.data['port'])
-    @state = STATE_CONNECTING;
-    @menu_page = MENU_MAIN
+    begin
+      @net_client.connect(@cfg.data['ip'], @cfg.data['port'])
+      @state = STATE_CONNECTING;
+      @menu_page = MENU_MAIN
+    rescue Errno::ECONNREFUSED
+      @state = STATE_ERROR
+      @menu_page = MENU_MAIN
+      @net_err = [NET_ERR_DISCONNECT, "connection refused"]
+      @net_client.disconnect
+    end
   end
 
   def connect_menu()
