@@ -43,7 +43,8 @@ CLIENT_PCK_TYPE = {
   :join => "1",
   :move => "2",
   :info => "3",
-  :cmd => "4"
+  :cmd => "4",
+  :event => "5"
 }
 
 SERVER_PCK_TYPE = {

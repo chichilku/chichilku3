@@ -267,12 +267,14 @@ class Gui < Gosu::Window
     msg = net_data[2]
     if msg
       type = msg[0]
-      if type == 0
+      if type == 0 # ERROR
         @net_err = msg[1..-1]
         @state = STATE_ERROR
-      elsif type == 1
+      elsif type == 1 # CMD
         @server_chat_msg = msg[1]
         @server_chat_recv = Time.now
+      elsif type == 2 # EVENT
+        create_event(msg[1])
       end
     end
     return if @flags[:skip]
@@ -300,6 +302,18 @@ class Gui < Gosu::Window
       else
         @font.draw_text("   #{menu_item[0]}   ", 20, 20 + offset, 0, size, size)
       end
+    end
+  end
+
+  def create_event(net_data)
+    type = net_data[0]
+    data = net_data[1..-1]
+    if type == "b"
+      x = net_unpack_bigint(data[0..1])
+      y = net_unpack_bigint(data[2..3])
+      event_blood(x, y)
+    else
+      @console.log "Error: unkown event type '#{type}'"
     end
   end
 

@@ -92,5 +92,5 @@ Event package
 type  pSTATUS eventcode event-details
 5     l       x         0000000000000000000000000
               EVENTS:
- death:       eventcode x   y   place-for-more
-              d         000 000 0000000000000000000
+ blood:       eventcode x   y   place-for-more
+              b        00  00  000000000000000000000

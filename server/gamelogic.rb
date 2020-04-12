@@ -1,6 +1,7 @@
 class GameLogic
-  def initialize(console)
+  def initialize(console, server)
     @console = console
+    @server = server
     @alive_players = 0
   end
 
@@ -67,6 +68,7 @@ class GameLogic
       player.dead_ticks += 1
       if player.dead_ticks > 3
         player.dead = false
+        @server.net_write_all("5lb#{net_pack_bigint(player.x, 2)}#{net_pack_bigint(player.y, 2)}000000000000000000000")
         player.die
       end
     else

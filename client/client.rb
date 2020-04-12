@@ -119,6 +119,8 @@ class Client
     elsif protocol == 4 # command respond
       @console.log "server respond: #{data}"
       return [1, data]
+    elsif protocol == 5 # event
+      return [2, data]
     else
       @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
     end

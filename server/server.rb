@@ -27,7 +27,7 @@ class ServerCore
     @last_alive_pck_by_client = Time.now
     @console = Console.new
     @cfg = ServerCfg.new(@console, "server.json")
-    @gamelogic = GameLogic.new(@console)
+    @gamelogic = GameLogic.new(@console, self)
     @global_pack = nil
   end
 
@@ -262,6 +262,12 @@ class ServerCore
         end
       end
       @players = @gamelogic.tick(@players, diff)
+    end
+  end
+
+  def net_write_all(data)
+    @clients.each do |client|
+      net_write(data, client[NET_CLIENT])
     end
   end
 
