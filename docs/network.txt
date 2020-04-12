@@ -1,9 +1,9 @@
-pSTATUS is a status of the current typeocol
+pSTATUS is a status of the current message type
 Different status codes:
 'l' lonley single packet
-'s' start package of a series
-'e' end of a series
-'1','2','3',..,'9' index of current series
+'s' start package of a series (not implemented)
+'e' end of a series (not implemented)
+'1','2','3',..,'9' index of current series (not implemented)
 
 gamestates:
 g = default ingame state
