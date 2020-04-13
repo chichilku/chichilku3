@@ -41,7 +41,7 @@ class Gui < Gosu::Window
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
     self.caption = 'chichilku3 client'
     # images
-    @background_image = Gosu::Image.new("client/img/battle1024x512.png")
+    @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @stick = Gosu::Image.new("client/img/stick32.png")
     @stick_images = []
