@@ -7,18 +7,18 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks
-  attr_reader :collide, :collide_str, :img_index, :version
+  attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
     @id = id
-    # @x = x
-    # @y = y
     @x = x.nil? ? SPAWN_X : x
     @y = y.nil? ? SPAWN_Y : y
+    @w = TILE_SIZE / 2
+    @h = TILE_SIZE
     @dx = 0
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
-    @state = {bleeding: false}
+    @state = {bleeding: false, rolling: false}
     @name = name
     @score = score
     @dead = false # only used by server for now
@@ -108,8 +108,8 @@ class Player
   def check_player_collide(other)
     # $console.log "x: #{@x} y: #{@y} ox: #{other.x} oy: #{other.y}"
     # x crash is more rare so make it the outer condition
-    if other.x + TILE_SIZE > @x && other.x < @x + TILE_SIZE
-      if other.y + TILE_SIZE > @y && other.y < @y + TILE_SIZE
+    if other.x + other.w > @x && other.x < @x + @w
+      if other.y + other.h > @y && other.y < @y + @h
         # $console.log "collide!"
         return @x < other.x ? -7 : 7
       end

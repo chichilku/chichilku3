@@ -69,6 +69,8 @@ type  pSTATUS     playercount  id          posx posy    id         posx posy   i
 
 player states:
 b - blood splash
+r - rolling
+s - slipping (r+b)
 
 ----------------------------------------------------------------------------------------
 Set ID package

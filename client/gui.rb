@@ -44,19 +44,14 @@ class Gui < Gosu::Window
     # images
     @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
-    @stick = Gosu::Image.new("client/img/stick32.png")
+    @stick = Gosu::Image.new("client/img/stick128/stick0.png")
     @stick_images = []
-    @stick_images << Gosu::Image.new("client/img/stick64/stick0.png")
-    @stick_images << Gosu::Image.new("client/img/stick64/stick1.png")
-    @stick_images << Gosu::Image.new("client/img/stick64/stick2.png")
-    @stick_images << Gosu::Image.new("client/img/stick64/stick3.png")
-    @stick_images << Gosu::Image.new("client/img/stick64/stick4.png")
-    @stick_images << Gosu::Image.new("client/img/stick64/stick5.png")
-
-    # @stick_images << Gosu::Image.new("client/img/stick32/stick0.png")
-    # @stick_images << Gosu::Image.new("client/img/stick32/stick1.png")
-    # @stick_images << Gosu::Image.new("client/img/stick32/stick2.png")
-    # data
+    @stick_images << Gosu::Image.new("client/img/stick128/stick0.png")
+    @stick_images << Gosu::Image.new("client/img/stick128/stick1.png")
+    @stick_images << Gosu::Image.new("client/img/stick128/stick2.png")
+    @stick_images << Gosu::Image.new("client/img/stick128/stick3.png")
+    @stick_images << Gosu::Image.new("client/img/stick128/stick4.png")
+    @stick_images << Gosu::Image.new("client/img/stick128/stick5.png")
     @x = 0
     @y = 0
     @players = []
@@ -373,14 +368,14 @@ class Gui < Gosu::Window
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         # @stick.draw(player.x, player.y, 0)
-        @stick_images[player.img_index].draw(player.x, player.y, 0)
+        @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         if @is_debug # print id
           # @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
-          draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
+          draw_rect(player.x, player.y, TILE_SIZE/2, TILE_SIZE, 0xAA00EE00)
         end
-        @font.draw_text(player.name, player.x, player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
+        @font.draw_text(player.name, player.x - (TILE_SIZE/6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end
 
       # chat input
