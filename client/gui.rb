@@ -374,9 +374,10 @@ class Gui < Gosu::Window
         # @stick.draw(player.x, player.y, 0)
         @stick_images[player.img_index].draw(player.x, player.y, 0)
         if @is_debug # print id
-          # @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
-          @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
-          # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)          
+          # @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
+          @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
+          # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
+          draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
         end
         @font.draw_text(player.name, player.x, player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end
@@ -393,12 +394,14 @@ class Gui < Gosu::Window
 
       if @is_debug
         player = Player.get_player_by_id(@players, @flags[:id])
-        @font.draw_text("Press m to deactivate debug mode", 10, 10, 0, 1, 1)
-        @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
-        @font.draw_text("gamestate: #{@flags[:gamestate]}", 10, 60, 0 , 1, 1)
-        # thats useless because collide/delta speed is not sent over the network
-        # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
-        # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
+        unless player.nil?
+          @font.draw_text("Press m to deactivate debug mode", 10, 10, 0, 1, 1)
+          @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
+          @font.draw_text("gamestate: #{@flags[:gamestate]}", 10, 60, 0 , 1, 1)
+          # thats useless because collide/delta speed is not sent over the network
+          # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
+          # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
+        end
       end
 
       draw_events()

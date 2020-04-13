@@ -79,7 +79,7 @@ class GameLogic
     end
 
     # outside of the save zone
-    if player.x < 214 || player.x > 818 || player.dead
+    if player.x < 214 || player.x > 800 || player.dead
       if player.y > 420
         # player.collide[:down] = true
         player.do_collide(:down, true)
