@@ -254,6 +254,7 @@ class ServerCore
       sleep $next_tick - t if $next_tick > t
       @tick += 1
       $next_tick = Time.now + MAX_TICK_SPEED
+      @players = @gamelogic.tick(@players, diff)
       @clients.each do |client|
         begin
           client_tick(client, diff)
@@ -261,7 +262,7 @@ class ServerCore
           disconnect_client(client)
         end
       end
-      @players = @gamelogic.tick(@players, diff)
+      @players = @gamelogic.posttick(@players, diff)
     end
   end
 

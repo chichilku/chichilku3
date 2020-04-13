@@ -6,7 +6,7 @@ SPAWN_X = 512
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_rolling
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
@@ -19,6 +19,7 @@ class Player
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
     @state = {bleeding: false, rolling: false}
+    @was_rolling = false
     @name = name
     @score = score
     @dead = false # only used by server for now
@@ -231,8 +232,16 @@ class Player
   end
 
   def state_to_net
-    if @state[:bleeding]
+    @w = TILE_SIZE / 2
+    @h = TILE_SIZE
+    if @state[:bleeding] && @state[:rolling]
+      "s"
+    elsif @state[:bleeding]
       "b"
+    elsif @state[:rolling]
+      @w = TILE_SIZE
+      @h = TILE_SIZE / 2
+      "r"
     else
       "0"
     end
@@ -240,9 +249,13 @@ class Player
 
   def net_to_state(net)
     if net == "b"
-      @state = {bleeding: true}
+      @state = {bleeding: true, rolling: false}
+    elsif net == "r"
+      @state = {bleeding: false, rolling: true}
+    elsif net == "s"
+      @state = {bleeding: true, rolling: true}
     else
-      @state = {bleeding: false}
+      @state = {bleeding: false, rolling: false}
     end
   end
 

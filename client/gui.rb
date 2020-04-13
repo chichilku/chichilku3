@@ -44,6 +44,7 @@ class Gui < Gosu::Window
     # images
     @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
+    @stick_rolling = Gosu::Image.new("client/img/stick128/stick_rolling0.png")
     @stick = Gosu::Image.new("client/img/stick128/stick0.png")
     @stick_images = []
     @stick_images << Gosu::Image.new("client/img/stick128/stick0.png")
@@ -226,6 +227,9 @@ class Gui < Gosu::Window
       end
     else
       net_request[0] = '0' # space for more
+      if button_down?(KEY_S)
+        net_request[0] = '1'
+      end
       if button_down?(KEY_A)
         net_request[1] = '1'
       end
@@ -368,12 +372,21 @@ class Gui < Gosu::Window
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         # @stick.draw(player.x, player.y, 0)
-        @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
+        if player.state[:rolling]
+          @stick_rolling.draw(player.x, player.y, 0, 0.5, 0.5)
+        else
+          @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
+        end
         if @is_debug # print id
           # @font.draw_text(player.id, player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
-          draw_rect(player.x, player.y, TILE_SIZE/2, TILE_SIZE, 0xAA00EE00)
+          if player.state[:rolling]
+            draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE/2, 0xAA00EE00)
+          else
+            draw_rect(player.x, player.y, TILE_SIZE/2, TILE_SIZE, 0xAA00EE00)
+          end
+          else
         end
         @font.draw_text(player.name, player.x - (TILE_SIZE/6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end

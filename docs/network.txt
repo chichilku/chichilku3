@@ -26,7 +26,7 @@ type pSTATUS  username (type=0 is the join type)
 
 ----------------------------------------------------------------------------------------
 id move requests
-type  pSTATUS id xlrj (x = spaceformore/left/right/jump)
+type  pSTATUS id dlrj (dodge-roll/left/right/jump)
 2     l       0  0000
 
 ----------------------------------------------------------------------------------------

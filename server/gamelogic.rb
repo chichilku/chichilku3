@@ -18,6 +18,8 @@ class GameLogic
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
+      player.state[:rolling] = false
+
       gravity(player, dt)
       player.tick
       # player collsions works
@@ -43,7 +45,9 @@ class GameLogic
 
     # move request
     if data[0] == '1'
-      @console.log "player=#{id} space for more"
+      @console.dbg "player=#{id} wants to roll"
+      player.state[:rolling] = true
+      player.was_rolling = true
     end
     if data[1] == '1'
       @console.dbg "player=#{id} wants to walk left"
@@ -60,6 +64,17 @@ class GameLogic
 
     # return updated players
     players
+  end
+
+  def posttick(players, dt)
+    players.each do |player|
+      # stopped rolling go up
+      if player.was_rolling && player.state[:rolling] == false
+        # player.y -= TILE_SIZE
+        player.was_rolling = false
+        @console.log "player stopped rollings"
+      end
+    end
   end
 
   def gravity(player, dt)
@@ -80,13 +95,13 @@ class GameLogic
 
     # outside of the save zone
     if player.x < 214 || player.x > 800 || player.dead
-      if player.y > 420
+      if player.y + player.h > 484
         # player.collide[:down] = true
         player.do_collide(:down, true)
         return
       end
     else # on the save zone
-      if player.y > 260
+      if player.y + player.h > 324
         # player.collide[:down] = true
         player.do_collide(:down, true)
         return
