@@ -1,5 +1,6 @@
 {
   "ip": "localhost",
   "port": 9900,
-  "username": "00000000"
+  "username": "00000000",
+  "fullscreen": false
 }

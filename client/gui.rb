@@ -24,7 +24,7 @@ KEY_UP = 82
 
 MENU_MAIN = 0
 MENU_CONNECT = 1
-MENU_SETTINGS = 2
+MENU_USERNAME = 2
 
 $time_point=Time.now
 $time_buffer=0
@@ -40,6 +40,7 @@ class Gui < Gosu::Window
   def initialize(cfg)
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
     self.caption = 'chichilku3 client'
+    self.fullscreen = true if cfg.data['fullscreen']
     # images
     @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
@@ -138,7 +139,7 @@ class Gui < Gosu::Window
     if @state == STATE_MENU
       if @menu_page == MENU_CONNECT
         enter_ip_tick
-      elsif @menu_page == MENU_SETTINGS
+      elsif @menu_page == MENU_USERNAME
         enter_name_tick
       else
         menu_tick
@@ -353,7 +354,7 @@ class Gui < Gosu::Window
         @connecting_image.draw(0, 0, 0)
         @font.draw_text("Enter server ip", 20, 20, 0, 5, 5)
         @menu_textfield.draw(0)
-      elsif @menu_page == MENU_SETTINGS
+      elsif @menu_page == MENU_USERNAME
         @connecting_image.draw(0, 0, 0)
         @font.draw_text("Choose a username", 20, 20, 0, 5, 5)
         @menu_textfield.draw(0)
@@ -449,18 +450,27 @@ class Gui < Gosu::Window
     @menu_page = MENU_CONNECT
   end
 
-  def settings_menu()
+  def username_page()
     @last_key = Gosu::KB_RETURN
     self.text_input = @menu_textfield
     @menu_textfield.text = "#{@cfg.data['username']}"
     @state = STATE_MENU
-    @menu_page = MENU_SETTINGS
+    @menu_page = MENU_USERNAME
+  end
+
+  def toggle_fullscreen()
+    if @cfg.data['fullscreen']
+      @cfg.data['fullscreen'] = self.fullscreen = false
+    else
+      @cfg.data['fullscreen'] = self.fullscreen = true
+    end
   end
 
   def init_menu()
     @menu_items = []
     add_menu_item("[c]onnect", Proc.new { connect_menu() })
-    add_menu_item("settings", Proc.new { settings_menu() })
+    add_menu_item("username", Proc.new { username_page() })
+    add_menu_item("fullscreen", Proc.new { toggle_fullscreen() })
     add_menu_item("[q]uit", Proc.new { exit() })
   end
 
