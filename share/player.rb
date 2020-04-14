@@ -6,7 +6,7 @@ SPAWN_X = 512
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_rolling
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
@@ -18,8 +18,8 @@ class Player
     @dx = 0
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
-    @state = {bleeding: false, rolling: false}
-    @was_rolling = false
+    @state = {bleeding: false, crouching: false}
+    @was_crouching = false
     @name = name
     @score = score
     @dead = false # only used by server for now
@@ -159,12 +159,12 @@ class Player
   # idk make sure to not get stuck in walls
   def move_left
     # @dx = -8
-    @x -= 8
+    @x -= state[:crouching] ? 4 : 8
   end
 
   def move_right
     # @dx = 8
-    @x += 8
+    @x += state[:crouching] ? 4 : 8
   end
 
   def apply_force(x, y)
@@ -178,7 +178,7 @@ class Player
     if @dead 
       @dy = -5
     else
-      @dy = -30
+      @dy = state[:crouching] ? -20 : -30
     end
   end
 
@@ -234,14 +234,14 @@ class Player
   def state_to_net
     @w = TILE_SIZE / 2
     @h = TILE_SIZE
-    if @state[:bleeding] && @state[:rolling]
+    if @state[:bleeding] && @state[:crouching]
       "s"
     elsif @state[:bleeding]
       "b"
-    elsif @state[:rolling]
+    elsif @state[:crouching]
       @w = TILE_SIZE
       @h = TILE_SIZE / 2
-      "r"
+      "c"
     else
       "0"
     end
@@ -249,13 +249,13 @@ class Player
 
   def net_to_state(net)
     if net == "b"
-      @state = {bleeding: true, rolling: false}
-    elsif net == "r"
-      @state = {bleeding: false, rolling: true}
+      @state = {bleeding: true, crouching: false}
+    elsif net == "c"
+      @state = {bleeding: false, crouching: true}
     elsif net == "s"
-      @state = {bleeding: true, rolling: true}
+      @state = {bleeding: true, crouching: true}
     else
-      @state = {bleeding: false, rolling: false}
+      @state = {bleeding: false, crouching: false}
     end
   end
 

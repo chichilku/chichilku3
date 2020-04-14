@@ -45,8 +45,14 @@ class Gui < Gosu::Window
     @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
     @menu_image = Gosu::Image.new("client/img/menu1920x1080.png")
-    @stick_rolling = Gosu::Image.new("client/img/stick128/stick_rolling0.png")
     @stick = Gosu::Image.new("client/img/stick128/stick0.png")
+    @stick_crouching = []
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching0.png")
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching1.png")
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching2.png")
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching3.png")
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching4.png")
+    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching5.png")
     @stick_images = []
     @stick_images << Gosu::Image.new("client/img/stick128/stick0.png")
     @stick_images << Gosu::Image.new("client/img/stick128/stick1.png")
@@ -369,8 +375,8 @@ class Gui < Gosu::Window
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
         # @stick.draw(player.x, player.y, 0)
-        if player.state[:rolling]
-          @stick_rolling.draw(player.x, player.y, 0, 0.5, 0.5)
+        if player.state[:crouching]
+          @stick_crouching[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         end
@@ -378,7 +384,7 @@ class Gui < Gosu::Window
           draw_rect(player.x - 2, player.y - 60, 32, 20, 0xAA000000)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - 60, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
-          if player.state[:rolling]
+          if player.state[:crouching]
             draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE/2, 0xAA00EE00)
           else
             draw_rect(player.x, player.y, TILE_SIZE/2, TILE_SIZE, 0xAA00EE00)

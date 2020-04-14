@@ -43,13 +43,14 @@ class GameLogic
     end
 
     # reset values (should stay first)
-    player.state[:rolling] = false
+    player.state[:crouching] = false
 
     # move request
     if data[0] == '1'
-      @console.dbg "player=#{id} wants to roll"
-      player.state[:rolling] = true
-      player.was_rolling = true
+      @console.dbg "player=#{id} wants to crouch"
+      player.state[:crouching] = true
+      player.x -= TILE_SIZE / 4 unless player.was_crouching
+      player.was_crouching = true
     end
     if data[1] == '1'
       @console.dbg "player=#{id} wants to walk left"
@@ -72,10 +73,11 @@ class GameLogic
 
   def posttick(players, dt)
     players.each do |player|
-      # stopped rolling go up
-      if player.was_rolling && player.state[:rolling] == false
+      # stopped crouching -> stand up
+      if player.was_crouching && player.state[:crouching] == false
         player.y -= TILE_SIZE
-        player.was_rolling = false
+        player.x += TILE_SIZE / 4
+        player.was_crouching = false
       end
     end
   end
