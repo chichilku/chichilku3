@@ -44,6 +44,7 @@ class Gui < Gosu::Window
     # images
     @background_image = Gosu::Image.new("client/img/battle1024x576.png")
     @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
+    @menu_image = Gosu::Image.new("client/img/menu1920x1080.png")
     @stick_rolling = Gosu::Image.new("client/img/stick128/stick_rolling0.png")
     @stick = Gosu::Image.new("client/img/stick128/stick0.png")
     @stick_images = []
@@ -290,7 +291,7 @@ class Gui < Gosu::Window
   end
 
   def draw_main_menu
-    @connecting_image.draw(0, 0, 0)
+    @menu_image.draw(0, 0, 0, UI_SCALE, UI_SCALE)
     offset = 0
     size = 2
     @menu_items.each_with_index do |menu_item, index|
