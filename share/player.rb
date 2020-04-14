@@ -141,8 +141,8 @@ class Player
     end
     # x ( comment me out to add the glitch feature agian )
     if @x < 0
-      @x = WINDOW_SIZE_X - TILE_SIZE - 2
-    elsif @x > WINDOW_SIZE_X - TILE_SIZE - 1
+      @x = WINDOW_SIZE_X - @w - 2
+    elsif @x > WINDOW_SIZE_X - @w - 1
       @x = 0
     end
   end

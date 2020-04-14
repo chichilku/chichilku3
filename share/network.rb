@@ -140,6 +140,6 @@ def save_read(socket, size)
 end
 
 def net_error(err)
-  puts "NetError: #{err}"
+  raise "NetError: #{err}"
   exit 1
 end

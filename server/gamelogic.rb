@@ -64,6 +64,8 @@ class GameLogic
       player.do_jump
     end
 
+    player.check_out_of_world
+
     # return updated players
     players
   end
