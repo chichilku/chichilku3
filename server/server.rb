@@ -255,6 +255,10 @@ class ServerCore
       @tick += 1
       $next_tick = Time.now + MAX_TICK_SPEED
       @players = @gamelogic.tick(@players, diff)
+      # there is no gurantee the client will tick here
+      # there might be 2 gamelogic ticks and posticks
+      # before the server recieves client data
+      # since it is a nonblocking read and server/client are not in perfect sync
       @clients.each do |client|
         begin
           client_tick(client, diff)

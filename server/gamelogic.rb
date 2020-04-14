@@ -18,7 +18,6 @@ class GameLogic
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
-      player.state[:rolling] = false
 
       gravity(player, dt)
       player.tick
@@ -42,6 +41,9 @@ class GameLogic
       end
       return players
     end
+
+    # reset values (should stay first)
+    player.state[:rolling] = false
 
     # move request
     if data[0] == '1'
@@ -70,9 +72,8 @@ class GameLogic
     players.each do |player|
       # stopped rolling go up
       if player.was_rolling && player.state[:rolling] == false
-        # player.y -= TILE_SIZE
+        player.y -= TILE_SIZE
         player.was_rolling = false
-        @console.log "player stopped rollings"
       end
     end
   end
