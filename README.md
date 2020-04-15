@@ -8,7 +8,7 @@ macOS
 -----
 
 ```
-brew install sdl2 git
+brew install sdl2
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
 bundle install
