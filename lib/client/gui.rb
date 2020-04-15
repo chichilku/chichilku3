@@ -42,24 +42,24 @@ class Gui < Gosu::Window
     self.caption = 'chichilku3'
     self.fullscreen = true if cfg.data['fullscreen']
     # images
-    @background_image = Gosu::Image.new("lib/client/img/battle1024x576.png")
-    @connecting_image = Gosu::Image.new("lib/client/img/connecting1024x512.png")
-    @menu_image = Gosu::Image.new("lib/client/img/menu1920x1080.png")
-    @stick = Gosu::Image.new("lib/client/img/stick128/stick0.png")
+    @background_image = Gosu::Image.new(img("battle1024x576.png"))
+    @connecting_image = Gosu::Image.new(img("connecting1024x512.png"))
+    @menu_image = Gosu::Image.new(img("menu1920x1080.png"))
+    @stick = Gosu::Image.new(img("stick128/stick0.png"))
     @stick_crouching = []
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching0.png")
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching1.png")
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching2.png")
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching3.png")
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching4.png")
-    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching5.png")
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching0.png"))
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching1.png"))
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching2.png"))
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching3.png"))
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching4.png"))
+    @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching5.png"))
     @stick_images = []
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick0.png")
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick1.png")
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick2.png")
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick3.png")
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick4.png")
-    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick5.png")
+    @stick_images << Gosu::Image.new(img("stick128/stick0.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick1.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick2.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick3.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick4.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick5.png"))
     @x = 0
     @y = 0
     @players = []
@@ -93,6 +93,10 @@ class Gui < Gosu::Window
     # depreciated ._.
     # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
     init_menu()
+  end
+
+  def img(path)
+    File.join(File.dirname(__FILE__), "../../lib/client/img/", path)
   end
 
   def button_press?(button)
