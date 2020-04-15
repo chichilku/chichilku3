@@ -1,5 +1,6 @@
 # chichilku3
-The stick game in the 3rd generation written in ruby
+Part 3 of the chichilku series written in ruby.
+Simple 2d multiplayer stick figure battle game.
 ![Demo Picture](screenshots/chichilku3.png)
 
 # Setup
