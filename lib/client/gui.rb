@@ -39,27 +39,27 @@ end
 class Gui < Gosu::Window
   def initialize(cfg)
     super WINDOW_SIZE_X, WINDOW_SIZE_Y
-    self.caption = 'chichilku3 client'
+    self.caption = 'chichilku3'
     self.fullscreen = true if cfg.data['fullscreen']
     # images
-    @background_image = Gosu::Image.new("client/img/battle1024x576.png")
-    @connecting_image = Gosu::Image.new("client/img/connecting1024x512.png")
-    @menu_image = Gosu::Image.new("client/img/menu1920x1080.png")
-    @stick = Gosu::Image.new("client/img/stick128/stick0.png")
+    @background_image = Gosu::Image.new("lib/client/img/battle1024x576.png")
+    @connecting_image = Gosu::Image.new("lib/client/img/connecting1024x512.png")
+    @menu_image = Gosu::Image.new("lib/client/img/menu1920x1080.png")
+    @stick = Gosu::Image.new("lib/client/img/stick128/stick0.png")
     @stick_crouching = []
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching0.png")
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching1.png")
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching2.png")
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching3.png")
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching4.png")
-    @stick_crouching << Gosu::Image.new("client/img/stick128/stick_crouching5.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching0.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching1.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching2.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching3.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching4.png")
+    @stick_crouching << Gosu::Image.new("lib/client/img/stick128/stick_crouching5.png")
     @stick_images = []
-    @stick_images << Gosu::Image.new("client/img/stick128/stick0.png")
-    @stick_images << Gosu::Image.new("client/img/stick128/stick1.png")
-    @stick_images << Gosu::Image.new("client/img/stick128/stick2.png")
-    @stick_images << Gosu::Image.new("client/img/stick128/stick3.png")
-    @stick_images << Gosu::Image.new("client/img/stick128/stick4.png")
-    @stick_images << Gosu::Image.new("client/img/stick128/stick5.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick0.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick1.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick2.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick3.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick4.png")
+    @stick_images << Gosu::Image.new("lib/client/img/stick128/stick5.png")
     @x = 0
     @y = 0
     @players = []

@@ -3,7 +3,20 @@ Part 3 of the chichilku series written in ruby.
 Simple 2d multiplayer stick figure battle game.
 ![Demo Picture](screenshots/chichilku3.png)
 
-# Setup
+# Installing as gem
+
+```
+# install binarys
+gem install chichilku3
+
+# run the server
+chichilku3-server
+
+# run the client
+chichilku3
+```
+
+# Building from source
 
 ## macOS
 
@@ -27,11 +40,11 @@ bundle install
 
 ## client
 
-``ruby client/game.rb``
+``ruby lib/client/chichilku3.rb``
 
 ## server
 
-``ruby server/server.rb``
+``ruby lib/server/chichilku3_server.rb``
 
 # testing
 

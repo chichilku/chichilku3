@@ -1,3 +1,4 @@
 client.json
 .ruby-version
 tags
+*.gem
