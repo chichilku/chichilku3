@@ -1,4 +1,4 @@
-require_relative '../share/network'
+require_relative '../lib/share/network'
 
 describe "Network", :network do
     context "With valid input" do
