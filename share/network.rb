@@ -2,7 +2,7 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0004'
+GAME_VERSION = '0005'
 
 # game
 
@@ -102,9 +102,9 @@ def net_pack_bigint(int, size)
   sum = ""
   div = size - 1
   (size - 1).times do
-    buf = int / (NET_MAX_INT ** div)
+    buf = int / ((NET_MAX_INT+1) ** div)
     sum += net_pack_int(buf)
-    int = int % (NET_MAX_INT ** div)
+    int = int % ((NET_MAX_INT+1) ** div)
   end
   sum += net_pack_int(int)
   # TODO: check reminder and so on
@@ -122,10 +122,10 @@ end
 def net_unpack_bigint(net_int)
   sum = 0
   net_int.chars.reverse.each_with_index do |c, i|
-    if sum.zero?
+    if i.zero?
       sum = net_unpack_int(c)
     else
-      sum += net_unpack_int(c) * i * NET_MAX_INT
+      sum += net_unpack_int(c) * i * (NET_MAX_INT+1)
     end
   end
   sum
