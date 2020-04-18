@@ -92,7 +92,7 @@ class GameLogic
         player.die
       end
     else
-      if player.y > 320 # too far down --> die
+      if player.y + player.h > 384 # too far down --> die
         player.dead = true
         player.dead_ticks = 0
       end
