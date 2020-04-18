@@ -254,7 +254,7 @@ class Client
   def server_package_to_player_strs(slots, data)
     players = []
     slots.times do |index|
-      players[index] = data[index * 8..index * 8 + 7]
+      players[index] = data[index * PLAYER_PACKAGE_LEN..index * PLAYER_PACKAGE_LEN + PLAYER_PACKAGE_LEN-1]
     end
     players
   end
@@ -266,9 +266,10 @@ class Client
       score = net_unpack_int(player_str[1])
       unused = player_str[2]
       net_state = player_str[3]
-      x = net_unpack_bigint(player_str[4..5])
-      y = net_unpack_bigint(player_str[6..7])
-      # puts "id: #{id} x: #{x} y: #{y}"
+      proj_aim_todo = player_str[4..11]
+      x = net_unpack_bigint(player_str[12..13])
+      y = net_unpack_bigint(player_str[14..15])
+      # puts "'#{player_str}' id: #{id} x: #{x} '#{player_str[12..13]}' y: #{y} '#{player_str[14..15]}'"
       # players << Player.new(id, x, y) unless id.zero?
 
       @console.dbg "-- updt player id=#{id} score=#{score}--"

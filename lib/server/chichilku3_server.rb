@@ -60,9 +60,9 @@ class ServerCore
     end
     unless player.nil?
       if player.version.to_i < GAME_VERSION.to_i
-        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}                   "
+        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}                                           "
       elsif player.version.to_i > GAME_VERSION.to_i
-        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}                   "
+        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}                                           "
       end
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
@@ -124,7 +124,7 @@ class ServerCore
     @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
-    format('2l00%02d0000000000000000000000', id).to_s
+    format('2l00%02d0000000000000000000000000000000000000000000000', id).to_s
   end
 
   def command_package(data, client)
@@ -154,7 +154,7 @@ class ServerCore
       id = data[0].to_i
       if id != client[PLAYER_ID]
         @console.log("id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}")
-        disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id      ")
+        disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id                              ")
         return nil
       end
       if protocol == 2 # update pck

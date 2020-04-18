@@ -7,6 +7,7 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching
+  attr_accessor :aimX, :aimY, :projX, :projY
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
@@ -15,6 +16,10 @@ class Player
     @y = y.nil? ? SPAWN_Y : y
     @w = TILE_SIZE / 2
     @h = TILE_SIZE
+    @aimX = 0
+    @aimY = 0
+    @projX = 0
+    @projY = 0
     @dx = 0
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
@@ -226,9 +231,12 @@ class Player
   def to_s
     # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 char ids
     # "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # old 3 char coords
+    pos="#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}"
+    proj="#{net_pack_bigint(@projX, 2)}#{net_pack_bigint(@projY, 2)}"
+    aim="#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
     #                            unused
     #                             V
-    "#{@id}#{net_pack_int(@score)}0#{state_to_net()}#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}" # new 2 char coords
+    "#{@id}#{net_pack_int(@score)}0#{state_to_net()}#{proj}#{aim}#{pos}" # new 2 char coords
   end
 
   def state_to_net

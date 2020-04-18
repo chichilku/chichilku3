@@ -44,28 +44,28 @@ Server packages:
 ###################
 Error package (404=server full)
 type  pSTATUS   errorcode error message
-0     l         404       00000000000000000000000
+0     l         404       00000000000000000000000000000000000000000000000
 
 Error package (004=server outdated)
 type  pSTATUS   errorcode server version    error message
-0     l         004       0002              0000000000000000000
+0     l         004       0002              0000000000000000000000000000000000000000000
 
 Error package (005=client outdated)
 type  pSTATUS   errorcode server version    error message
-0     l         005       0002              0000000000000000000
+0     l         005       0002              0000000000000000000000000000000000000000000
 
 ----------------------------------------------------------------------------------------
 Update package
-                                 player1                    player2              player3
-                                    |                         |                      |
-                                ___/ \______________     ____/ \__________      ____/ \___________
-                               /                    \   /                 \    /                  \
-type  pSTATUS     playercount  id          posx posy    id         posx posy   id          posx posy
-|     |           |  gamestate | score       |   |       | score       |   |    | score       |  |
-|     |           |  |         | |unused     |   |       | |unused     |   |    | |unused     |  |
-|     |           |  |         | |   |state  |   |       | |   |state  |   |    | |   |state  |  |
-|     |           |  |         | |   ||      |   |       | |   ||      |   |    | |   ||      |  |
-1     l           0  g         1 0   00      00 00       2 0   00      00 00    3 0   00      00 00
+                                           player (x3)
+                                              |
+                                _____________/ \______________________
+                               /                                      \
+type  pSTATUS     playercount  id                             posx posy
+|     |           |  gamestate | score  projectileX    aimY   |   |
+|     |           |  |         | |unused    |projectileY |    |   |
+|     |           |  |         | |   |state | |    aimX  |    |   |
+|     |           |  |         | |   ||     | |       |  |    |   |
+1     l           0  g         1 0   00    00 00      00 00   00 00
 
 player states:
 b - blood splash
@@ -75,7 +75,7 @@ s - slipping (c+b)
 ----------------------------------------------------------------------------------------
 Set ID package
 type  pSTATUS     playercount ID  version Place for more info
-2     l           03          01  0000    000000000000000000
+2     l           03          01  0000    000000000000000000000000000000000000000000
 
 ----------------------------------------------------------------------------------------
 Username package
@@ -86,9 +86,9 @@ Username package
 type  pSTATUS     playercount  id    name  id    name  id    name  empty
 |     |           |  gamestate | score |   | score |   | score |    |
 |     |           |  |         | |     |   | |     |   | |     |    |
-3     l           3  g         1 0   00000 2 0   00000 3 0   00000 000
+3     l           3  g         1 0   00000 2 0   00000 3 0   00000 000000000000000000000000000
 
 ----------------------------------------------------------------------------------------
 cmd response package
 type  pSTATUS     response
-4     l           00000000000000000000000000
+4     l           00000000000000000000000000000000000000000000000000
