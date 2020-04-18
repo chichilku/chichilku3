@@ -26,6 +26,8 @@ MENU_MAIN = 0
 MENU_CONNECT = 1
 MENU_USERNAME = 2
 
+MOUSE_RADIUS = 200
+
 $time_point=Time.now
 $time_buffer=0
 
@@ -42,6 +44,7 @@ class Gui < Gosu::Window
     self.caption = 'chichilku3'
     self.fullscreen = true if cfg.data['fullscreen']
     # images
+    @crosshair = Gosu::Image.new(img("crosshair128x128.png"))
     @background_image = Gosu::Image.new(img("battle1024x576.png"))
     @connecting_image = Gosu::Image.new(img("connecting1024x512.png"))
     @menu_image = Gosu::Image.new(img("menu1920x1080.png"))
@@ -373,6 +376,14 @@ class Gui < Gosu::Window
       # @con_msg.draw(100,200,0)
     elsif @state == STATE_INGAME
       @background_image.draw(0, 0, 0)
+      @crosshair.draw(self.mouse_x, self.mouse_y, 0, 0.3, 0.3)
+      # useless mouse trap
+      # since its buggo and your character moves maybe keep it free
+      # mouse players should go fullscreen
+      # self.mouse_x = (WINDOW_SIZE_X / 2) + MOUSE_RADIUS - 1 if self.mouse_x > (WINDOW_SIZE_X / 2) + MOUSE_RADIUS
+      # self.mouse_x = (WINDOW_SIZE_X / 2) - MOUSE_RADIUS + 1 if self.mouse_x < (WINDOW_SIZE_X / 2) - MOUSE_RADIUS
+      # self.mouse_y = (WINDOW_SIZE_Y / 2) + MOUSE_RADIUS - 1 if self.mouse_y > (WINDOW_SIZE_Y / 2) + MOUSE_RADIUS
+      # self.mouse_y = (WINDOW_SIZE_Y / 2) - MOUSE_RADIUS + 1 if self.mouse_y < (WINDOW_SIZE_Y / 2) - MOUSE_RADIUS
       @players.each do |player|
         event_blood(player.x, player.y) if player.state[:bleeding]
         player.draw_tick
