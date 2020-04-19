@@ -21,6 +21,7 @@ class GameLogic
 
       gravity(player, dt)
       player.tick
+      player.projectile.tick
       # player collsions works
       # but it eats performance and delays jumping
       check_collide(players, player)
@@ -63,9 +64,12 @@ class GameLogic
     if data[3] == '1'
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
+      player.projectile.fire(player.aimX, player.aimY, 0, 0)
     end
     player.aimX = net_unpack_bigint(data[4..5])
     player.aimY = net_unpack_bigint(data[6..7])
+    # player.projectile.x = player.aimX + 20
+    # player.projectile.y = player.aimY + 20
 
     player.check_out_of_world
 

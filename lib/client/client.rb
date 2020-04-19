@@ -267,7 +267,8 @@ class Client
       score = net_unpack_int(player_str[1])
       unused = player_str[2]
       net_state = player_str[3]
-      proj_aim_todo = player_str[4..7]
+      projX = net_unpack_bigint(player_str[4..5])
+      projY = net_unpack_bigint(player_str[6..7])
       aimX = net_unpack_bigint(player_str[8..9])
       aimY = net_unpack_bigint(player_str[10..11])
       x = net_unpack_bigint(player_str[12..13])
@@ -283,6 +284,8 @@ class Client
 
       @console.dbg "got player: #{@players[p_index]}"
       new_player = Player.update_player(@players, id, x, y, score, aimX, aimY)
+      new_player.projectile.x = projX
+      new_player.projectile.y = projY
       new_player.net_to_state(net_state)
       @players[Player.get_player_index_by_id(@players, id)] = new_player
     end

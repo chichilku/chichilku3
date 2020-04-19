@@ -133,13 +133,13 @@ class ServerCore
     @console.log "[chat] ID=#{id} command='#{cmd}'"
     msg = "server_recived_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
-    msg = msg[0..SERVER_PACKAGE_LEN - 3]
+    msg = msg[0..SERVER_PACKAGE_LEN - CMD_LEN]
     if cmd == "test"
       # return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
       msg = "id=#{client[PLAYER_ID]}"
     end
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, ' ')
-    msg = msg[0..SERVER_PACKAGE_LEN - 3]
+    msg = msg[0..SERVER_PACKAGE_LEN - 2]
     "4l#{msg}"
   end
 

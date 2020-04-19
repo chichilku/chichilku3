@@ -227,14 +227,15 @@ class Gui < Gosu::Window
       end
     end
     net_request = '0000'.split('')
+    net_request << "!!!!"
     protocol = 2
 
     if @is_chat
       msg = chat_tick
       if !msg.nil?
         # @console.dbg "rawmsg: #{msg}"
-        msg = msg.ljust(4, '0')
-        net_request = msg[0..3].split('')
+        msg = msg.ljust(8, '0')
+        net_request = msg[0..CMD_LEN].split('')
         # @console.dbg "prepedmsg: #{net_request}"
         protocol = 4
       end
@@ -399,6 +400,7 @@ class Gui < Gosu::Window
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         end
+        draw_rect(player.projectile.x, player.projectile.y, 8, 8, 0xFF000000)
         if @is_debug # print id
           # aim
           draw_rect(player.aimX - 2, player.aimY - 16, 4, 32, 0xCC33FF33)
