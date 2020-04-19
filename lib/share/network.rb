@@ -2,7 +2,7 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0006'
+GAME_VERSION = '0007'
 
 # game
 
@@ -15,10 +15,10 @@ SPEED = TILE_SIZE
 
 # networking
 
-NAME_LEN = 5
+NAME_LEN = 9
 MAX_CLIENTS = 3
 PLAYER_PACKAGE_LEN = 16
-CLIENT_PACKAGE_LEN = 7                    # used by server
+CLIENT_PACKAGE_LEN = 11 # used by server
 SERVER_PACKAGE_LEN = MAX_CLIENTS * PLAYER_PACKAGE_LEN + 4 # used by client
 
 MAX_TIMEOUT = 5

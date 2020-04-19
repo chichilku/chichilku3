@@ -129,14 +129,14 @@ class Client
     if @id.nil?
       # request id has priority
       # resend after 100 ticks if no respond
-      name = @cfg.data['username'].ljust(5, '-')
+      name = @cfg.data['username'].ljust(NAME_LEN, ' ')
       net_write("1l#{name}") if (@tick % 200).zero?
       return
     end
 
     # if no playerlist yet -> request one
     if @players == [] && @req_playerlist < Time.now - 4
-      net_write("3l#{id}#{GAME_VERSION}")
+      net_write("3l#{id}#{GAME_VERSION}XXXX")
       @console.log('requesting a playerlist')
       @req_playerlist = Time.now
       return
@@ -217,7 +217,8 @@ class Client
   def protocol_names_to_player_strs(slots, data)
     players = []
     slots.times do |index|
-      players[index] = data[index * 7..index * 7 + 6]
+      size = NAME_LEN + 2 # id|score|name
+      players[index] = data[index * size..index * size + size-1]
     end
     players
   end
@@ -266,7 +267,9 @@ class Client
       score = net_unpack_int(player_str[1])
       unused = player_str[2]
       net_state = player_str[3]
-      proj_aim_todo = player_str[4..11]
+      proj_aim_todo = player_str[4..7]
+      aimX = net_unpack_bigint(player_str[8..9])
+      aimY = net_unpack_bigint(player_str[10..11])
       x = net_unpack_bigint(player_str[12..13])
       y = net_unpack_bigint(player_str[14..15])
       # puts "'#{player_str}' id: #{id} x: #{x} '#{player_str[12..13]}' y: #{y} '#{player_str[14..15]}'"
@@ -279,7 +282,7 @@ class Client
       next if p_index.nil?
 
       @console.dbg "got player: #{@players[p_index]}"
-      new_player = Player.update_player(@players, id, x, y, score)
+      new_player = Player.update_player(@players, id, x, y, score, aimX, aimY)
       new_player.net_to_state(net_state)
       @players[Player.get_player_index_by_id(@players, id)] = new_player
     end

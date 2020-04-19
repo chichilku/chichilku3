@@ -87,11 +87,13 @@ class Player
     players.find { |player| id == player.id }
   end
 
-  def self.update_player(players, id, x, y, score)
+  def self.update_player(players, id, x, y, score, aimX, aimY)
     player = get_player_by_id(players, id)
     player.x = x
     player.y = y
     player.score = score
+    player.aimX = aimX
+    player.aimY = aimY
     player
   end
 
@@ -223,7 +225,7 @@ class Player
   # @return [String] partial network packet
 
   def to_n_pck
-    name = @name.ljust(5, '_')
+    name = @name.ljust(NAME_LEN, '_')
     # format("%02d#{name}", @id) # old 2 char ids
     "#{@id}#{net_pack_int(@score)}#{name}" # new 1 char id
   end

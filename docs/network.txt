@@ -17,27 +17,28 @@ Client packages:
 Update package
 Error package (not used yet)
 type  pSTATUS errorcode
-0     l       00000
+0     l       000000000
 
 ----------------------------------------------------------------------------------------
 ID request package
 type pSTATUS  username (type=0 is the join type)
-1     l        00000
+1     l        000000000
 
 ----------------------------------------------------------------------------------------
 id move requests
-type  pSTATUS id clrj (crouch/left/right/jump)
-2     l       0  0000
+        (crouch/left/right/jump)
+type  pSTATUS id clrj aimX aimY
+2     l       0  0000 00   00
 
 ----------------------------------------------------------------------------------------
 request usernames (resets positions ->  should happen 1time at join)
-type  pSTATUS id version
-3     l       0  0000
+type  pSTATUS id version  unused
+3     l       0  0000     0000
 
 ----------------------------------------------------------------------------------------
 cmd send
-type  pSTATUS id  message
-4     l       0   0000
+type  pSTATUS id  command
+4     l       0   00000000
 
 ###################
 Server packages:
@@ -79,14 +80,14 @@ type  pSTATUS     playercount ID  version Place for more info
 
 ----------------------------------------------------------------------------------------
 Username package
-                               player1     player2     player3
-                                    |          |           |
-                                ___/ \__    __/ \___    __/ \___
-                               /        \  /        \  /        \
-type  pSTATUS     playercount  id    name  id    name  id    name  empty
-|     |           |  gamestate | score |   | score |   | score |    |
-|     |           |  |         | |     |   | |     |   | |     |    |
-3     l           3  g         1 0   00000 2 0   00000 3 0   00000 000000000000000000000000000
+                               player1          player2        player3
+                                    |              |              |
+                                ___/ \__        __/ \___       __/ \___
+                               /        \      /        \     /        \
+type  pSTATUS     playercount  id    name      id    name     id    name     empty
+|     |           |  gamestate | score |       | score |       | score |       |
+|     |           |  |         | |     |       | |     |       | |     |       |
+3     l           3  g         1 0   000000000 2 0   000000000 3 0   000000000 000000000000000
 
 ----------------------------------------------------------------------------------------
 cmd response package

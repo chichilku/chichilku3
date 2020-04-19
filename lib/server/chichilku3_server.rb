@@ -114,7 +114,7 @@ class ServerCore
   end
 
   def id_pck(data, client, ip)
-    name = data[0..5]
+    name = data[0..NAME_LEN]
     id = add_player(name, client, ip)
     if id == -1
       @console.log "'#{name}' failed to connect (server full)"

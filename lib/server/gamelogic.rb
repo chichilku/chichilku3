@@ -64,6 +64,8 @@ class GameLogic
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
+    player.aimX = net_unpack_bigint(data[4..5])
+    player.aimY = net_unpack_bigint(data[6..7])
 
     player.check_out_of_world
 

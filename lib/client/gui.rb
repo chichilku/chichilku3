@@ -260,6 +260,10 @@ class Gui < Gosu::Window
         @is_chat = true
         @chat_msg = ""
       end
+      # TODO: check for active window
+      # do not leak mouse movement in other applications than chichilku3
+      net_request[4] = net_pack_bigint(self.mouse_x.to_i.clamp(0, 8834), 2)
+      net_request[5] = net_pack_bigint(self.mouse_y.to_i.clamp(0, 8834), 2)
       @is_scoreboard = button_down?(Gosu::KB_TAB)
     end
 
@@ -376,7 +380,7 @@ class Gui < Gosu::Window
       # @con_msg.draw(100,200,0)
     elsif @state == STATE_INGAME
       @background_image.draw(0, 0, 0)
-      @crosshair.draw(self.mouse_x, self.mouse_y, 0, 0.3, 0.3)
+      @crosshair.draw(self.mouse_x-16, self.mouse_y-16, 0, 0.25, 0.25)
       # useless mouse trap
       # since its buggo and your character moves maybe keep it free
       # mouse players should go fullscreen
@@ -396,6 +400,12 @@ class Gui < Gosu::Window
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         end
         if @is_debug # print id
+          # aim
+          draw_rect(player.aimX - 2, player.aimY - 16, 4, 32, 0xCC33FF33)
+          draw_rect(player.aimX - 16, player.aimY - 2, 32, 4, 0xCC33FF33)
+          draw_rect(player.aimX, player.aimY - 15, 1, 30, 0xAA000000)
+          draw_rect(player.aimX - 15, player.aimY, 30, 1, 0xAA000000)
+          # text background
           draw_rect(player.x - 2, player.y - 60, 32, 20, 0xAA000000)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - 60, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
