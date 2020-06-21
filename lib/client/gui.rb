@@ -245,13 +245,13 @@ class Gui < Gosu::Window
         net_request[0] = '1'
       end
       if button_down?(KEY_A)
-        net_request[1] = '1'
+        net_request[1] = 'l'
       end
       if button_down?(KEY_D)
-        net_request[2] = '1'
+        net_request[1] = 'r'
       end
       if button_down?(Gosu::KB_SPACE)
-        net_request[3] = '1'
+        net_request[2] = '1'
       end
       if button_press?(KEY_M)
         @is_debug = !@is_debug
@@ -260,6 +260,9 @@ class Gui < Gosu::Window
         @last_key = KEY_T
         @is_chat = true
         @chat_msg = ""
+      end
+      if button_down?(Gosu::MsLeft)
+        net_request[3] = '1'
       end
       # TODO: check for active window
       # do not leak mouse movement in other applications than chichilku3

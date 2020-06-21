@@ -53,17 +53,20 @@ class GameLogic
       player.x -= TILE_SIZE / 4 unless player.was_crouching
       player.was_crouching = true
     end
-    if data[1] == '1'
+    if data[1] == 'l'
       @console.dbg "player=#{id} wants to walk left"
       player.move_left
     end
-    if data[2] == '1'
+    if data[1] == 'r'
       @console.dbg "player=#{id} wants to walk right"
       player.move_right
     end
-    if data[3] == '1'
+    if data[2] == '1'
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
+    end
+    if data[3] == '1'
+      @console.dbg "player=#{id} wants to fire"
       player.projectile.fire(player.aimX, player.aimY, 0, 0)
     end
     player.aimX = net_unpack_bigint(data[4..5])

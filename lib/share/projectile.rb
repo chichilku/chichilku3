@@ -19,7 +19,7 @@ class Projectile
         @dx = dx
         @dy = dy
         @flying = true
-        $console.log "Projectile(x=#{x}, y=#{y}, dx=#{dx}, dy=#{dy})"
+        $console.dbg "Projectile(x=#{x}, y=#{y}, dx=#{dx}, dy=#{dy})"
     end
 
     def hit

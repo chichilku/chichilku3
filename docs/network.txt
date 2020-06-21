@@ -26,8 +26,8 @@ type pSTATUS  username (type=0 is the join type)
 
 ----------------------------------------------------------------------------------------
 id move requests
-        (crouch/left/right/jump)
-type  pSTATUS id clrj aimX aimY
+        (crouch/dir l=left r=right/jump/fire)
+type  pSTATUS id cdjf aimX aimY
 2     l       0  0000 00   00
 
 ----------------------------------------------------------------------------------------
