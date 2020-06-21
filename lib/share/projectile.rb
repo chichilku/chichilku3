@@ -29,8 +29,10 @@ class Projectile
     end
 
     def tick
+        return unless @flying
+
         @x = @x + @dx
-        @y = @x + @dy
+        @y = @y + @dy
         @dy += 1
         hit if  @y > WINDOW_SIZE_Y
     end

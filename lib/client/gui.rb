@@ -437,6 +437,7 @@ class Gui < Gosu::Window
           draw_rect(5, 10, 295, 75, 0xAA000000)
           @font.draw_text("Press m to deactivate debug mode", 10, 10, 0, 1, 1)
           @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
+          @font.draw_text("aimX: #{player.aimX} aimY: #{player.aimY}", 10, 45, 0, 1, 1)
           @font.draw_text("gamestate: #{@flags[:gamestate]}", 10, 60, 0 , 1, 1)
           # thats useless because collide/delta speed is not sent over the network
           # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
