@@ -251,9 +251,15 @@ class ServerCore
     loop do
       diff = 0 # TODO: unused lmao traced it through the half source
       t = Time.now
-      sleep $next_tick - t if $next_tick > t
-      @tick += 1
+      if $next_tick > t
+        sleep $next_tick - t
+      else
+        unless @tick.zero?
+          @console.log "[WARNING] tick took #{t - $next_tick} too long"
+        end
+      end
       $next_tick = Time.now + MAX_TICK_SPEED
+      @tick += 1
       @players = @gamelogic.tick(@players, diff)
       # there is no gurantee the client will tick here
       # there might be 2 gamelogic ticks and posticks
