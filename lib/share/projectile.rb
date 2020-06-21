@@ -35,5 +35,7 @@ class Projectile
         @y = @y + @dy
         @dy += 1
         hit if  @y > WINDOW_SIZE_Y
+        hit if  @x > WINDOW_SIZE_X
+        hit if @x < 0 || @y < 0
     end
 end

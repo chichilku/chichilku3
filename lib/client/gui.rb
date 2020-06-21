@@ -403,7 +403,9 @@ class Gui < Gosu::Window
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         end
-        draw_rect(player.projectile.x, player.projectile.y, 8, 8, 0xFF000000)
+        unless player.projectile.x == 0 or player.projectile.y == 0
+          draw_rect(player.projectile.x, player.projectile.y, 8, 8, 0xFF000000)
+        end
         if @is_debug # print id
           # aim
           draw_rect(player.aimX - 2, player.aimY - 16, 4, 32, 0xCC33FF33)
