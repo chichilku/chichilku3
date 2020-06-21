@@ -63,8 +63,8 @@ Update package
                                /                                      \
 type  pSTATUS     playercount  id                             posx posy
 |     |           |  gamestate | score  projectileX    aimY   |   |
-|     |           |  |         | |unused    |projectileY |    |   |
-|     |           |  |         | |   |state | |    aimX  |    |   |
+|     |           |  |         | |state     |projectileY |    |   |
+|     |           |  |         | |   |projR | |    aimX  |    |   |
 |     |           |  |         | |   ||     | |       |  |    |   |
 1     l           0  g         1 0   00    00 00      00 00   00 00
 

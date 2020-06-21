@@ -265,8 +265,8 @@ class Client
     player_strs.each do |player_str|
       id = player_str[0].to_i
       score = net_unpack_int(player_str[1])
-      unused = player_str[2]
-      net_state = player_str[3]
+      net_state = player_str[2]
+      projR = player_str[3]
       projX = net_unpack_bigint(player_str[4..5])
       projY = net_unpack_bigint(player_str[6..7])
       aimX = net_unpack_bigint(player_str[8..9])
@@ -284,6 +284,7 @@ class Client
 
       @console.dbg "got player: #{@players[p_index]}"
       new_player = Player.update_player(@players, id, x, y, score, aimX, aimY)
+      new_player.projectile.r = projR
       new_player.projectile.x = projX
       new_player.projectile.y = projY
       new_player.net_to_state(net_state)

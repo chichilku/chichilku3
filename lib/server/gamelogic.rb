@@ -67,8 +67,8 @@ class GameLogic
     end
     if data[3] == '1'
       @console.dbg "player=#{id} wants to fire"
-      dx = (player.aimX - player.x).clamp(-900, 900) / 10
-      dy = (player.aimY - player.y).clamp(-900, 900) / 10
+      dx = (player.aimX - player.x).clamp(-200, 200) / 20
+      dy = (player.aimY - player.y).clamp(-200, 200) / 20
       player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy)
     end
     player.aimX = net_unpack_bigint(data[4..5])
