@@ -428,7 +428,9 @@ class Gui < Gosu::Window
           else
             draw_rect(player.x, player.y, TILE_SIZE/2, TILE_SIZE, 0xAA00EE00)
           end
-          else
+          unless player.projectile.x == 0 or player.projectile.y == 0
+            draw_rect(player.projectile.x, player.projectile.y, player.projectile.w, player.projectile.h, 0xAA00EE00)
+          end
         end
         @font.draw_text(player.name, player.x - (TILE_SIZE/6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
       end

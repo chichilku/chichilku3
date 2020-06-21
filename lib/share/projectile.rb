@@ -1,18 +1,22 @@
 require_relative 'console'
 
 class Projectile
-    attr_accessor :x, :y, :dx, :dy, :r
+    attr_accessor :x, :y, :dx, :dy, :r, :w, :h, :owner_id
 
     def initialize
         @x = 0
         @y = 0
         @dx = 0
         @dy = 0
+        @w = 16
+        @h = 16
+        @owner_id = nil
+        @left_owner = false
         @flying = false
         @tick = 0
     end
 
-    def fire(x, y, dx, dy)
+    def fire(x, y, dx, dy, owner_id)
         return if @flying
 
         @x = x
@@ -20,6 +24,8 @@ class Projectile
         @dx = dx
         @dy = dy
         calc_rotation()
+        @owner_id = owner_id
+        @left_owner = false
         @flying = true
         $console.dbg "Projectile(x=#{x}, y=#{y}, dx=#{dx}, dy=#{dy})"
     end
@@ -30,7 +36,7 @@ class Projectile
         @y = 0
     end
 
-    def tick
+    def tick(players)
         return unless @flying
 
         @tick += 1
@@ -38,9 +44,29 @@ class Projectile
         @y = @y + @dy
         @dy += 1 if @tick % 3 == 0
         calc_rotation()
+        check_hit(players)
         hit if  @y > WINDOW_SIZE_Y
         hit if  @x > WINDOW_SIZE_X
         hit if @x < 0 || @y < 0
+    end
+
+    def check_hit(players)
+        owner_hit = false
+        players.each do |player|
+            if player.x + player.w > @x && player.x < @x + @w
+                if player.y + player.h > @y && player.y < @y + @h
+                    if owner_id == player.id
+                        owner_hit = true
+                        player.damage if @left_owner
+                    else
+                        player.damage
+                    end
+                end
+            end
+        end
+        if owner_hit == false
+            @left_owner = true
+        end
     end
 
     # NETWORK ROTATION

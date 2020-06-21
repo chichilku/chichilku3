@@ -29,6 +29,7 @@ class Player
     @score = score
     @dead = false # only used by server for now
     @dead_ticks = 0
+    @bleed_ticks = 0
 
     # used by client
     @img_index = 0
@@ -111,6 +112,10 @@ class Player
     @dx = normalize_zero(@dx)
     @dy = normalize_zero(@dy)
     check_out_of_world
+    if @bleed_ticks > 0
+      @bleed_ticks -= 1
+      self.state[:bleeding] = @bleed_ticks.zero? == false
+    end
   end
 
   def check_player_collide(other)
@@ -123,6 +128,10 @@ class Player
       end
     end
     return 0
+  end
+
+  def damage
+    @bleed_ticks = 3
   end
 
   # def check_out_of_world #die

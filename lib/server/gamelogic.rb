@@ -21,7 +21,7 @@ class GameLogic
 
       gravity(player, dt)
       player.tick
-      player.projectile.tick
+      player.projectile.tick(players)
       # player collsions works
       # but it eats performance and delays jumping
       check_collide(players, player)
@@ -69,7 +69,7 @@ class GameLogic
       @console.dbg "player=#{id} wants to fire"
       dx = (player.aimX - player.x).clamp(-200, 200) / 20
       dy = (player.aimY - player.y).clamp(-200, 200) / 20
-      player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy)
+      player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy, player.id)
     end
     player.aimX = net_unpack_bigint(data[4..5])
     player.aimY = net_unpack_bigint(data[6..7])
