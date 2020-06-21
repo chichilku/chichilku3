@@ -60,9 +60,9 @@ class ServerCore
     end
     unless player.nil?
       if player.version.to_i < GAME_VERSION.to_i
-        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}                                           "
+        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
       elsif player.version.to_i > GAME_VERSION.to_i
-        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}                                           "
+        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
       end
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
@@ -124,7 +124,7 @@ class ServerCore
     @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
-    format('2l00%02d0000000000000000000000000000000000000000000000', id).to_s
+    format('2l00%02d', id).to_s.ljust(SERVER_PACKAGE_LEN, '0')
   end
 
   def command_package(data, client)
