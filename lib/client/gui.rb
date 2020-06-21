@@ -49,6 +49,7 @@ class Gui < Gosu::Window
     @connecting_image = Gosu::Image.new(img("connecting1024x512.png"))
     @menu_image = Gosu::Image.new(img("menu1920x1080.png"))
     @arrow_image = Gosu::Image.new(img("arrow64.png"))
+    @bow_image = Gosu::Image.new(img("bow64.png"))
     @stick = Gosu::Image.new(img("stick128/stick0.png"))
     @stick_crouching = []
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching0.png"))
@@ -404,6 +405,10 @@ class Gui < Gosu::Window
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         end
+        x = player.aimX - player.x
+        y = player.aimY - player.y
+        rot = Math.atan2(x, y) * 100
+        @bow_image.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, -0.5, -0.5, 0.5, 0.5)
         unless player.projectile.x == 0 or player.projectile.y == 0
           rot = player.projectile.r.to_i * 45
           @arrow_image.draw_rot(player.projectile.x, player.projectile.y, 0, rot, 0.5, 0.5, 0.5, 0.5)
