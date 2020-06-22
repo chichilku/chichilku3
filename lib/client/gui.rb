@@ -407,8 +407,8 @@ class Gui < Gosu::Window
         end
         x = player.aimX - player.x
         y = player.aimY - player.y
-        rot = Math.atan2(x, y) * 100
-        @bow_image.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, -0.5, -0.5, 0.5, 0.5)
+        rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
+        @bow_image.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 1, 1, 0.5, 0.5)
         unless player.projectile.x == 0 or player.projectile.y == 0
           rot = player.projectile.r.to_i * 45
           @arrow_image.draw_rot(player.projectile.x, player.projectile.y, 0, rot, 0.5, 0.5, 0.5, 0.5)
