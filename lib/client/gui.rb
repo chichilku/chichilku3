@@ -49,8 +49,7 @@ class Gui < Gosu::Window
     @connecting_image = Gosu::Image.new(img("connecting1024x512.png"))
     @menu_image = Gosu::Image.new(img("menu1920x1080.png"))
     @arrow_image = Gosu::Image.new(img("arrow64.png"))
-    @bow_image = Gosu::Image.new(img("bow64.png"))
-    @stick = Gosu::Image.new(img("stick128/stick0.png"))
+    @stick_arm = Gosu::Image.new(img("stick128/arm64.png"))
     @stick_crouching = []
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching0.png"))
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching1.png"))
@@ -59,12 +58,23 @@ class Gui < Gosu::Window
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching4.png"))
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching5.png"))
     @stick_images = []
-    @stick_images << Gosu::Image.new(img("stick128/stick0.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick1.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick2.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick3.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick4.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick5.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @bow_images = []
+    @bow_images << Gosu::Image.new(img("bow64/bow0.png"))
+    @bow_images << Gosu::Image.new(img("bow64/bow1.png"))
+    @bow_images << Gosu::Image.new(img("bow64/bow2.png"))
+    @bow_images << Gosu::Image.new(img("bow64/bow3.png"))
+    # TODO: add arms back in if no bow is in use
+    # @stick_images << Gosu::Image.new(img("stick128/stick0.png"))
+    # @stick_images << Gosu::Image.new(img("stick128/stick1.png"))
+    # @stick_images << Gosu::Image.new(img("stick128/stick2.png"))
+    # @stick_images << Gosu::Image.new(img("stick128/stick3.png"))
+    # @stick_images << Gosu::Image.new(img("stick128/stick4.png"))
+    # @stick_images << Gosu::Image.new(img("stick128/stick5.png"))
     @x = 0
     @y = 0
     @players = []
@@ -399,16 +409,17 @@ class Gui < Gosu::Window
         player.draw_tick
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
-        # @stick.draw(player.x, player.y, 0)
         if player.state[:crouching]
           @stick_crouching[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
+          x = player.aimX - player.x
+          y = player.aimY - player.y
+          rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
+          @bow_images[player.state[:fire]].draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
+          @console.log "fire state" + player.state[:fire].to_s
+          @stick_arm.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
         end
-        x = player.aimX - player.x
-        y = player.aimY - player.y
-        rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
-        @bow_image.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 1, 1, 0.5, 0.5)
         unless player.projectile.x == 0 or player.projectile.y == 0
           rot = player.projectile.r.to_i * 45
           @arrow_image.draw_rot(player.projectile.x, player.projectile.y, 0, rot, 0.5, 0.5, 0.5, 0.5)

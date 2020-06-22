@@ -8,7 +8,7 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching
-  attr_accessor :aimX, :aimY, :projectile
+  attr_accessor :aimX, :aimY, :projectile, :fire_ticks
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
@@ -23,13 +23,14 @@ class Player
     @dx = 0
     @dy = 0
     @collide = {up: false, down: false, right: false, left: false}
-    @state = {bleeding: false, crouching: false}
+    @state = {bleeding: false, crouching: false, fire: 0}
     @was_crouching = false
     @name = name
     @score = score
     @dead = false # only used by server for now
     @dead_ticks = 0
     @bleed_ticks = 0
+    @fire_ticks = 0
 
     # used by client
     @img_index = 0
@@ -254,12 +255,24 @@ class Player
     @h = TILE_SIZE
     if @state[:bleeding] && @state[:crouching]
       "s"
+    elsif @state[:bleeding] && @state[:fire] == 1
+      "x"
+    elsif @state[:bleeding] && @state[:fire] == 2
+      "y"
+    elsif @state[:bleeding] && @state[:fire] == 3
+      "z"
     elsif @state[:bleeding]
       "b"
     elsif @state[:crouching]
       @w = TILE_SIZE
       @h = TILE_SIZE / 2
       "c"
+    elsif @state[:fire] == 1
+      "1"
+    elsif @state[:fire] == 2
+      "2"
+    elsif @state[:fire] == 3
+      "3"
     else
       "0"
     end
@@ -267,13 +280,25 @@ class Player
 
   def net_to_state(net)
     if net == "b"
-      @state = {bleeding: true, crouching: false}
+      @state = {bleeding: true, crouching: false, fire: 0}
     elsif net == "c"
-      @state = {bleeding: false, crouching: true}
+      @state = {bleeding: false, crouching: true, fire: 0}
     elsif net == "s"
-      @state = {bleeding: true, crouching: true}
+      @state = {bleeding: true, crouching: true, fire: 0}
+    elsif net == "x"
+      @state = {bleeding: true, crouching: false, fire: 1}
+    elsif net == "y"
+      @state = {bleeding: true, crouching: false, fire: 2}
+    elsif net == "z"
+      @state = {bleeding: true, crouching: false, fire: 3}
+    elsif net == "1"
+      @state = {bleeding: false, crouching: false, fire: 1}
+    elsif net == "2"
+      @state = {bleeding: false, crouching: false, fire: 2}
+    elsif net == "3"
+      @state = {bleeding: false, crouching: false, fire: 3}
     else
-      @state = {bleeding: false, crouching: false}
+      @state = {bleeding: false, crouching: false, fire: 0}
     end
   end
 

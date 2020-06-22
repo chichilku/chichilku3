@@ -67,9 +67,25 @@ class GameLogic
     end
     if data[3] == '1'
       @console.dbg "player=#{id} wants to fire"
-      dx = (player.aimX - player.x).clamp(-200, 200) / 20
-      dy = (player.aimY - player.y).clamp(-200, 200) / 20
-      player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy, player.id)
+      player.fire_ticks += 1
+      @console.log "player=#{id} wants to fire_ticks=#{player.fire_ticks} firestate=#{player.state[:fire]}"
+      if player.fire_ticks > 29
+        player.state[:fire] = 3
+      elsif player.fire_ticks > 19
+        player.state[:fire] = 2
+      elsif player.fire_ticks > 9
+        player.state[:fire] = 1
+      end
+    else
+      if player.fire_ticks > 0
+        dx = (player.aimX - player.x).clamp(-200, 200) / 20
+        dy = (player.aimY - player.y).clamp(-200, 200) / 20
+        dx *= (player.fire_ticks / 10).clamp(1, 3)
+        dy *= (player.fire_ticks / 10).clamp(1, 3)
+        player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy, player.id)
+      end
+      player.fire_ticks = 0
+      player.state[:fire] = 0
     end
     player.aimX = net_unpack_bigint(data[4..5])
     player.aimY = net_unpack_bigint(data[6..7])

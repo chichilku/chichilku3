@@ -72,6 +72,12 @@ player states:
 b - blood splash
 c - crouching
 s - slipping (c+b)
+1 - bow1
+2 - bow2
+3 - bow3
+x - bow1 + blood
+y - bow2 + blood
+z - bow3 + blood
 
 ----------------------------------------------------------------------------------------
 Set ID package
