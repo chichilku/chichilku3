@@ -68,7 +68,6 @@ class GameLogic
     if data[3] == '1'
       @console.dbg "player=#{id} wants to fire"
       player.fire_ticks += 1
-      @console.log "player=#{id} wants to fire_ticks=#{player.fire_ticks} firestate=#{player.state[:fire]}"
       if player.fire_ticks > 29
         player.state[:fire] = 3
       elsif player.fire_ticks > 19

@@ -417,7 +417,6 @@ class Gui < Gosu::Window
           y = player.aimY - player.y
           rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
           @bow_images[player.state[:fire]].draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
-          @console.log "fire state" + player.state[:fire].to_s
           @stick_arm.draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
         end
         unless player.projectile.x == 0 or player.projectile.y == 0
