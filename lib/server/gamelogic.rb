@@ -65,7 +65,7 @@ class GameLogic
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
-    if data[3] == '1'
+    if data[3] == '1' && player.state[:crouching] == false
       @console.dbg "player=#{id} wants to fire"
       player.fire_ticks += 1
       if player.fire_ticks > 29
