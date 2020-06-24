@@ -7,6 +7,7 @@ STATE_MENU = -1
 STATE_OFFLINE = 0
 STATE_CONNECTING = 1
 STATE_INGAME = 2
+STATE_REC_PLAYBACK = 3
 
 # Networking part of the game clientside
 class Client
@@ -21,6 +22,10 @@ class Client
     @console.log "LOAD #{@s}"
 
     @s = nil # network socket (set in connect() method)
+
+    @recording_ticks = []
+    @recording_file = "autorec.txt"
+    @is_recording = false
 
     # state variables
     @req_playerlist = Time.now - 8
@@ -43,6 +48,7 @@ class Client
     @s = TCPSocket.open(ip, port)
     @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm-
     @state = STATE_CONNECTING
+    start_recording() if @cfg.data['autorecord']
   end
 
   def disconnect()
@@ -51,6 +57,51 @@ class Client
     @s.close
     @s = nil
     reset
+  end
+
+  def load_recording(recording_file)
+    recording_file = "#{@cfg.chichilku3_dir}recordings/#{recording_file}"
+    @recording_ticks = []
+    @tick = 0
+    update_state(STATE_REC_PLAYBACK)
+    File.readlines(recording_file).each do |data|
+      @recording_ticks << data[0..-2] # cut off newline
+    end
+    @console.log "loaded recording containing #{@recording_ticks.size} ticks"
+  end
+
+  def start_recording()
+    @recording_file = "autorec.txt"
+    rec_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
+    @is_recording = true
+    File.delete(rec_file) if File.exists? rec_file
+  end
+
+  def recording_record_tick(data)
+    return unless @is_recording
+
+    recording_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
+    IO.write(recording_file, data + "\n", mode: 'a')
+  end
+
+  def recording_playback_tick()
+    if @recording_ticks.length <= @tick
+      @console.log "finished playing back recording"
+      update_state(STATE_MENU)
+      return [[], @flags, nil]
+    end
+    data = @recording_ticks[@tick]
+    if data.length != SERVER_PACKAGE_LEN
+      @console.err "failed to parse recording data=#{data.length} server=#{SERVER_PACKAGE_LEN}"
+      return nil
+    end
+
+    @tick += 1
+    @flags[:skip] = false
+
+    # save protocol and cut it off
+    msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
+    [@players, @flags, msg]
   end
 
   def tick(client_data, protocol, tick)
@@ -69,6 +120,8 @@ class Client
 
     # only process the long packages and ignore ip packages here
     return nil if data.length != SERVER_PACKAGE_LEN
+
+    recording_record_tick(data)
 
     # save protocol and cut it off
     msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
@@ -166,7 +219,7 @@ class Client
     @playercount = data[0..1]
     id = data[2..3].to_i
     set_id(id)
-    update_state(STATE_INGAME)
+    update_state(STATE_INGAME) unless @state == STATE_REC_PLAYBACK
   end
 
   def id_packet(data)

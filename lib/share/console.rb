@@ -7,6 +7,11 @@ class Console
     puts format("[%02d:%02d:%02d][log] #{message}", t.hour, t.min, t.sec, message)
   end
 
+  def err(message)
+    t = Time.now
+    puts format("[%02d:%02d:%02d][error] #{message}", t.hour, t.min, t.sec, message)
+  end
+
   def dbg(message)
     return unless DEBUG
 

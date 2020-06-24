@@ -2,7 +2,7 @@ require 'json'
 require_relative '../share/network'
 require_relative '../share/config'
 
-# The client side repository usign JSON
+# The client side repository using JSON
 class ClientCfg < Config
   def sanitize_data(data)
     data = JSON.parse(File.read(@file))

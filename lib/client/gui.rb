@@ -287,12 +287,16 @@ class Gui < Gosu::Window
       @is_scoreboard = button_down?(Gosu::KB_TAB)
     end
 
-    # Networking
-    begin
-      net_data = @net_client.tick(net_request, protocol, @tick)
-    rescue Errno::ECONNRESET, Errno::EPIPE
-      net_data = [@players, @flags, [0, NET_ERR_DISCONNECT, "connection to server lost"]]
-      @net_client.disconnect
+    if @state == STATE_REC_PLAYBACK
+      net_data = @net_client.recording_playback_tick()
+    else
+      # Networking
+      begin
+        net_data = @net_client.tick(net_request, protocol, @tick)
+      rescue Errno::ECONNRESET, Errno::EPIPE
+        net_data = [@players, @flags, [0, NET_ERR_DISCONNECT, "connection to server lost"]]
+        @net_client.disconnect
+      end
     end
     return if net_data.nil?
 
@@ -398,7 +402,7 @@ class Gui < Gosu::Window
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 2, 5)
       # @con_msg.draw(100,200,0)
-    elsif @state == STATE_INGAME
+    elsif @state == STATE_INGAME || @state == STATE_REC_PLAYBACK
       @background_image.draw(0, 0, 0)
       @crosshair.draw(self.mouse_x-16, self.mouse_y-16, 0, 0.25, 0.25)
       # useless mouse trap
@@ -534,11 +538,17 @@ class Gui < Gosu::Window
     end
   end
 
+  def play_recording()
+    @net_client.load_recording('autorec.txt')
+    @state = STATE_REC_PLAYBACK
+  end
+
   def init_menu()
     @menu_items = []
     add_menu_item("[c]onnect", Proc.new { connect_menu() })
     add_menu_item("username", Proc.new { username_page() })
     add_menu_item("fullscreen", Proc.new { toggle_fullscreen() })
+    add_menu_item("recording", Proc.new { play_recording() })
     add_menu_item("[q]uit", Proc.new { exit() })
   end
 
