@@ -10,13 +10,13 @@ class Projectile
         @dy = 0
         @w = 16
         @h = 16
-        @owner_id = nil
+        @owner = nil
         @left_owner = false
         @flying = false
         @tick = 0
     end
 
-    def fire(x, y, dx, dy, owner_id)
+    def fire(x, y, dx, dy, owner)
         return if @flying
 
         @x = x
@@ -24,7 +24,7 @@ class Projectile
         @dx = dx
         @dy = dy
         calc_rotation()
-        @owner_id = owner_id
+        @owner = owner
         @left_owner = false
         @flying = true
         $console.dbg "Projectile(x=#{x}, y=#{y}, dx=#{dx}, dy=#{dy})"
@@ -55,11 +55,15 @@ class Projectile
         players.each do |player|
             if player.x + player.w > @x && player.x < @x + @w
                 if player.y + player.h > @y && player.y < @y + @h
-                    if owner_id == player.id
+                    if @owner.id == player.id
                         owner_hit = true
-                        player.damage if @left_owner
+                        if @left_owner
+                            player.damage(@owner)
+                            hit()
+                        end
                     else
-                        player.damage
+                        player.damage(@owner)
+                        hit()
                     end
                 end
             end

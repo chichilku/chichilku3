@@ -22,6 +22,7 @@ class Player
     @projectile = Projectile.new
     @dx = 0
     @dy = 0
+    @health = 3
     @collide = {up: false, down: false, right: false, left: false}
     @state = {bleeding: false, crouching: false, fire: 0}
     @was_crouching = false
@@ -131,8 +132,11 @@ class Player
     return 0
   end
 
-  def damage
+  def damage(attacker)
     @bleed_ticks = 3
+    @health -= 1
+    $console.log "player='#{attacker.name}' damaged player='#{@name}'"
+    die(attacker) if @health <= 0
   end
 
   # def check_out_of_world #die
@@ -164,10 +168,20 @@ class Player
     end
   end
 
-  def die
-    $console.log("[death] id=#{@id} name='#{@name}'")
+  def die(killer = nil)
+    if killer.nil?
+      $console.log("[death] id=#{@id} name='#{@name}'")
+    else
+      if killer.id == self.id
+        killer.score = (killer.score - 1).clamp(0, NET_MAX_INT)
+      else
+        killer.score += 1
+      end
+      $console.log("[kill] id=#{@id} name='#{@name}' killer='#{killer.name}'")
+    end
     @x = SPAWN_X
     @y = SPAWN_Y
+    @health = 3
   end
 
   #TODO: check for collision before update
