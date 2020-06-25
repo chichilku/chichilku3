@@ -3,7 +3,7 @@ GEM
   specs:
     diff-lcs (1.3)
     fileutils (1.2.0)
-    gosu (0.14.5)
+    gosu (0.15.2)
     os (1.0.1)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
