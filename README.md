@@ -36,6 +36,12 @@ sudo apt install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-de
 # ubuntu
 sudo apt-get install build-essential libsdl2-dev libgl1-mesa-dev libopenal-dev libsndfile-dev libmpg123-dev libgmp-dev libfontconfig1-dev
 
+# arch
+sudo pacman -S openal pango sdl2 sdl2_ttf libsndfile pkg-config mpg123
+
+# fedora
+sudo dnf install --assumeyes mpg123-devel mesa-libGL-devel openal-devel libsndfile-devel gcc-c++ redhat-rpm-config SDL2-devel fontconfig-devel
+
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
 bundle install
