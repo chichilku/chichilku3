@@ -104,6 +104,7 @@ class Gui < Gosu::Window
     @menu_items = []
     @selected_menu_item = 0
     @menu_textfield = TextField.new(self, 60, 200)
+    @demo_ticks = [0,0]
     # @chat_inp_stream = nil #TextInput.new
     # @chat_inp_stream.text # didnt get it working <--- nobo xd
     
@@ -240,6 +241,9 @@ class Gui < Gosu::Window
         @state = STATE_MENU
         @net_client.disconnect
         return
+      elsif @state == STATE_REC_PLAYBACK
+        @state = STATE_MENU
+        return
       end
     end
     net_request = '0000'.split('')
@@ -289,6 +293,7 @@ class Gui < Gosu::Window
 
     if @state == STATE_REC_PLAYBACK
       net_data = @net_client.recording_playback_tick()
+      @demo_ticks = net_data[3] unless net_data.nil?
     else
       # Networking
       begin
@@ -505,6 +510,9 @@ class Gui < Gosu::Window
 
       if @is_scoreboard
         draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font)
+      end
+      if @state == STATE_REC_PLAYBACK && !(@demo_ticks.nil?)
+        @font.draw_text("#{@demo_ticks[0]}/#{@demo_ticks[1]}", 10, WINDOW_SIZE_Y - 20, 0)
       end
     elsif @state == STATE_ERROR
       net_err_code = @net_err[0]

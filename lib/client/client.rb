@@ -24,6 +24,7 @@ class Client
     @s = nil # network socket (set in connect() method)
 
     @recording_ticks = []
+    @recording_ticks_len = 0
     @recording_file = "autorec.txt"
     @is_recording = false
 
@@ -53,6 +54,7 @@ class Client
 
   def disconnect()
     return if @state == STATE_MENU
+
     @console.log "disconnecting from server."
     @s.close
     @s = nil
@@ -67,6 +69,8 @@ class Client
     File.readlines(recording_file).each do |data|
       @recording_ticks << data[0..-2] # cut off newline
     end
+    # TODO: check if this .length lookup eats performance in ruby
+    @recording_ticks_len = @recording_ticks.length
     @console.log "loaded recording containing #{@recording_ticks.size} ticks"
   end
 
@@ -85,7 +89,7 @@ class Client
   end
 
   def recording_playback_tick()
-    if @recording_ticks.length <= @tick
+    if @recording_ticks_len <= @tick
       @console.log "finished playing back recording"
       update_state(STATE_MENU)
       return [[], @flags, nil]
@@ -101,7 +105,7 @@ class Client
 
     # save protocol and cut it off
     msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
-    [@players, @flags, msg]
+    [@players, @flags, msg, [@tick, @recording_ticks_len]]
   end
 
   def tick(client_data, protocol, tick)
