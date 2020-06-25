@@ -384,6 +384,13 @@ class Gui < Gosu::Window
     @events[:blood] = bloods
   end
 
+  def draw_debug(x, y, s=1)
+    return unless @is_debug
+
+    draw_rect(x, y, 4*s, 4*s, 0xFFFF0000, 1)
+    draw_rect(x+1*s, y+1*s, 2*s, 2*s, 0xFF00FF00, 1)
+  end
+
   def draw
     # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
     if @state == STATE_MENU
@@ -424,8 +431,25 @@ class Gui < Gosu::Window
           x = player.aimX - player.x
           y = player.aimY - player.y
           rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
-          @bow_images[player.state[:fire]].draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
-          @stick_arm_images[player.state[:fire]].draw_rot(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, 0, rot, 0.5, 0.5, 0.5, 0.5)
+          rot2 = Math.atan2(x, y) * 180 / Math::PI * -1 + 270 * -1
+          stick_center_x = player.x + TILE_SIZE/4
+          stick_center_y = player.y + TILE_SIZE/2
+          d = -8
+          d += player.state[:fire] * 3
+          arr_x = stick_center_x + (d * Math.cos((rot2 + 180) / 180 * Math::PI))
+          arr_y = stick_center_y + (d * Math.sin((rot2 + 180) / 180 * Math::PI))
+          @bow_images[player.state[:fire]].draw_rot(stick_center_x, stick_center_y, 0, rot, 0.5, 0.5, 0.5, 0.5)
+          @stick_arm_images[player.state[:fire]].draw_rot(stick_center_x, stick_center_y, 0, rot, 0.5, 0.5, 0.5, 0.5)
+          if player.projectile.x == 0 or player.projectile.y == 0
+            @arrow_image.draw_rot(arr_x, arr_y, 0, rot2, 0.5, 0.5, 0.5, 0.5)
+          end
+          if @is_debug
+            draw_debug(arr_x, arr_y, 2)
+            draw_debug(stick_center_x, stick_center_y, 1)
+            draw_line(arr_x, arr_y, 0xFFFF0000, stick_center_x, stick_center_y, 0xFF000000)
+            @font.draw_text("rot=#{rot.to_i} rot2=#{rot2.to_i}", player.x - 60, player.y - 100, 0, 1, 1, 0xFF000000)
+            @font.draw_text("d=#{d} (#{stick_center_x}/#{stick_center_y}) -> (#{arr_x.to_i}/#{arr_y.to_i})", player.x - 80, player.y - 80, 0, 1, 1, 0xFF000000)
+          end
         end
         unless player.projectile.x == 0 or player.projectile.y == 0
           rot = player.projectile.r.to_i * 45
