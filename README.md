@@ -27,10 +27,15 @@ cd chichilku3
 bundle install
 ```
 
-## linux (debian/ubuntu)
+## linux
 
 ```
+# debian
 sudo apt install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
+
+# ubuntu
+sudo apt-get install build-essential libsdl2-dev libgl1-mesa-dev libopenal-dev libsndfile-dev libmpg123-dev libgmp-dev libfontconfig1-dev
+
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
 bundle install
