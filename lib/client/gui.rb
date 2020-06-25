@@ -407,7 +407,7 @@ class Gui < Gosu::Window
       end
     elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
-      @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 2, 5)
+      @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 3, 3)
       # @con_msg.draw(100,200,0)
     elsif @state == STATE_INGAME || @state == STATE_REC_PLAYBACK
       @background_image.draw(0, 0, 0)
