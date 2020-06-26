@@ -34,7 +34,7 @@ class ServerCore
   def parse_client_version(data)
     return if data.nil?
 
-    id = data[0].to_i
+    id = data[0].to_i(16)
     version = data[1..-1]
     player = Player.get_player_by_id(@players, id)
     if player
@@ -50,9 +50,9 @@ class ServerCore
     # protocol 3 name prot
     # also includes client version
     player = parse_client_version(data)
-    #                      gamestate
-    #                         |
-    pck = "3l#{@players.count}g"
+    #                             gamestate
+    #                                  |
+    pck = "3l#{@players.count.to_s(16)}g"
     # pck = format('3l%02d', @players.count) # old 2 digit player count
     @players.each do |p|
       pck += p.to_n_pck
@@ -60,8 +60,10 @@ class ServerCore
     end
     unless player.nil?
       if player.version.to_i < GAME_VERSION.to_i
+        @console.log "player='#{player.name}' failed to connect (client too old)"
         return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
       elsif player.version.to_i > GAME_VERSION.to_i
+        @console.log "player='#{player.name}' failed to connect (client too new)"
         return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
       end
     end
@@ -90,14 +92,12 @@ class ServerCore
   end
 
   def delete_player(id)
-    @console.log "Deleted player id='#{id}'"
     @players.delete(Player.get_player_by_id(@players, id))
   end
 
   def players_to_packet
-    # old 2 digit player count
-    # packet = @players.empty? ? '00' : format('%02d', @players.count)
-    packet = @players.empty? ? '0' : @players.count.to_s
+    # player count
+    packet = net_pack_int(@players.empty? ? 0 : @players.count)
     packet += 'g' # gamestate
     @players.each do |player|
       packet += player.to_s
@@ -106,7 +106,7 @@ class ServerCore
   end
 
   def update_pck(data, dt)
-    id = data[0].to_i
+    id = data[0].to_i(16)
     @console.dbg "got player with id: #{id}"
     @players = @gamelogic.handle_client_requests(data[1..-1], id, @players, dt)
     nil # defaults to normal update pck
@@ -123,11 +123,11 @@ class ServerCore
     @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
-    format('2l00%02d', id).to_s.ljust(SERVER_PACKAGE_LEN, '0')
+    "2l#{@players.count.to_s(16)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}".ljust(SERVER_PACKAGE_LEN, '0')
   end
 
   def command_package(data, client)
-    id = data[0..1].to_i
+    id = data[0..1].to_i(16)
     cmd = data[1..-1]
     @console.log "[chat] ID=#{id} command='#{cmd}'"
     msg = "server_recived_cmd: #{cmd}"
@@ -150,7 +150,7 @@ class ServerCore
       return id_pck(data, client, ip)
     else
       # all other types require id
-      id = data[0].to_i
+      id = data[0].to_i(16)
       if id != client[PLAYER_ID]
         @console.log("id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}")
         disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id                              ")
@@ -267,7 +267,7 @@ class ServerCore
       @clients.each do |client|
         begin
           client_tick(client, diff)
-        rescue Errno::ECONNRESET, EOFError, IOError
+        rescue Errno::ECONNRESET, Errno::ENOTCONN, EOFError, IOError
           disconnect_client(client)
         end
       end

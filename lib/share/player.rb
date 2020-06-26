@@ -250,19 +250,16 @@ class Player
 
   def to_n_pck
     name = @name.ljust(NAME_LEN, '_')
-    # format("%02d#{name}", @id) # old 2 char ids
-    "#{@id}#{net_pack_int(@score)}#{name}" # new 1 char id
+    "#{@id.to_s(16)}#{net_pack_int(@score)}#{name}"
   end
 
   def to_s
-    # "#{'%02d' % @id}#{'%03d' % @x}#{'%03d' % @y}" # old 2 char ids
-    # "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # old 3 char coords
     pos="#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}"
     proj=@projectile.r.to_i.to_s # hack nil to "0"
     fake_y = @projectile.y > 0 ? @projectile.y : 0
     proj+="#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(fake_y, 2)}"
     aim="#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
-    "#{@id}#{net_pack_int(@score)}#{state_to_net()}#{proj}#{aim}#{pos}" # new 2 char coords
+    "#{@id.to_s(16)}#{net_pack_int(@score)}#{state_to_net()}#{proj}#{aim}#{pos}"
   end
 
   def state_to_net

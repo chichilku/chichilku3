@@ -190,7 +190,7 @@ class Client
 
     # if no playerlist yet -> request one
     if @players == [] && @req_playerlist < Time.now - 4
-      net_write("3l#{id}#{GAME_VERSION}XXXX")
+      net_write("3l#{id.to_s(16)}#{GAME_VERSION}XXXX")
       @console.log('requesting a playerlist')
       @req_playerlist = Time.now
       return
@@ -200,7 +200,7 @@ class Client
     # prot 2 = update pck
     # prot updated to dynamic becuase we now also send cmds
     # data = format("#{protocol}l%02d#{data.join('')}", @id) # old 2byte id
-    data = "#{protocol}l#{@id}#{data.join('')}" # new 1byte id
+    data = "#{protocol}l#{@id.to_s(16)}#{data.join('')}" # new 1byte id
     net_write(data)
   end
 
@@ -218,7 +218,7 @@ class Client
   def grab_id(data)
     @console.log 'Trying to read id...'
     @playercount = data[0..1]
-    id = data[2..3].to_i
+    id = data[2].to_i(16)
     set_id(id)
     update_state(STATE_INGAME) unless @state == STATE_REC_PLAYBACK
   end
@@ -241,7 +241,7 @@ class Client
     return nil if server_data == ''
 
     if server_data[0] == "1"
-      len = server_data[2].to_i * PLAYER_PACKAGE_LEN
+      len = net_unpack_int(server_data[2]) * PLAYER_PACKAGE_LEN
       server_data += save_read(@s, len+1)
     else
       server_data += save_read(@s, SERVER_PACKAGE_LEN-3)
@@ -276,9 +276,9 @@ class Client
     protocol_names_strs_to_objs(p_strs)
   end
 
-  def protocol_names_to_player_strs(slots, data)
+  def protocol_names_to_player_strs(used_slots, data)
     players = []
-    slots.times do |index|
+    used_slots.times do |index|
       size = NAME_LEN + 2 # id|score|name
       players[index] = data[index * size..index * size + size-1]
     end
@@ -288,7 +288,7 @@ class Client
   def protocol_names_strs_to_objs(player_strs)
     players = []
     player_strs.each do |player_str|
-      id = player_str[0].to_i
+      id = player_str[0].to_i(16)
       score = net_unpack_int(player_str[1])
       name = player_str[2..-1]
       players << Player.new(id, 0, 0, score, name) unless id.zero?
@@ -304,19 +304,19 @@ class Client
   def server_package_to_player_array(data)
     # /(?<count>\d{2})(?<player>(?<id>\d{2})(?<x>\d{3})(?<y>\d{3}))/
     # @console.log "data: #{data}"
-    slots = data[0].to_i # save occupado slots
+    used_slots = net_unpack_int(data[0]) # save occupado slots
     # gamestate = data[1].to_i # save gamestate
     @flags[:gamestate] = data[1]
     # @console.log "gamestate: " + @flags[:gamestate]
     data = data[2..-1] # cut slots and gamestate off
-    players = server_package_to_player_strs(slots, data)
+    players = server_package_to_player_strs(used_slots, data)
     # @console.log "players: \n#{players}"
     player_strs_to_objects(players)
   end
 
-  def server_package_to_player_strs(slots, data)
+  def server_package_to_player_strs(used_slots, data)
     players = []
-    slots.times do |index|
+    used_slots.times do |index|
       players[index] = data[index * PLAYER_PACKAGE_LEN..index * PLAYER_PACKAGE_LEN + PLAYER_PACKAGE_LEN-1]
     end
     players
@@ -325,7 +325,7 @@ class Client
   def player_strs_to_objects(player_strs)
     players = []
     player_strs.each do |player_str|
-      id = player_str[0].to_i
+      id = player_str[0].to_i(16)
       score = net_unpack_int(player_str[1])
       net_state = player_str[2]
       projR = player_str[3]

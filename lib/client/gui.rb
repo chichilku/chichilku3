@@ -113,6 +113,11 @@ class Gui < Gosu::Window
     # depreciated ._.
     # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
     init_menu()
+
+    if ARGV.length > 0
+      port = ARGV.length > 1 ? ARGV[1].to_i : 9900
+      connect(ARGV[0], port)
+    end
   end
 
   def img(path)
@@ -207,7 +212,7 @@ class Gui < Gosu::Window
         ip = @menu_textfield.text.split(":")
         @cfg.data['ip'] = ip[0]
         @cfg.data['port'] = ip[1] if ip.length > 1
-        connect
+        connect(@cfg.data['ip'], @cfg.data['port'])
       end
     else
       @last_key = nil
@@ -509,7 +514,7 @@ class Gui < Gosu::Window
       draw_events()
 
       if @is_scoreboard
-        draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font)
+        draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font, @is_debug)
       end
       if @state == STATE_REC_PLAYBACK && !(@demo_ticks.nil?)
         @font.draw_text("#{@demo_ticks[0]}/#{@demo_ticks[1]}", 10, WINDOW_SIZE_Y - 20, 0)
@@ -533,9 +538,10 @@ class Gui < Gosu::Window
 
   private
 
-  def connect()
+  def connect(ip, port)
+    @console.log "connecting to server '#{ip}:#{port}' ..."
     begin
-      @net_client.connect(@cfg.data['ip'], @cfg.data['port'])
+      @net_client.connect(ip, port)
       @state = STATE_CONNECTING;
       @menu_page = MENU_MAIN
     rescue Errno::ECONNREFUSED

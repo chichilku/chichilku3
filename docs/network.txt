@@ -10,6 +10,10 @@ g = default ingame state
 f = failure/error gamestate
 e = round end gamestate (somebody won)
 
+encoding:
+most integers like aim, position, slots and playercount are base 91 encoded
+player ids are encoded as single character hexadecimal numbers
+
 ###################
 Client packages:
 ###################
@@ -57,7 +61,7 @@ type  pSTATUS   errorcode server version    error message
 
 ----------------------------------------------------------------------------------------
 Update package
-                                           player (x3)
+                                           player (repeats depending on player count)
                                               |
                                 _____________/ \______________________
                                /                                      \
@@ -81,8 +85,8 @@ z - bow3 + blood
 
 ----------------------------------------------------------------------------------------
 Set ID package
-type  pSTATUS     playercount ID  version Place for more info
-2     l           03          01  0000    000000000000000000000000000000000000000000
+type  pSTATUS     playercount   slots   ID      unused  version Place for more info
+2     l           0             3       1       1       0000    000000000000000000000000000000000000000000
 
 ----------------------------------------------------------------------------------------
 Username package

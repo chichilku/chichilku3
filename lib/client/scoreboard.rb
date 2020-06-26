@@ -1,5 +1,5 @@
 
-def draw_scoreboard(win_size_x, win_size_y, players, font)
+def draw_scoreboard(win_size_x, win_size_y, players, font, debug)
     # TODO: do not compute those every frame
     padX = win_size_x / 3
     sizeX = win_size_x / 3
@@ -19,7 +19,13 @@ def draw_scoreboard(win_size_x, win_size_y, players, font)
     end
     players.each_with_index do | player, i |
         score_offset = text_scale * 10 * player.score.to_s.length
-        font.draw_text(player.name, padX + 5, padY + (i * slot_height), 0, text_scale, text_scale)
-        font.draw_text(player.score, padX + sizeX - score_offset, padY + (i * slot_height), 0, text_scale, text_scale)
+        dbg = 0
+        if debug
+            dbg += 25
+            score_offset += 25
+            font.draw_text(player.id, padX + 5, padY + (i * slot_height), 0, text_scale, text_scale, 0xFF00FF00)
+        end
+        font.draw_text(player.name, dbg + padX + 5, padY + (i * slot_height), 0, text_scale, text_scale)
+        font.draw_text(player.score, dbg + padX + sizeX - score_offset, padY + (i * slot_height), 0, text_scale, text_scale)
     end
 end
