@@ -445,7 +445,7 @@ class Gui < Gosu::Window
           arr_y = stick_center_y + (d * Math.sin((rot2 + 180) / 180 * Math::PI))
           @bow_images[player.state[:fire]].draw_rot(stick_center_x, stick_center_y, 0, rot, 0.5, 0.5, 0.5, 0.5)
           @stick_arm_images[player.state[:fire]].draw_rot(stick_center_x, stick_center_y, 0, rot, 0.5, 0.5, 0.5, 0.5)
-          if player.projectile.x == 0 or player.projectile.y == 0
+          if player.projectile.x == 0 and player.projectile.y == 0
             @arrow_image.draw_rot(arr_x, arr_y, 0, rot2, 0.5, 0.5, 0.5, 0.5)
           end
           if @is_debug

@@ -259,7 +259,8 @@ class Player
     # "#{@id}#{net_pack_int(@score)}#{'%03d' % @x}#{'%03d' % @y}" # old 3 char coords
     pos="#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}"
     proj=@projectile.r.to_i.to_s # hack nil to "0"
-    proj+="#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(@projectile.y, 2)}"
+    fake_y = @projectile.y > 0 ? @projectile.y : 0
+    proj+="#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(fake_y, 2)}"
     aim="#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
     "#{@id}#{net_pack_int(@score)}#{state_to_net()}#{proj}#{aim}#{pos}" # new 2 char coords
   end

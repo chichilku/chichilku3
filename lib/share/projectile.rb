@@ -47,7 +47,7 @@ class Projectile
         check_hit(players)
         hit if  @y > WINDOW_SIZE_Y
         hit if  @x > WINDOW_SIZE_X
-        hit if @x < 0 || @y < 0
+        hit if @x < 0
     end
 
     def check_hit(players)
