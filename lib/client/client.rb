@@ -243,8 +243,6 @@ class Client
     if server_data[0] == "1"
       len = server_data[2].to_i * PLAYER_PACKAGE_LEN
       server_data += save_read(@s, len+1)
-      @console.log "got player packet of len=#{len} players=#{server_data[2].to_i}"
-      @console.log server_data
     else
       server_data += save_read(@s, SERVER_PACKAGE_LEN-3)
     end
