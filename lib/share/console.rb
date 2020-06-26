@@ -4,19 +4,19 @@ DEBUG = false
 class Console
   def log(message)
     t = Time.now
-    puts format("[%02d:%02d:%02d][log] #{message}", t.hour, t.min, t.sec, message)
+    puts format("[%02d:%02d:%02d][log] %s", t.hour, t.min, t.sec, message)
   end
 
   def err(message)
     t = Time.now
-    puts format("[%02d:%02d:%02d][error] #{message}", t.hour, t.min, t.sec, message)
+    puts format("[%02d:%02d:%02d][error] %s", t.hour, t.min, t.sec, message)
   end
 
   def dbg(message)
     return unless DEBUG
 
     t = Time.now
-    puts format("[%02d:%02d:%02d][debug] #{message}", t.hour, t.min, t.sec, message)
+    puts format("[%02d:%02d:%02d][debug] %s", t.hour, t.min, t.sec, message)
   end
 end
 
