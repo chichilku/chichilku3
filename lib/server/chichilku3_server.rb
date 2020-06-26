@@ -102,8 +102,7 @@ class ServerCore
     @players.each do |player|
       packet += player.to_s
     end
-    # fill with zeros if less than 3 players online
-    packet.ljust(SERVER_PACKAGE_LEN - 2, '0') # implicit return
+    packet
   end
 
   def update_pck(data, dt)
@@ -286,10 +285,6 @@ class ServerCore
   end
 
   def net_write(data, cli)
-    if data.length != SERVER_PACKAGE_LEN
-      @console.log "ERROR pack len: #{data.length}/#{SERVER_PACKAGE_LEN} pck: #{data}"
-      exit
-    end
     @console.dbg("sending: #{data}")
     cli.write(data)
   end

@@ -122,9 +122,6 @@ class Client
     data = fetch_server_data
     return nil if data.nil?
 
-    # only process the long packages and ignore ip packages here
-    return nil if data.length != SERVER_PACKAGE_LEN
-
     recording_record_tick(data)
 
     # save protocol and cut it off
@@ -240,7 +237,17 @@ class Client
   end
 
   def fetch_server_data
-    server_data = save_read(@s, SERVER_PACKAGE_LEN)
+    server_data = save_read(@s, 3)
+    return nil if server_data == ''
+
+    if server_data[0] == "1"
+      len = server_data[2].to_i * PLAYER_PACKAGE_LEN
+      server_data += save_read(@s, len+1)
+      @console.log "got player packet of len=#{len} players=#{server_data[2].to_i}"
+      @console.log server_data
+    else
+      server_data += save_read(@s, SERVER_PACKAGE_LEN-3)
+    end
     return nil if server_data == ''
 
     @console.dbg "recived data: #{server_data}"
