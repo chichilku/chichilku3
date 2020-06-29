@@ -46,26 +46,19 @@ class ServerCore
     player
   end
 
-  def create_name_package(data)
+  def create_name_package(data, client)
+    if !client.nil? && !data.nil?
+      player = Player.get_player_by_id(@players, client[PLAYER_ID])
+      player.set_name(data)
+    end
+
     # protocol 3 name prot
-    # also includes client version
-    player = parse_client_version(data)
     #                                   gamestate
     #                                       |
     pck = "3l#{net_pack_int(@players.count)}g"
-    # pck = format('3l%02d', @players.count) # old 2 digit player count
     @players.each do |p|
       pck += p.to_n_pck
       @console.dbg "pname='#{p.name}'"
-    end
-    unless player.nil?
-      if player.version.to_i < GAME_VERSION.to_i
-        @console.log "player='#{player.name}' failed to connect (client too old)"
-        return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
-      elsif player.version.to_i > GAME_VERSION.to_i
-        @console.log "player='#{player.name}' failed to connect (client too new)"
-        return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
-      end
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -81,12 +74,12 @@ class ServerCore
     -1
   end
 
-  def add_player(name, client, ip)
+  def add_player(name, version, client, ip)
     @current_id = get_free_id()
     return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
-    @console.log "Added player id='#{@current_id}' ip='#{ip}'"
-    @players << Player.new(@current_id, 0, nil, nil, name, ip)
+    @console.log "Added player id='#{@current_id}' version='#{version}' ip='#{ip}'"
+    @players << Player.new(@current_id, 0, nil, nil, name, version, ip)
     client[PLAYER_ID] = @current_id
     @current_id # implicit return
   end
@@ -113,17 +106,24 @@ class ServerCore
   end
 
   def id_pck(data, client, ip)
-    name = data[0..NAME_LEN]
-    id = add_player(name, client, ip)
+    player_version = data[0..3]
+    id = add_player("(connecting)", player_version, client, ip)
     if id == -1
       @console.log "'#{name}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
       return "0l#{NET_ERR_FULL}                       "
     end
-    @console.log "id='#{id}' name='#{name}' joined the game"
+    if player_version.to_i < GAME_VERSION.to_i
+      @console.log "IP='#{ip}' failed to connect (client too old '#{player_version}' < '#{GAME_VERSION}')"
+      return "0l#{NET_ERR_CLIENT_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
+    elsif player_version.to_i > GAME_VERSION.to_i
+      @console.log "IP='#{ip}' failed to connect (client too new '#{player_version}' < '#{GAME_VERSION}')"
+      return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
+    end
+    @console.log "id='#{id}' ip='#{ip}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
-    "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}".ljust(SERVER_PACKAGE_LEN, '0')
+    "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}X#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, '0')
   end
 
   def command_package(data, client)
@@ -139,6 +139,7 @@ class ServerCore
     end
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, ' ')
     msg = msg[0..SERVER_PACKAGE_LEN - 2]
+    # protocol 4 (chat command)
     "4l#{msg}"
   end
 
@@ -148,6 +149,8 @@ class ServerCore
       @console.log "Error pck=#{data}"
     elsif protocol == 1 # id pck
       return id_pck(data, client, ip)
+    elsif protocol == 3 # initial request names
+      return create_name_package(data, client)
     else
       # all other types require id
       id = data[0].to_i(16)
@@ -158,8 +161,6 @@ class ServerCore
       end
       if protocol == 2 # update pck
         return update_pck(data, dt)
-      elsif protocol == 3 # initial request names
-        return create_name_package(data)
       elsif protocol == 4 # command
         return command_package(data, client)
       else
@@ -177,7 +178,7 @@ class ServerCore
     return response unless response.nil?
 
     if (@tick % 100).zero?
-      return create_name_package(nil)
+      return create_name_package(nil, nil)
     end
 
     # some debug suff for class vars

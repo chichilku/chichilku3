@@ -11,7 +11,7 @@ class Player
   attr_accessor :aimX, :aimY, :projectile, :fire_ticks
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
-  def initialize(id, score, x = nil, y = nil, name = 'def', ip = nil)
+  def initialize(id, score, x = nil, y = nil, name = 'def', version = nil, ip = nil)
     @id = id
     @x = x.nil? ? SPAWN_X : x
     @y = y.nil? ? SPAWN_Y : y
@@ -41,7 +41,7 @@ class Player
     @not_changed_y = 0
 
     # used by server
-    @version = nil
+    @version = version
     @ip = ip
   end
 
@@ -104,8 +104,8 @@ class Player
   # server only #
   ###############
 
-  def set_version(version)
-    @version = version
+  def set_name(name)
+    @name = name
   end
 
   def tick

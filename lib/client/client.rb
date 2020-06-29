@@ -11,7 +11,7 @@ STATE_REC_PLAYBACK = 3
 
 # Networking part of the game clientside
 class Client
-  attr_reader :id, :state
+  attr_reader :id, :state, :server_version
   def initialize(console, cfg)
     @id = nil
     @tick = 0
@@ -27,6 +27,8 @@ class Client
     @recording_ticks_len = 0
     @recording_file = "autorec.txt"
     @is_recording = false
+
+    @server_version = nil
 
     # state variables
     @req_playerlist = Time.now - 8
@@ -183,24 +185,20 @@ class Client
     if @id.nil?
       # request id has priority
       # resend after 100 ticks if no respond
-      name = @cfg.data['username'].ljust(NAME_LEN, ' ')
-      net_write("1l#{name}") if (@tick % 200).zero?
+      net_write("1l#{GAME_VERSION}XXXXX") if (@tick % 200).zero?
       return
     end
 
     # if no playerlist yet -> request one
     if @players == [] && @req_playerlist < Time.now - 4
-      net_write("3l#{id.to_s(16)}#{GAME_VERSION}XXXX")
+      name = @cfg.data['username'].ljust(NAME_LEN, ' ')
+      net_write("3l#{name}")
       @console.log('requesting a playerlist')
       @req_playerlist = Time.now
       return
     end
 
-    # prefix data with id
-    # prot 2 = update pck
-    # prot updated to dynamic becuase we now also send cmds
-    # data = format("#{protocol}l%02d#{data.join('')}", @id) # old 2byte id
-    data = "#{protocol}l#{@id.to_s(16)}#{data.join('')}" # new 1byte id
+    data = "#{protocol}l#{@id.to_s(16)}#{data.join('')}"
     net_write(data)
   end
 
@@ -232,8 +230,8 @@ class Client
   end
 
   def get_server_version(data)
-    server_version = data[4..8]
-    @console.log "server version='#{server_version}'"
+    @server_version = data[4..7]
+    @console.log "server version='#{@server_version}'"
   end
 
   def fetch_server_data

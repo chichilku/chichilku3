@@ -25,8 +25,8 @@ type  pSTATUS errorcode
 
 ----------------------------------------------------------------------------------------
 ID request package
-type pSTATUS  username (type=0 is the join type)
-1     l        000000000
+type    pSTATUS  version        unused (type=0 is the join type)
+1       l        0000           00000
 
 ----------------------------------------------------------------------------------------
 id move requests
@@ -36,8 +36,8 @@ type  pSTATUS id cdjf aimX aimY
 
 ----------------------------------------------------------------------------------------
 request usernames (resets positions ->  should happen 1time at join)
-type  pSTATUS id version  unused
-3     l       0  0000     0000
+type  pSTATUS username
+3     l       000000000
 
 ----------------------------------------------------------------------------------------
 cmd send

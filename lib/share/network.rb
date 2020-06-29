@@ -2,7 +2,7 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0013'
+GAME_VERSION = '0014'
 
 # game
 
