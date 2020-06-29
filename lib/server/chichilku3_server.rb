@@ -35,7 +35,7 @@ class ServerCore
     return if data.nil?
 
     id = data[0].to_i(16)
-    version = data[1..-1]
+    version = data[1..4]
     player = Player.get_player_by_id(@players, id)
     if player
       @console.log "name req id='#{id}' vrs='#{version}' name='#{player.name}'"
@@ -177,7 +177,6 @@ class ServerCore
     return response unless response.nil?
 
     if (@tick % 100).zero?
-      # return '3l0301hello02x0x0x03hax0r000'
       return create_name_package(nil)
     end
 
@@ -211,11 +210,10 @@ class ServerCore
       return
     end
 
-    @console.dbg "recv: #{client_data}"
+    @console.dbg "tick recv: '#{client_data}'"
     @last_alive_pck_by_client = Time.now
     port, ip = Socket.unpack_sockaddr_in(cli[NET_CLIENT].getpeername)
     server_response = handle_client_data(cli, client_data, ip, dt)
-    # server_response = '1l03011001010220020203300303'
     pck_type = server_response[0]
     if pck_type == SERVER_PCK_TYPE[:error]
       disconnect_client(cli, server_response)
