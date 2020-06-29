@@ -217,7 +217,7 @@ class Client
 
   def grab_id(data)
     @console.log 'Trying to read id...'
-    @playercount = data[0..1]
+    @playercount = net_unpack_int(data[0..1])
     id = data[2].to_i(16)
     set_id(id)
     update_state(STATE_INGAME) unless @state == STATE_REC_PLAYBACK
@@ -269,7 +269,7 @@ class Client
   # And its dependencies:
   def protocol_names(data)
     #     3 0          00 00000 00 00000 00 00000 000
-    playercount = data[0].to_i
+    playercount = net_unpack_int(data[0])
     @flags[:gamestate] = data[1]
     data = data[2..-1]
     p_strs = protocol_names_to_player_strs(playercount, data)

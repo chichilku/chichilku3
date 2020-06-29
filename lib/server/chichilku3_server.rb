@@ -50,9 +50,9 @@ class ServerCore
     # protocol 3 name prot
     # also includes client version
     player = parse_client_version(data)
-    #                             gamestate
-    #                                  |
-    pck = "3l#{@players.count.to_s(16)}g"
+    #                                   gamestate
+    #                                       |
+    pck = "3l#{net_pack_int(@players.count)}g"
     # pck = format('3l%02d', @players.count) # old 2 digit player count
     @players.each do |p|
       pck += p.to_n_pck
@@ -123,7 +123,7 @@ class ServerCore
     @console.log "id='#{id}' name='#{name}' joined the game"
     @global_pack = "true"
     # protocol 2 (id)
-    "2l#{@players.count.to_s(16)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}".ljust(SERVER_PACKAGE_LEN, '0')
+    "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}".ljust(SERVER_PACKAGE_LEN, '0')
   end
 
   def command_package(data, client)
