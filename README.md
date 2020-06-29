@@ -1,6 +1,7 @@
 # chichilku3
 Part 3 of the chichilku series written in ruby.
-Simple 2d multiplayer stick figure battle game.
+
+Simple 2d online multiplayer stick figure battle game.
 ![Demo Picture](screenshots/chichilku3.png)
 
 # Installing as gem
