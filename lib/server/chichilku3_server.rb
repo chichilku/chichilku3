@@ -28,7 +28,6 @@ class ServerCore
     @console = Console.new
     @cfg = ServerCfg.new(@console, "server.json")
     @gamelogic = GameLogic.new(@console)
-    @global_pack = nil
   end
 
   def parse_client_version(data)
@@ -121,7 +120,6 @@ class ServerCore
       return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
     end
     @console.log "id='#{id}' ip='#{ip}' joined the game"
-    @global_pack = "true"
     # protocol 2 (id)
     "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}X#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -180,18 +178,6 @@ class ServerCore
     if (@tick % 100).zero?
       return create_name_package(nil, nil)
     end
-
-    # some debug suff for class vars
-    # if (@tick % 50).zero?
-    #   puts ""
-    #   @console.log "id=#{data[0].to_i} currentid=#{@current_id}"
-    # end
-
-    # if @global_pack.nil?
-    #   @global_pack = nil
-    #   @console.log "sending an global pck"
-    #   return "5l#{players_to_packet}"
-    # end
 
     # if error occurs or something unexpected
     # just send regular update pck
