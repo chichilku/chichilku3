@@ -4,6 +4,31 @@ Part 3 of the chichilku series written in ruby.
 Simple 2d online multiplayer stick figure battle game.
 ![Demo Picture](screenshots/chichilku3.png)
 
+# dependencies
+
+### macOS
+
+```
+brew install sdl2
+```
+
+### linux
+
+```
+# debian
+sudo apt install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
+
+# ubuntu
+sudo apt-get install build-essential libsdl2-dev libgl1-mesa-dev libopenal-dev libsndfile-dev libmpg123-dev libgmp-dev libfontconfig1-dev
+
+# arch
+sudo pacman -S openal pango sdl2 sdl2_ttf libsndfile pkg-config mpg123
+
+# fedora
+sudo dnf install --assumeyes mpg123-devel mesa-libGL-devel openal-devel libsndfile-devel gcc-c++ redhat-rpm-config SDL2-devel fontconfig-devel
+
+```
+
 # Installing as gem
 
 ```
@@ -19,42 +44,19 @@ chichilku3
 
 # Building from source
 
-## macOS
+## Download the source
 
 ```
-brew install sdl2
 git clone https://github.com/chichilku/chichilku3
 cd chichilku3
 bundle install
 ```
 
-## linux
-
-```
-# debian
-sudo apt install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
-
-# ubuntu
-sudo apt-get install build-essential libsdl2-dev libgl1-mesa-dev libopenal-dev libsndfile-dev libmpg123-dev libgmp-dev libfontconfig1-dev
-
-# arch
-sudo pacman -S openal pango sdl2 sdl2_ttf libsndfile pkg-config mpg123
-
-# fedora
-sudo dnf install --assumeyes mpg123-devel mesa-libGL-devel openal-devel libsndfile-devel gcc-c++ redhat-rpm-config SDL2-devel fontconfig-devel
-
-git clone https://github.com/chichilku/chichilku3
-cd chichilku3
-bundle install
-```
-
-# Running
-
-## Client
+## Start the client
 
 ``ruby lib/client/chichilku3.rb``
 
-## Server
+## Start the server
 
 ``ruby lib/server/chichilku3_server.rb``
 
