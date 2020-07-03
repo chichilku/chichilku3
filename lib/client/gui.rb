@@ -62,11 +62,11 @@ class Gui < Gosu::Window
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching4.png"))
     @stick_crouching << Gosu::Image.new(img("stick128/stick_crouching5.png"))
     @stick_images = []
-    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
-    @stick_images << Gosu::Image.new(img("stick128/stick_noarms.png"))
+    @stick_images << Gosu::Image.new(img("stick128/noarms/stick0.png"))
+    @stick_images << Gosu::Image.new(img("stick128/noarms/stick1.png"))
+    @stick_images << Gosu::Image.new(img("stick128/noarms/stick2.png"))
+    @stick_images << Gosu::Image.new(img("stick128/noarms/stick3.png"))
+    @stick_images << Gosu::Image.new(img("stick128/noarms/stick4.png"))
     @bow_images = []
     @bow_images << Gosu::Image.new(img("bow64/bow0.png"))
     @bow_images << Gosu::Image.new(img("bow64/bow1.png"))

@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
     'lib/client/img/*.png',
     'lib/client/img/stick128/*.png',
     'lib/client/img/stick128/arm64/*.png',
+    'lib/client/img/stick128/noarms/*.png',
     'lib/client/img/bow64/*.png',
     'client.json',
     'server.json'
