@@ -1,4 +1,12 @@
+# chichilku3
 client.json
+
+# ruby
 .ruby-version
-tags
 *.gem
+
+# IDE
+tags
+.vscode/*
+!.vscode/settings.json
+
