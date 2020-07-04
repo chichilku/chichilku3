@@ -173,10 +173,11 @@ class Player
       $console.log("player ID=#{@id} name='#{@name}' died")
     else
       if killer.id == self.id
-        killer.score = (killer.score - 1).clamp(0, NET_MAX_INT)
+        killer.score -= 1
       else
         killer.score += 1
       end
+      killer.score = killer.score.clamp(0, NET_MAX_INT)
       $console.log("player '#{@id}:#{@name}' was killed by '#{killer.id}:#{killer.name}'")
     end
     @x = SPAWN_X
