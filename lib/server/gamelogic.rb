@@ -4,6 +4,21 @@ class GameLogic
     @alive_players = 0
   end
 
+  def on_player_connect(client, players)
+    player = Player.get_player_by_id(players, client[PLAYER_ID])
+    return if player.nil?
+
+    port, ip = Socket.unpack_sockaddr_in(client[NET_CLIENT].getpeername)
+    @console.log "player joined ID=#{player.id} IP=#{ip}:#{port} name='#{player.name}'"
+  end
+
+  def on_player_disconnect(client, players)
+    player = Player.get_player_by_id(players, client[PLAYER_ID])
+    return if player.nil?
+
+    @console.log "player left ID=#{player.id} name='#{player.name}'"
+  end
+
   def check_collide(players, player)
     players.each do |other|
       next if other == player

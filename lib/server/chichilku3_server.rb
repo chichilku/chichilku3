@@ -37,10 +37,10 @@ class ServerCore
     version = data[1..4]
     player = Player.get_player_by_id(@players, id)
     if player
-      @console.log "name req id='#{id}' vrs='#{version}' name='#{player.name}'"
+      @console.dbg "[NAME-REQUEST] ID='#{id}' version='#{version}' name='#{player.name}'"
       player.set_version(version)
     else
-      @console.log "error parsing version data=#{data}"
+      @console.err "failed to parse version data=#{data}"
     end
     player
   end
@@ -49,6 +49,7 @@ class ServerCore
     if !client.nil? && !data.nil?
       player = Player.get_player_by_id(@players, client[PLAYER_ID])
       player.set_name(data)
+      @gamelogic.on_player_connect(client, @players)
     end
 
     # protocol 3 name prot
@@ -57,7 +58,6 @@ class ServerCore
     pck = "3l#{net_pack_int(@players.count)}g"
     @players.each do |p|
       pck += p.to_n_pck
-      @console.dbg "pname='#{p.name}'"
     end
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -77,7 +77,7 @@ class ServerCore
     @current_id = get_free_id()
     return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
-    @console.log "Added player id='#{@current_id}' version='#{version}' ip='#{ip}'"
+    @console.dbg "[NEW PLAYER] IP='#{ip}' ID='#{@current_id}' version='#{version}'"
     @players << Player.new(@current_id, 0, nil, nil, name, version, ip)
     client[PLAYER_ID] = @current_id
     @current_id # implicit return
@@ -99,7 +99,7 @@ class ServerCore
 
   def update_pck(data, dt)
     id = data[0].to_i(16)
-    @console.dbg "got player with id: #{id}"
+    @console.dbg "[UPDATE] got player with id: #{id}"
     @players = @gamelogic.handle_client_requests(data[1..-1], id, @players, dt)
     nil # defaults to normal update pck
   end
@@ -108,7 +108,7 @@ class ServerCore
     player_version = data[0..3]
     id = add_player("(connecting)", player_version, client, ip)
     if id == -1
-      @console.log "'#{name}' failed to connect (server full)"
+      @console.log "IP='#{ip}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
       return "0l#{NET_ERR_FULL}                       "
     end
@@ -119,7 +119,7 @@ class ServerCore
       @console.log "IP='#{ip}' failed to connect (client too new '#{player_version}' < '#{GAME_VERSION}')"
       return "0l#{NET_ERR_SERVER_OUTDATED}#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, ' ')
     end
-    @console.log "id='#{id}' ip='#{ip}' joined the game"
+    @console.dbg "[ID-PACKAGE] ID='#{id}' IP='#{ip}'"
     # protocol 2 (id)
     "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}X#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, '0')
   end
@@ -142,9 +142,9 @@ class ServerCore
   end
 
   def handle_protocol(client, protocol, p_status, data, ip, dt)
-    @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
+    @console.dbg "[PROTOCOL] protocol=#{protocol} status=#{p_status}"
     if protocol.zero? # error pck
-      @console.log "Error pck=#{data}"
+      @console.err "Error pck=#{data}"
     elsif protocol == 1 # id pck
       return id_pck(data, client, ip)
     elsif protocol == 3 # initial request names
@@ -153,7 +153,7 @@ class ServerCore
       # all other types require id
       id = data[0].to_i(16)
       if id != client[PLAYER_ID]
-        @console.log("id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}")
+        @console.wrn "id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}"
         disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id                              ")
         return nil
       end
@@ -162,7 +162,7 @@ class ServerCore
       elsif protocol == 4 # command
         return command_package(data, client)
       else
-        @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
+        @console.err "unkown protocol=#{protocol} data=#{data}"
       end
     end
   end
@@ -185,7 +185,6 @@ class ServerCore
     "1l#{players_to_packet}" # implicit return
   end
 
-  # TODO: this func and it dependencies should be new file
   # Handles each client
   def client_tick(cli, dt)
     client_data = save_read(cli[NET_CLIENT], CLIENT_PACKAGE_LEN)
@@ -197,7 +196,6 @@ class ServerCore
       return
     end
 
-    @console.dbg "tick recv: '#{client_data}'"
     @last_alive_pck_by_client = Time.now
     port, ip = Socket.unpack_sockaddr_in(cli[NET_CLIENT].getpeername)
     server_response = handle_client_data(cli, client_data, ip, dt)
@@ -211,7 +209,7 @@ class ServerCore
 
   def disconnect_client(client, server_response = nil)
     player_id = client[PLAYER_ID]
-    @console.log "player id=#{player_id} left the game." if player_id != -1
+    @gamelogic.on_player_disconnect(client, @players)
     @console.dbg "client disconnected.#{" (" + server_response + ")" unless server_response.nil?}"
     net_write(server_response, client[NET_CLIENT]) unless server_response.nil?
     client[NET_CLIENT].close
@@ -239,7 +237,7 @@ class ServerCore
         sleep $next_tick - t
       else
         unless @tick.zero?
-          @console.log "[WARNING] tick took #{t - $next_tick} too long"
+          @console.wrn "tick took #{t - $next_tick} too long"
         end
       end
       $next_tick = Time.now + MAX_TICK_SPEED
@@ -265,12 +263,12 @@ class ServerCore
   def accept(server)
     Socket.accept_loop(server) do |client|
       @clients << [client, -1]
-      @console.log "client connected. clients connected: #{@clients.count}"
+      @console.dbg "client connected. clients connected: #{@clients.count}"
     end
   end
 
   def net_write(data, cli)
-    @console.dbg("sending: #{data}")
+    # @console.dbg("sending: #{data}")
     cli.write(data)
   end
 end
