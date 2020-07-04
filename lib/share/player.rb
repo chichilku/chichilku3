@@ -135,7 +135,7 @@ class Player
   def damage(attacker)
     @bleed_ticks = 3
     @health -= 1
-    $console.log "player='#{attacker.name}' damaged player='#{@name}'"
+    $console.log "'#{attacker.id}:#{attacker.name}' damaged '#{@id}:#{@name}'"
     die(attacker) if @health <= 0
   end
 
@@ -170,14 +170,14 @@ class Player
 
   def die(killer = nil)
     if killer.nil?
-      $console.log("[death] id=#{@id} name='#{@name}'")
+      $console.log("player ID=#{@id} name='#{@name}' died")
     else
       if killer.id == self.id
         killer.score = (killer.score - 1).clamp(0, NET_MAX_INT)
       else
         killer.score += 1
       end
-      $console.log("[kill] id=#{@id} name='#{@name}' killer='#{killer.name}'")
+      $console.log("player '#{@id}:#{@name}' was killed by '#{killer.id}:#{killer.name}'")
     end
     @x = SPAWN_X
     @y = SPAWN_Y
