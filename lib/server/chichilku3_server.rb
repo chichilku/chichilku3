@@ -53,7 +53,7 @@ class ServerCore
         @console.wrn "IP=#{ip}:#{port} tried to get a name pack (without player)"
         return
       end
-      player.set_name(data)
+      player.set_name(data.gsub(/[^a-zA-Z0-9_ ]/, ''))
       @gamelogic.on_player_connect(client, @players)
     end
 
@@ -155,6 +155,10 @@ class ServerCore
     elsif protocol == 3 # initial request names
       return create_name_package(data, client)
     else
+      if data.nil?
+        @console.err "IP=#{ip} invalid data"
+        return
+      end
       # all other types require id
       id = data[0].to_i(16)
       if id != client[PLAYER_ID]
@@ -167,7 +171,7 @@ class ServerCore
       elsif protocol == 4 # command
         return command_package(data, client)
       else
-        @console.err "unkown protocol=#{protocol} data=#{data}"
+        @console.err "IP=#{ip} unkown protocol=#{protocol} data=#{data}"
       end
     end
   end
