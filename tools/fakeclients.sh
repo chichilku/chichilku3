@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]
+then
+    echo "usage: $(basename "$0") [OPTIONS] [NUM_CLIENTS=16] [IP=localhost] [PORT=9900]"
+    echo "options:"
+    echo "  --flood     reconnect 1 client constantly"
+    exit 0
+elif [ "$1" == "--flood" ]
+then
+    is_flood=1
+    shift
+fi
+
 root=chichilku3
 function check_root() {
     if [ -f "$root/lib/share/network.rb" ]
@@ -25,17 +37,19 @@ NUM_CLIENTS="${1:-16}"
 IP="${2:-localhost}"
 PORT="${3:-9900}"
 
-if [ "$1" == "--help" ] || [ "$1" == "-h" ]
+if [ "$is_flood" == "1" ]
 then
-    echo "usage: $(basename "$0") [NUM_CLIENTS=16] [IP=localhost] [PORT=9900]"
-    exit 0
+    while true
+    do
+        nc "$IP" "$PORT" -q 1 < <(printf '%s%s' "$ID_REQUEST" "$NAME_REQUEST") || exit
+    done
+else
+    for ((i=0;i<NUM_CLIENTS;i++))
+    do
+        nc "$IP" "$PORT" < <(printf '%s%s' "$ID_REQUEST" "$NAME_REQUEST") &
+    done
+
+    read -r
+    pkill -f 'nc localhost 990'
 fi
-
-for ((i=0;i<NUM_CLIENTS;i++))
-do
-    nc "$IP" "$PORT" < <(printf '%s%s' "$ID_REQUEST" "$NAME_REQUEST") &
-done
-
-read -r
-pkill -f 'nc localhost 990'
 
