@@ -48,6 +48,11 @@ class ServerCore
   def create_name_package(data, client)
     if !client.nil? && !data.nil?
       player = Player.get_player_by_id(@players, client[PLAYER_ID])
+      if player.nil?
+        port, ip = Socket.unpack_sockaddr_in(client[NET_CLIENT].getpeername)
+        @console.wrn "IP=#{ip}:#{port} tried to get a name pack (without player)"
+        return
+      end
       player.set_name(data)
       @gamelogic.on_player_connect(client, @players)
     end
