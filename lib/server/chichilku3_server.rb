@@ -53,7 +53,7 @@ class ServerCore
         @console.wrn "IP=#{ip}:#{port} tried to get a name pack (without player)"
         return
       end
-      player.set_name(data.gsub(/[^a-zA-Z0-9_ ]/, ''))
+      player.set_name(data.strip.gsub(/[^a-zA-Z0-9_]/, '_'))
       @gamelogic.on_player_connect(client, @players)
     end
 

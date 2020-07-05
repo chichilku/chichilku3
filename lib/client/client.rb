@@ -288,7 +288,7 @@ class Client
     player_strs.each do |player_str|
       id = player_str[0].to_i(16)
       score = net_unpack_int(player_str[1])
-      name = player_str[2..-1]
+      name = player_str[2..-1].strip
       players << Player.new(id, 0, 0, score, name) unless id.zero?
     end
     # debug

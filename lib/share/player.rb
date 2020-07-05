@@ -250,7 +250,7 @@ class Player
   # @return [String] partial network packet
 
   def to_n_pck
-    name = @name.ljust(NAME_LEN, '_')
+    name = @name.ljust(NAME_LEN, ' ')
     "#{@id.to_s(16)}#{net_pack_int(@score)}#{name}"
   end
 
