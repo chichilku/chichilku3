@@ -185,7 +185,7 @@ class ServerCore
     # the response is a direct respond to an protocol
     # everything above this could override important responds
     # like id assignment
-    # every think that is after this guad case just overrides update pcks
+    # every think that is after this guard case just overrides update pcks
     return response unless response.nil?
 
     if (@tick % 100).zero?
