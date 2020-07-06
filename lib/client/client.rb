@@ -56,6 +56,7 @@ class Client
 
   def disconnect()
     return if @state == STATE_MENU
+    return if @s.nil?
 
     @console.log "disconnecting from server."
     @s.close
@@ -160,6 +161,7 @@ class Client
         @console.log "ERROR unkown error code code=#{code} data=#{data}"
         return
       end
+      disconnect()
       @state = STATE_ERROR
       return [0, code, error_msg]
     elsif protocol == 1 # update package

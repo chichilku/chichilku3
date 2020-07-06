@@ -23,6 +23,7 @@ class ServerCore
     # 1 - player id
     @clients = []
     @current_id = 0
+    @bans = {}
     @tick = 0
     @last_alive_pck_by_client = Time.now
     @console = Console.new
@@ -271,6 +272,24 @@ class ServerCore
     end
   end
 
+  def ban_client(client, seconds, message = 'banned')
+    port, ip = Socket.unpack_sockaddr_in(client.getpeername)
+    ban_ip(ip, seconds, message)
+    net_write("0l#{NET_ERR_BAN}#{message}"[0..SERVER_PACKAGE_LEN].ljust(SERVER_PACKAGE_LEN, ' '), client)
+    client.close
+  end
+
+  def ban_ip(ip, seconds, message)
+    @bans[ip] = Time.now + seconds
+    @console.log "IP=#{ip} banned for #{seconds} seconds (#{message})"
+  end
+
+  def ip_banned?(ip)
+    return false if @bans[ip].nil?
+
+    @bans[ip] - Time.now > 0
+  end
+
   private
 
   def num_ip_connected(ip)
@@ -283,9 +302,26 @@ class ServerCore
   end
 
   def accept(server)
+    last_connect = Hash.new([Time.now,0])
     Socket.accept_loop(server) do |client|
+      port, ip = Socket.unpack_sockaddr_in(client.getpeername)
+      if ip_banned?(ip)
+        net_write("0l#{NET_ERR_BAN}banned".ljust(SERVER_PACKAGE_LEN, ' '), client)
+        client.close
+        next
+      end
+      diff = Time.now - last_connect[ip][0]
+      if diff < 3
+        last_connect[ip][1] += 1
+        if last_connect[ip][1] > 2
+          last_connect[ip][1] = 0
+          ban_client(client, 10, "banned for 10 seconds (too many reconnects)")
+          next
+        end
+      end
       @clients << [client, -1]
-      @console.dbg "client connected. clients connected: #{@clients.count}"
+      @console.log "client connected IP=#{ip} (total #{@clients.count})"
+      last_connect[ip][0] = Time.now
     end
   end
 
