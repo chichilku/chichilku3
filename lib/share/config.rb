@@ -22,6 +22,7 @@ class Config
     FileUtils.mkdir_p @chichilku3_dir
     FileUtils.mkdir_p "#{@chichilku3_dir}recordings"
     create_default_cfg(file, "#{@chichilku3_dir}/#{file}")
+    @source_file = file
     @file = @chichilku3_dir + file
     @console = console
     @data = load
@@ -41,7 +42,9 @@ class Config
   end
 
   def load
+    defaults = JSON.parse(File.read(@source_file))
     data = JSON.parse(File.read(@file))
+    data = defaults.merge(data)
     data = sanitize_data(data)
     data
   end

@@ -1,4 +1,4 @@
 {
-    "port": 9900
+    "port": 9900,
+    "max_clients_per_ip": 2
 }
-  

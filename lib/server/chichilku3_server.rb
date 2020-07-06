@@ -110,6 +110,10 @@ class ServerCore
   end
 
   def id_pck(data, client, ip)
+    if num_ip_connected(ip) > @cfg.data['max_clients_per_ip']
+      disconnect_client(client, "0l#{NET_ERR_DISCONNECT}too many clients per ip                        ")
+      return
+    end
     player_version = data[0..3]
     id = add_player("(connecting)", player_version, client, ip)
     if id == -1
@@ -268,6 +272,15 @@ class ServerCore
   end
 
   private
+
+  def num_ip_connected(ip)
+    connected = 0
+    @clients.each do |client|
+      port, conencted_ip = Socket.unpack_sockaddr_in(client[NET_CLIENT].getpeername)
+      connected += 1 if conencted_ip == ip
+    end
+    connected
+  end
 
   def accept(server)
     Socket.accept_loop(server) do |client|
