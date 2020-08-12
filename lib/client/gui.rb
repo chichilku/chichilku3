@@ -352,17 +352,15 @@ class Gui < Gosu::Window
   end
 
   def event_blood(x, y)
+    splashes = []
+    20.times do
+      splashes << [x, y, rand(6) - 3, rand(6) - 10, rand(1..6), rand(1..6)]
+    end
     @events[:blood] << [
       x,
       y,
       0,
-      [
-        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
-        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
-        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
-        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)],
-        [x, y, rand(12) - 6, rand(12) - 24, rand(3..12), rand(3..12)]
-      ]
+      splashes
     ]
   end
 
@@ -430,7 +428,7 @@ class Gui < Gosu::Window
       # self.mouse_y = (WINDOW_SIZE_Y / 2) + MOUSE_RADIUS - 1 if self.mouse_y > (WINDOW_SIZE_Y / 2) + MOUSE_RADIUS
       # self.mouse_y = (WINDOW_SIZE_Y / 2) - MOUSE_RADIUS + 1 if self.mouse_y < (WINDOW_SIZE_Y / 2) - MOUSE_RADIUS
       @players.each do |player|
-        event_blood(player.x, player.y) if player.state[:bleeding]
+        event_blood(player.x + (player.w/2), player.y + (player.h/2)) if player.state[:bleeding]
         player.draw_tick
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
