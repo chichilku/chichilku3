@@ -36,14 +36,16 @@ describe "Network", :network do
         end
 
         it "should pack and unpack same value (big)" do
-            # (0..(NET_MAX_INT+10)).each do |i|
-            #     compressed = net_pack_bigint(i, 2)
-            #     uncompressed = net_unpack_bigint(compressed)
-            #     p "#{i} => #{compressed} => #{uncompressed}"
-            #     expect(uncompressed).to eq(i)
-            # end
             (0..((NET_MAX_INT+1)*(NET_MAX_INT+1)-1)).each do |i|
                 expect(net_unpack_bigint(net_pack_bigint(i, 2))).to eq(i)
+            end
+        end
+
+        it "should pack and unpack same value in any buffer size" do
+            (2..10).each do |buffersize|
+                (0..((NET_MAX_INT+1)*(NET_MAX_INT+1)-1)).each do |i|
+                    expect(net_unpack_bigint(net_pack_bigint(i, buffersize))).to eq(i)
+                end
             end
         end
     end
