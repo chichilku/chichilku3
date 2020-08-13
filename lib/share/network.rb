@@ -107,6 +107,7 @@ def net_pack_bigint(int, size)
     buf = int / ((NET_MAX_INT+1) ** div)
     sum += net_pack_int(buf)
     int = int % ((NET_MAX_INT+1) ** div)
+    div -= 1
   end
   sum += net_pack_int(int)
   # TODO: check reminder and so on
