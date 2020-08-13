@@ -48,5 +48,11 @@ describe "Network", :network do
                 end
             end
         end
+
+        it "should pack and unpack same value for big numbers" do
+            (0..999999).each do |i|
+                expect(net_unpack_bigint(net_pack_bigint(i, 6))).to eq(i)
+            end
+        end
     end
 end
