@@ -1,26 +1,10 @@
 require 'gosu'
 require_relative 'client'
-require_relative 'text'
+require_relative '../external/gosu/text'
 require_relative 'scoreboard'
 require_relative '../share/console'
 require_relative '../share/player'
-
-KEY_A = 4
-KEY_C = 6
-KEY_D = 7
-KEY_H = 11
-KEY_J = 13
-KEY_K = 14
-KEY_L = 15
-KEY_M = 16
-KEY_Q = 20
-KEY_S = 22
-KEY_T = 23
-KEY_W = 26
-KEY_RIGHT = 79
-KEY_LEFT = 80
-KEY_DOWN = 81
-KEY_UP = 82
+require_relative 'keys'
 
 MENU_MAIN = 0
 MENU_CONNECT = 1
@@ -85,12 +69,13 @@ class Gui < Gosu::Window
     @cfg = cfg
     @tick = 0
     @console = Console.new
-    @net_client = Client.new(@console, @cfg)
+    @net_client = Client.new(@console, @cfg, self)
     @net_err = nil
     @state = @net_client.state
     @menu_page = MENU_MAIN
     @font = Gosu::Font.new(20)
     @is_debug = false
+    @is_dbg_grid = false
     @is_chat = false
     @is_scoreboard = false
     @chat_msg = "" # what we type
@@ -105,6 +90,7 @@ class Gui < Gosu::Window
     @selected_menu_item = 0
     @menu_textfield = TextField.new(self, 60, 200)
     @demo_ticks = [0,0]
+    @download_progress = [0,0]
     # @chat_inp_stream = nil #TextInput.new
     # @chat_inp_stream.text # didnt get it working <--- nobo xd
     
@@ -122,6 +108,12 @@ class Gui < Gosu::Window
 
   def img(path)
     File.join(File.dirname(__FILE__), "../../lib/client/img/", path)
+  end
+
+  def load_background_image(map_path)
+    bg_path =  File.join(map_path, "background.png")
+    @console.log "loading background image '#{bg_path}' ..."
+    @background_image = Gosu::Image.new(bg_path)
   end
 
   def button_press?(button)
@@ -281,6 +273,9 @@ class Gui < Gosu::Window
       if button_press?(KEY_M)
         @is_debug = !@is_debug
       end
+      if button_press?(KEY_G) && @is_debug
+        @is_dbg_grid = !@is_dbg_grid
+      end
       if button_down?(KEY_T)
         @last_key = KEY_T
         @is_chat = true
@@ -322,6 +317,9 @@ class Gui < Gosu::Window
         @server_chat_msg = msg[1]
         @server_chat_recv = Time.now
       end
+    end
+    if @state == STATE_DOWNLOADING
+      @download_progress = net_data[3] unless net_data[3].nil?
     end
     return if @flags[:skip]
 
@@ -416,7 +414,9 @@ class Gui < Gosu::Window
     elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 3, 3)
-      # @con_msg.draw(100,200,0)
+    elsif @state == STATE_DOWNLOADING
+      @connecting_image.draw(0, 0, 0)
+      @font.draw_text("downloading map #{@download_progress[0]} / #{@download_progress[1]} ...", 20, 20, 0, 3, 3)
     elsif @state == STATE_INGAME || @state == STATE_REC_PLAYBACK
       @background_image.draw(0, 0, 0)
       @crosshair.draw(self.mouse_x-16, self.mouse_y-16, 0, 0.25, 0.25)
@@ -507,6 +507,15 @@ class Gui < Gosu::Window
           # thats useless because collide/delta speed is not sent over the network
           # @font.draw_text("dx: #{player.dx} dy: #{player.dy}", 10, 50, 0, 1, 1)
           # @font.draw_text(player.collide_string, 10, 70, 0, 1, 1)
+        end
+
+        if @is_dbg_grid
+          (1..MAP_WIDTH).each do |gx|
+            draw_rect(gx * TILE_SIZE, 0, 1, WINDOW_SIZE_Y, 0xAA00EE00)
+          end
+          (1..MAP_HEIGHT).each do |gy|
+            draw_rect(0, gy * TILE_SIZE, WINDOW_SIZE_X, 1, 0xAA00EE00)
+          end
         end
       end
 

@@ -1,4 +1,5 @@
 # https://github.com/gosu/gosu-examples/blob/master/examples/text_input.rb
+# Gosu is released under the MIT license.
 require "gosu"
 
 class TextField < Gosu::TextInput

@@ -2,13 +2,15 @@ require 'socket'
 # check doc_network.rb for documentation
 
 # update GAME_VERSION on network protocol changes
-GAME_VERSION = '0014'
+GAME_VERSION = '0015'
 
 # game
 
 TILE_SIZE = 64
-WINDOW_SIZE_X = TILE_SIZE * 16
-WINDOW_SIZE_Y = TILE_SIZE * 9
+MAP_WIDTH = 16
+MAP_HEIGHT = 9
+WINDOW_SIZE_X = TILE_SIZE * MAP_WIDTH
+WINDOW_SIZE_Y = TILE_SIZE * MAP_HEIGHT
 FULLHD_X = 1920
 UI_SCALE = WINDOW_SIZE_X.to_f / FULLHD_X.to_f
 SPEED = TILE_SIZE
@@ -17,6 +19,7 @@ SPEED = TILE_SIZE
 
 CMD_LEN = 7
 NAME_LEN = 9
+MAX_MAPNAME_LEN = 43
 MAX_CLIENTS = 12
 PLAYER_PACKAGE_LEN = 16
 CLIENT_PACKAGE_LEN = 11 # used by server
@@ -128,7 +131,7 @@ def net_unpack_bigint(net_int)
     if i.zero?
       sum = net_unpack_int(c)
     else
-      sum += net_unpack_int(c) * i * (NET_MAX_INT+1)
+      sum += net_unpack_int(c) * (NET_MAX_INT+1) ** i
     end
   end
   sum

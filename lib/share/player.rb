@@ -8,7 +8,7 @@ SPAWN_Y = 100
 
 class Player
   attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching
-  attr_accessor :aimX, :aimY, :projectile, :fire_ticks
+  attr_accessor :aimX, :aimY, :projectile, :fire_ticks, :map_download
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', version = nil, ip = nil)
@@ -41,6 +41,7 @@ class Player
     @not_changed_y = 0
 
     # used by server
+    @map_download = -2
     @version = version
     @ip = ip
   end

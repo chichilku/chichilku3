@@ -3,6 +3,7 @@ require 'socket'
 require_relative '../share/console'
 require_relative '../share/network'
 require_relative '../share/player'
+require_relative '../share/map'
 
 require_relative 'gamelogic'
 require_relative 'server_cfg'
@@ -29,6 +30,10 @@ class ServerCore
     @console = Console.new
     @cfg = ServerCfg.new(@console, "server.json")
     @gamelogic = GameLogic.new(@console)
+    if @cfg.data['map'] != ""
+      @map = Map.new(@console, @cfg, @cfg.data['map'])
+      @map.prepare_upload
+    end
   end
 
   def parse_client_version(data)
@@ -110,6 +115,23 @@ class ServerCore
     nil # defaults to normal update pck
   end
 
+  def map_info_pck()
+    "5l#{@map.checksum}".ljust(SERVER_PACKAGE_LEN, ' ')
+  end
+
+  def map_dl_init_pck()
+    size = net_pack_bigint(@map.size, 6)
+    name = @map.name
+    "6l#{size}#{name}".ljust(SERVER_PACKAGE_LEN, ' ')
+  end
+
+  def map_dl_chunk_pck(player)
+    size = SERVER_PACKAGE_LEN - 2
+    map_chunk = @map.get_data(player.map_download, size)
+    player.map_download += size
+    "7l#{map_chunk}"
+  end
+
   def id_pck(data, client, ip)
     if num_ip_connected(ip) > @cfg.data['max_clients_per_ip']
       disconnect_client(client, "0l#{NET_ERR_DISCONNECT}too many clients per ip                        ")
@@ -168,13 +190,43 @@ class ServerCore
       id = data[0].to_i(16)
       if id != client[PLAYER_ID]
         @console.wrn "id=#{client[PLAYER_ID]} tried to spoof id=#{id} ip=#{ip}"
+        @console.wrn data
         disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id                              ")
         return nil
       end
       if protocol == 2 # update pck
-        return update_pck(data, dt)
+        return update_pck(data, dt) if @map.nil?
+
+        player = Player.get_player_by_id(@players, id)
+        if player.map_download == -2
+          player.map_download = -1
+          return map_info_pck()
+        elsif player.map_download == -1
+          # set state to -3 which stops sending
+          # any further information
+          # wait for the client to respond
+          player.map_download = -3
+          return map_dl_init_pck()
+        elsif player.map_download < @map.size() && player.map_download >= 0
+          return map_dl_chunk_pck(player)
+        else
+          return update_pck(data, dt)
+        end
       elsif protocol == 4 # command
         return command_package(data, client)
+      elsif protocol == 5 # map info response
+        return update_pck(data, dt) if @map.nil?
+
+        player = Player.get_player_by_id(@players, id)
+        if data[1] == "1"
+          player.map_download = 0
+          @console.log "player started map download"
+          return map_dl_chunk_pck(player)
+        else
+          @console.log "player rejected map download"
+          player.map_download = @map.size
+          return update_pck(data, dt)
+        end
       else
         @console.err "IP=#{ip} unkown protocol=#{protocol} data=#{data}"
       end
@@ -186,7 +238,7 @@ class ServerCore
     # the response is a direct respond to an protocol
     # everything above this could override important responds
     # like id assignment
-    # every think that is after this guard case just overrides update pcks
+    # everything that is after this guard case just overrides update pcks
     return response unless response.nil?
 
     if (@tick % 100).zero?
@@ -196,7 +248,7 @@ class ServerCore
     # if error occurs or something unexpected
     # just send regular update pck
     # protocol 1 (update)
-    "1l#{players_to_packet}" # implicit return
+    "1l#{players_to_packet}"
   end
 
   # Handles each client

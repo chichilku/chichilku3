@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'os', '~> 1.0.1'
   s.add_dependency 'fileutils', '~> 1.2.0'
   s.add_dependency 'rspec', '~> 3.9.0'
+  s.add_dependency 'rubyzip', '~> 2.3.0'
   s.homepage    = 'https://github.com/chichilku/chichilku3'
   s.license     = 'Unlicense'
 end

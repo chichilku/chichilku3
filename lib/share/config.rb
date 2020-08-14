@@ -21,6 +21,10 @@ class Config
     puts "path: " + @chichilku3_dir
     FileUtils.mkdir_p @chichilku3_dir
     FileUtils.mkdir_p "#{@chichilku3_dir}recordings"
+    FileUtils.mkdir_p "#{@chichilku3_dir}maps"
+    FileUtils.mkdir_p "#{@chichilku3_dir}maps_b64"
+    FileUtils.mkdir_p "#{@chichilku3_dir}downloadedmaps"
+    FileUtils.mkdir_p "#{@chichilku3_dir}tmp"
     create_default_cfg(file, "#{@chichilku3_dir}/#{file}")
     @source_file = file
     @file = @chichilku3_dir + file

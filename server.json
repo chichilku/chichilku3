@@ -1,4 +1,5 @@
 {
     "port": 9900,
-    "max_clients_per_ip": 2
+    "max_clients_per_ip": 2,
+    "map": ""
 }

@@ -68,10 +68,13 @@ rspec
 
 # License
 
-The whole code base and all images are licensed under public domain.
+The whole project and all images are licensed under public domain.
 All graphics were handcrafted by [ChillerDragon](https://github.com/ChillerDragon) same goes for the code.
 You are free to use any of it for anything. You are free to copy/redistribute/sell/edit this project without any limitations.
 Without any warranty tho for more information see LICENSE file at the root of this repository.
+
+
+IMPORTANT NOTE! The source under lib/external are external libraries with their own licenses. Check the individual libraries.
 
 
 Credit is appreciated but not required.

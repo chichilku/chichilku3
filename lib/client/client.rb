@@ -1,22 +1,26 @@
 require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
+require_relative '../share/map'
 
 STATE_ERROR = -2
 STATE_MENU = -1
 STATE_OFFLINE = 0
 STATE_CONNECTING = 1
-STATE_INGAME = 2
-STATE_REC_PLAYBACK = 3
+STATE_DOWNLOADING = 2
+STATE_INGAME = 3
+STATE_REC_PLAYBACK = 4
 
 # Networking part of the game clientside
 class Client
   attr_reader :id, :state, :server_version
-  def initialize(console, cfg)
+
+  def initialize(console, cfg, gui)
     @id = nil
     @tick = 0
     @state = STATE_MENU
     @cfg = cfg
+    @gui = gui
 
     @console = console
     @console.log "LOAD #{@s}"
@@ -30,12 +34,18 @@ class Client
 
     @server_version = nil
 
+    # @force_send
+    # used by client to send data regardless of what the gui
+    # wanted to send
+    @force_send = nil
+
     # state variables
     @req_playerlist = Time.now - 8
 
     # return values
     @players = []
     @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
+    @extra = nil # currently only used for download progress array
   end
 
   def reset()
@@ -129,7 +139,7 @@ class Client
 
     # save protocol and cut it off
     msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
-    [@players, @flags, msg]
+    [@players, @flags, msg, @extra]
   end
 
   private
@@ -177,8 +187,37 @@ class Client
     elsif protocol == 4 # command respond
       @console.log "server respond: #{data}"
       return [1, data]
+    elsif protocol == 5 # map info
+      checksum = data[0..39]
+      @map = Map.new(@console, @cfg, nil, method(:finished_download_callback), checksum)
+    elsif protocol == 6 # map download init
+      size = net_unpack_bigint(data[0..5])
+      mapname = data[6..].strip
+      @map.set_name(mapname)
+      @map.set_size(size)
+      accept = "0"
+      if @map.has_map?
+        @console.log "loading map name='#{mapname}'"
+        finished_download_callback(@map.dl_path())
+      else
+        @console.log "downloading map name='#{mapname}' size=#{size} ..."
+        update_state(STATE_DOWNLOADING)
+        @map.prepare_download
+        accept = "1"
+      end
+      @force_send = "5l#{@id.to_s(16)}#{accept}b641000"
+    elsif protocol == 7 # map download chunk
+      if @map.nil?
+        @console.wrn "got unexpected map chunk from server (no map)"
+        @force_send = "5l#{@id.to_s(16)}#{"0"}b641000"
+      elsif @state != STATE_DOWNLOADING
+        @console.wrn "got unexpected map chunk from server (wrong client state)"
+        @force_send = "5l#{@id.to_s(16)}#{"0"}b641000"
+      else
+        @extra = [@map.download(data), @map.size]
+      end
     else
-      @console.log "ERROR unkown protocol=#{protocol} data=#{data}"
+      @console.log "ERROR unkown protocol=#{protocol} data='#{data}'"
     end
     nil
   end
@@ -198,6 +237,11 @@ class Client
       @console.log('requesting a playerlist')
       @req_playerlist = Time.now
       return
+    end
+
+    unless @force_send.nil?
+      net_write(@force_send)
+      @force_send = nil
     end
 
     data = "#{protocol}l#{@id.to_s(16)}#{data.join('')}"
@@ -259,6 +303,12 @@ class Client
     end
     @s.write(data)
     @console.dbg "sent: #{data}"
+  end
+
+  def finished_download_callback(map_dir)
+    update_state(STATE_INGAME)
+    @gui.load_background_image(map_dir)
+    @map.load_gametiles(map_dir)
   end
 
   # TODO: add protocol class for this

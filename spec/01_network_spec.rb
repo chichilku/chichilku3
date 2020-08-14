@@ -50,7 +50,7 @@ describe "Network", :network do
         end
 
         it "should pack and unpack same value for big numbers" do
-            (0..999999).each do |i|
+            (999000..999999).each do |i|
                 expect(net_unpack_bigint(net_pack_bigint(i, 6))).to eq(i)
             end
         end
