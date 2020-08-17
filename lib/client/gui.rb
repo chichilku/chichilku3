@@ -516,6 +516,16 @@ class Gui < Gosu::Window
           (1..MAP_HEIGHT).each do |gy|
             draw_rect(0, gy * TILE_SIZE, WINDOW_SIZE_X, 1, 0xAA00EE00)
           end
+          # gametiles
+          (0..(MAP_HEIGHT-1)).each do |gy|
+            (0..(MAP_WIDTH-1)).each do |gx|
+              if @net_client.map.is_collision?(gx, gy)
+                draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
+              elsif @net_client.map.is_death?(gx, gy)
+                draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAAEE0000)
+              end
+            end
+          end
         end
       end
 

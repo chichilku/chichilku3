@@ -13,7 +13,7 @@ STATE_REC_PLAYBACK = 4
 
 # Networking part of the game clientside
 class Client
-  attr_reader :id, :state, :server_version
+  attr_reader :id, :state, :server_version, :map
 
   def initialize(console, cfg, gui)
     @id = nil
@@ -33,6 +33,8 @@ class Client
     @is_recording = false
 
     @server_version = nil
+
+    @map = nil
 
     # @force_send
     # used by client to send data regardless of what the gui

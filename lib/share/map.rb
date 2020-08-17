@@ -56,9 +56,16 @@ class Map
       exit 1
     end
 
+    is_skip = true
     @gametiles = []
     File.readlines(gamefile).each_with_index do |data, i|
       gamerow = data[0..-2] # cut off newline
+      is_skip = !is_skip if gamerow =~ /\+\-+\+/
+      gamerow = gamerow.match(/\|(.*)\|/)
+      next if gamerow.nil?
+      gamerow = gamerow[1]
+      next if is_skip
+
       if gamerow.length != MAP_WIDTH
         @console.err "invalid gametiles row=#{i} size=#{gamerow.length}/#{MAP_WIDTH}"
         exit 1
@@ -69,6 +76,14 @@ class Map
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
+  end
+
+  def is_death?(x, y)
+    @gametiles[y][x] == "X"
+  end
+
+  def is_collision?(x, y)
+    @gametiles[y][x] == "O"
   end
 
   # SERVER
