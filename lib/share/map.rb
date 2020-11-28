@@ -6,6 +6,10 @@ require 'fileutils'
 require_relative '../external/rubyzip/recursive'
 
 MAX_UNZIP_SIZE = 1024**2 # 1MiB
+MAP_FILES = [
+  'background.png',
+  'gametiles.txt'
+]
 
 class Map
   attr_reader :gametiles
@@ -115,8 +119,17 @@ class Map
     File.delete map_zip if File.exists? map_zip
 
     @console.log "archiving map '#{map_zip}' ..."
-    zf = ZipFileGenerator.new(map_dir, map_zip)
-    zf.write()
+    Zip::File.open(map_zip, Zip::File::CREATE) do |zipfile|
+      MAP_FILES.each do |filename|
+        filepath = File.join(map_dir, filename)
+        unless File.exists? filepath
+          @console.err "failed to zip map '#{@mapname}' missing file:"
+          @console.err filepath
+          exit 1
+        end
+        zipfile.add(filename, filepath)
+      end
+    end
   end
 
   def encode()
