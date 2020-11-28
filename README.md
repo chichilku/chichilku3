@@ -47,7 +47,7 @@ chichilku3
 ## Download the source
 
 ```
-git clone https://github.com/chichilku/chichilku3
+git clone --recursive https://github.com/chichilku/chichilku3
 cd chichilku3
 bundle install
 ```

@@ -19,7 +19,8 @@ Gem::Specification.new do |s|
     'lib/client/img/stick128/noarms/*.png',
     'lib/client/img/bow64/*.png',
     'client.json',
-    'server.json'
+    'server.json',
+    'maps'
   ]
   s.add_dependency 'gosu', '~> 0.15.2'
   s.add_dependency 'os', '~> 1.0.1'
