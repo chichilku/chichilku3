@@ -1,6 +1,8 @@
-# Filesystem
+# Map Version 1
 
-## server
+## Filesystem
+
+### server
 
 The server expects a map directory at
 
@@ -14,7 +16,7 @@ And a base64 encoded txt file of the zp at
 
     ~/.chichilku/chichilku3/maps_b64/mapname_checksum.zip
 
-## client
+### client
 
 The client downloads the base64 encoded zip chunk by chunk to
 
@@ -26,18 +28,32 @@ On finish it is exctracted and moved to
 
 
 
-# Structure
+## Structure
 
 The map is a directory containing:
 
-- background.png (16:9 background image)
-- gametiles.txt (ascii representation of the gametiles)
+ - background.png (16:9 background image)
+ - gametiles.txt (ascii representation of the gametiles)
+ - metadata.json (json data about the map)
 
-## background.png
+It can also contain other files such as .xcf source files for the background image.
+Any other file than the ones required for the map will be ignored by the server and not sent to the client.
+
+
+Example maps directory:
+
+    maps
+    └── battle
+       ├── background.png
+       ├── battle1024x576.xcf
+       ├── gametiles.txt
+       └── metadata.json
+
+### background.png
 
 1024x576 is the expected resolution
 
-## gametiles.txt
+### gametiles.txt
 
 A map consists of 16x9 tiles and no other format is allowed
 
@@ -63,4 +79,38 @@ gametiles.txt
 |XXXXXXXXXXXXXXXX|
 |XXXXXXXXXXXXXXXX|
 +----------------+
+```
+
+### metadata.json
+
+The metadata for the map is stored in json format.
+
+Required keys by client and server:
+ - chichilku3-map-version
+    integer: map standard version (should always be 1 for version 1)
+
+Keys displayed by the server and client are:
+ - name
+    string: map name
+ - version
+    string: map version
+ - authors
+    array of strings: names of the map authors
+
+Optional non used keys are:
+ - license
+    string
+ - chichilku3-version
+    string: game version
+
+metadata.json
+```json
+{
+    "name": "battle",
+    "version": "1.0",
+    "authors": ["ChillerDragon"],
+    "license": "Unlicense",
+    "chichilku3-version": "0015",
+    "chichilku3-map-version": 1
+}
 ```

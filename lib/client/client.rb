@@ -310,7 +310,7 @@ class Client
   def finished_download_callback(map_dir)
     update_state(STATE_INGAME)
     @gui.load_background_image(map_dir)
-    @map.load_gametiles(map_dir)
+    @map.load_data(map_dir)
   end
 
   # TODO: add protocol class for this

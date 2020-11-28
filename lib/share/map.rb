@@ -6,13 +6,15 @@ require 'fileutils'
 require_relative '../external/rubyzip/recursive'
 
 MAX_UNZIP_SIZE = 1024**2 # 1MiB
+MAP_VERSION = 1
 MAP_FILES = [
   'background.png',
-  'gametiles.txt'
+  'gametiles.txt',
+  'metadata.json'
 ]
 
 class Map
-  attr_reader :gametiles, :ready
+  attr_reader :gametiles, :ready, :metadata
 
   def initialize(console, cfg, mapname, callback = nil, checksum = nil)
     @console = console
@@ -23,6 +25,7 @@ class Map
     @sha1sum = checksum
     @gametiles = []
     @ready = false
+    @metadata = nil
 
     # client
     @callback = callback
@@ -81,6 +84,27 @@ class Map
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
+  end
+
+  def load_metadata(map_dir)
+    metafile = "#{map_dir}/metadata.json"
+    unless File.exists? metafile
+      @console.err "could not load gametiles '#{metafile}'"
+      exit 1
+    end
+
+    @metadata = JSON.parse(File.read(metafile))
+    if @metadata['chichilku3-map-version'] != MAP_VERSION
+      @console.err "Failed to load map '#{@metadata['name']}':"
+      @console.err "  Expected map version '#{MAP_VERSION}' but got '#{@metadata['chichilku3-map-version']}'"
+      exit 1
+    end
+    @console.log "loaded map '#{@metadata['name']}' (#{@metadata['version']}) by #{@metadata['authors'].join(',')}"
+  end
+
+  def load_data(map_dir)
+    load_gametiles(map_dir)
+    load_metadata(map_dir)
     @ready = true
   end
 
@@ -110,7 +134,7 @@ class Map
       @console.err "failed to load map '#{@mapname}' (no gametiles.txt)"
       exit 1
     end
-    load_gametiles(map_dir)
+    load_data(map_dir)
     zip()
     encode()
   end
