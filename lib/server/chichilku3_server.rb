@@ -30,10 +30,10 @@ class ServerCore
     @console = Console.new
     @cfg = ServerCfg.new(@console, "server.json")
     @gamelogic = GameLogic.new(@console)
-    if @cfg.data['map'] != ""
-      @map = Map.new(@console, @cfg, @cfg.data['map'])
-      @map.prepare_upload
-    end
+
+    @cfg.data['map'] = 'battle' if @cfg.data['map'] == ""
+    @map = Map.new(@console, @cfg, @cfg.data['map'])
+    @map.prepare_upload
   end
 
   def parse_client_version(data)

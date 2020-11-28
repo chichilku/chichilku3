@@ -29,7 +29,7 @@ class Gui < Gosu::Window
     self.fullscreen = true if cfg.data['fullscreen']
     # images
     @crosshair = Gosu::Image.new(img("crosshair128x128.png"))
-    @background_image = Gosu::Image.new(img("battle1024x576.png"))
+    @background_image = nil
     @connecting_image = Gosu::Image.new(img("connecting1024x512.png"))
     @menu_image = Gosu::Image.new(img("menu1920x1080.png"))
     @arrow_image = Gosu::Image.new(img("arrow64.png"))
@@ -414,7 +414,7 @@ class Gui < Gosu::Window
     elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 3, 3)
-    elsif @state == STATE_DOWNLOADING
+    elsif @state == STATE_DOWNLOADING || !@net_client.map || !@net_client.map.ready
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("downloading map #{@download_progress[0]} / #{@download_progress[1]} ...", 20, 20, 0, 3, 3)
     elsif @state == STATE_INGAME || @state == STATE_REC_PLAYBACK
