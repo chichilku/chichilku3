@@ -12,7 +12,7 @@ MAP_FILES = [
 ]
 
 class Map
-  attr_reader :gametiles
+  attr_reader :gametiles, :ready
 
   def initialize(console, cfg, mapname, callback = nil, checksum = nil)
     @console = console
@@ -22,6 +22,7 @@ class Map
     @b64_data = ""
     @sha1sum = checksum
     @gametiles = []
+    @ready = false
 
     # client
     @callback = callback
@@ -80,6 +81,7 @@ class Map
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
+    @ready = true
   end
 
   def is_death?(x, y)

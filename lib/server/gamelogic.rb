@@ -29,12 +29,12 @@ class GameLogic
     end
   end
 
-  def tick(players, dt)
+  def tick(map, players, dt)
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
 
-      gravity(player, dt)
+      gravity(map, player, dt)
       player.tick
       player.projectile.tick(players)
       # player collsions works
@@ -123,7 +123,7 @@ class GameLogic
     end
   end
 
-  def gravity(player, dt)
+  def gravity(map, player, dt)
     if player.dead
       player.dead_ticks += 1
       player.state[:bleeding] = true
@@ -133,25 +133,15 @@ class GameLogic
         player.die
       end
     else
-      if player.y + player.h > 384 # too far down --> die
+      if map.is_death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
         player.dead = true
         player.dead_ticks = 0
       end
     end
 
-    # outside of the save zone
-    if player.x < 214 || player.x > 800 || player.dead
-      if player.y + player.h > 484
-        # player.collide[:down] = true
-        player.do_collide(:down, true)
-        return
-      end
-    else # on the save zone
-      if player.y + player.h > 324
-        # player.collide[:down] = true
-        player.do_collide(:down, true)
-        return
-      end
+    if map.is_collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+      player.do_collide(:down, true)
+      return
     end
 
     # grav = 100000 * dt
