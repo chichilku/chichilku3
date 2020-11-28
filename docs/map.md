@@ -65,7 +65,7 @@ gametiles:
 
 The gametiles are surrounded by + - and | to better work with spaces
 
-A sample map could look like this:
+A sample gametiles file could look like this:
 
 gametiles.txt
 ```
@@ -86,23 +86,23 @@ gametiles.txt
 
 The metadata for the map is stored in json format.
 
-Required keys by client and server:
- - chichilku3-map-version
-    integer: map standard version (should always be 1 for version 1)
+* Required keys by client and server:
+    + chichilku3-map-version
+        - integer: map standard version (should always be 1 for version 1)
 
-Keys displayed by the server and client are:
- - name
-    string: map name
- - version
-    string: map version
- - authors
-    array of strings: names of the map authors
+* Keys displayed by the server and client are:
+    + name
+        - string: map name
+    + version
+        - string: map version
+    + authors
+        - array of strings: names of the map authors
 
-Optional non used keys are:
- - license
-    string
- - chichilku3-version
-    string: game version
+* Optional non used keys are:
+    + license
+        - string
+    + chichilku3-version
+        - string: game version
 
 metadata.json
 ```json
