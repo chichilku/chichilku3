@@ -12,7 +12,7 @@ And on server start it creates a zip at
 
     ~/.chichilku/chichilku3/maps/mapname.zip
 
-And a base64 encoded txt file of the zp at
+And a base64 encoded txt file of the zip at
 
     ~/.chichilku/chichilku3/maps_b64/mapname_checksum.zip
 
