@@ -35,7 +35,7 @@ The map is a directory containing:
 
 ## background.png
 
-1024x512 is the expected resolution
+1024x576 is the expected resolution
 
 ## gametiles.txt
 
