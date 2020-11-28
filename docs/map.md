@@ -58,9 +58,10 @@ Example maps directory:
 A map consists of 16x9 tiles and no other format is allowed
 
 gametiles:
-  `X`     kill tile
-  `O`     collision
-  ` `     air
+
+    'X'     kill tile
+    'O'     collision
+    ' '     air
 
 The gametiles are surrounded by + - and | to better work with spaces
 
