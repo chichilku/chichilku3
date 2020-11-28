@@ -22,7 +22,7 @@ The client downloads the base64 encoded zip chunk by chunk to
 
     ~/.chichilku/chichilku3/tmp/mapname
 
-On finish it is exctracted and moved to
+On finish it is extracted and moved to
 
     ~/.chichilku/chichilku3/downloadedmaps/mapname_checksum
 
