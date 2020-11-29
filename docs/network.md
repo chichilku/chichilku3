@@ -145,7 +145,7 @@ type  pSTATUS     response
 --------------------------------------------------------------------------------------------------------------
 # map info package
 ```
-type  pSTATUS     sha1sum(raw png file)                    unused
+type  pSTATUS     sha1sum(of the zipped map)               unused
 5     l           fe6bb781c95a3d1da2867dc239defa08ff3aef6d 0000000000
 ```
 
