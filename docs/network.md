@@ -38,7 +38,7 @@ type    pSTATUS  version        unused (type=0 is the join type)
 ```
 
 --------------------------------------------------------------------------------------------------------------
-### id move requests
+### move requests
 ```
         (crouch/dir l=left r=right/jump/fire)
 type  pSTATUS id cdjf aimX aimY
@@ -62,7 +62,7 @@ type  pSTATUS id  command
 --------------------------------------------------------------------------------------------------------------
 ### map info response
 ```
-type  pSTATUS id  accept/decline(0/1)     encoding(preffered)    encoding(supported)     unused
+type  pSTATUS id  (accept=1 decline=0)    encoding(preffered)    encoding(supported)     unused
 5     l       0   0                       b64                    1                       000
 ```
 
