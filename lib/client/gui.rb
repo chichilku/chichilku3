@@ -414,7 +414,7 @@ class Gui < Gosu::Window
     elsif @state == STATE_CONNECTING
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", 20, 20, 0, 3, 3)
-    elsif @state == STATE_DOWNLOADING || !@net_client.map || !@net_client.map.ready
+    elsif @state == STATE_DOWNLOADING
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("downloading map #{@download_progress[0]} / #{@download_progress[1]} ...", 20, 20, 0, 3, 3)
     elsif @state == STATE_INGAME || @state == STATE_REC_PLAYBACK

@@ -62,7 +62,7 @@ class Client
     reset
     @s = TCPSocket.open(ip, port)
     @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm-
-    @state = STATE_CONNECTING
+    update_state(STATE_CONNECTING)
     start_recording() if @cfg.data['autorecord']
   end
 
@@ -266,7 +266,6 @@ class Client
     @playercount = net_unpack_int(data[0..1])
     id = data[2].to_i(16)
     set_id(id)
-    update_state(STATE_INGAME) unless @state == STATE_REC_PLAYBACK
   end
 
   def id_packet(data)
