@@ -109,11 +109,11 @@ class Map
   end
 
   def is_death?(x, y)
-    @gametiles[y][x] == "X"
+    {x: x, y: y} if @gametiles[y][x] == "X"
   end
 
   def is_collision?(x, y)
-    @gametiles[y][x] == "O"
+    {x: x, y: y} if @gametiles[y][x] == "O"
   end
 
   # SERVER

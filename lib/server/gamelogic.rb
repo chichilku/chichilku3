@@ -34,12 +34,40 @@ class GameLogic
       # reset values (should stay first)
       player.reset_collide
 
+      map_collision(map, player)
       gravity(map, player, dt)
       player.tick
       player.projectile.tick(players)
       # player collsions works
       # but it eats performance and delays jumping
       check_collide(players, player)
+    end
+  end
+
+  def map_collision(map, player)
+    # left bottom
+    col = map.is_collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    if col
+      player.y = (col[:y] - 1) * TILE_SIZE
+      player.do_collide(:down, true)
+    end
+    # right bottom
+    col = map.is_collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    if col
+      player.y = (col[:y] - 1) * TILE_SIZE
+      player.do_collide(:down, true)
+    end
+    # left top
+    col = map.is_collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
+    if col
+      player.y = (col[:y] * TILE_SIZE) + player.h
+      player.do_collide(:up, true)
+    end
+    # right top
+    col = map.is_collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
+    if col
+      player.y = (col[:y] * TILE_SIZE) + player.h
+      player.do_collide(:up, true)
     end
   end
 
@@ -137,11 +165,6 @@ class GameLogic
         player.dead = true
         player.dead_ticks = 0
       end
-    end
-
-    if map.is_collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
-      player.do_collide(:down, true)
-      return
     end
 
     # grav = 100000 * dt
