@@ -52,6 +52,13 @@ cd chichilku3
 bundle install
 ```
 
+## Download default maps (needed for server)
+
+```
+cd ~/.chichilku/chichilku3
+git clone git@github.com:chichilku/chichilku3-maps.git maps
+```
+
 ## Start the client
 
 ``ruby lib/client/chichilku3.rb``
