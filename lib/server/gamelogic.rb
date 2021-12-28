@@ -29,13 +29,13 @@ class GameLogic
     end
   end
 
-  def tick(map, players, dt)
+  def tick(map, players, dt, tick)
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
 
       map_collision(map, player)
-      gravity(map, player, dt)
+      gravity(map, player, dt, tick)
       player.tick
       player.projectile.tick(players)
       # player collsions works
@@ -150,14 +150,14 @@ class GameLogic
     players.each do |player|
       # stopped crouching -> stand up
       if player.was_crouching && player.state[:crouching] == false
-        player.y -= TILE_SIZE
+        player.y -= TILE_SIZE / 2
         player.x += TILE_SIZE / 4
         player.was_crouching = false
       end
     end
   end
 
-  def gravity(map, player, dt)
+  def gravity(map, player, dt, tick)
     if player.dead
       player.dead_ticks += 1
       player.state[:bleeding] = true
@@ -176,6 +176,6 @@ class GameLogic
     # grav = 100000 * dt
     # @console.log "grav: #{grav}"
     # player.y += grav
-    player.dy += 2 if player.dy < 16
+    player.dy += 1 if player.dy < 16
   end
 end

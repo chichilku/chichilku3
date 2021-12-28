@@ -308,7 +308,7 @@ class ServerCore
       end
       $next_tick = Time.now + MAX_TICK_SPEED
       @tick += 1
-      @players = @gamelogic.tick(@map, @players, diff)
+      @players = @gamelogic.tick(@map, @players, diff, @tick)
       # there is no gurantee the client will tick here
       # there might be 2 gamelogic ticks and posticks
       # before the server recieves client data

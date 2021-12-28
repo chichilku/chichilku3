@@ -113,7 +113,7 @@ class Player
     move_x(@dx)
     move_y(@dy)
     @dx = normalize_zero(@dx)
-    @dy = normalize_zero(@dy)
+    # @dy = normalize_zero(@dy)
     check_out_of_world
     if @bleed_ticks > 0
       @bleed_ticks -= 1
@@ -211,7 +211,7 @@ class Player
     if @dead 
       @dy = -5
     else
-      @dy = state[:crouching] ? -20 : -30
+      @dy = state[:crouching] ? -15 : -20
     end
   end
 
