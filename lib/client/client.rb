@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
@@ -29,7 +31,7 @@ class Client
 
     @recording_ticks = []
     @recording_ticks_len = 0
-    @recording_file = "autorec.txt"
+    @recording_file = 'autorec.txt'
     @is_recording = false
 
     @server_version = nil
@@ -46,16 +48,16 @@ class Client
 
     # return values
     @players = []
-    @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
+    @flags = { skip: false, state: @state, gamestate: 'g', id: nil }
     @extra = nil # currently only used for download progress array
   end
 
-  def reset()
+  def reset
     @id = nil
     @tick = 0
     @state = STATE_MENU
     @players = []
-    @flags = { skip: false, state: @state, gamestate: 'g',id: nil }
+    @flags = { skip: false, state: @state, gamestate: 'g', id: nil }
   end
 
   def connect(ip, port)
@@ -63,14 +65,14 @@ class Client
     @s = TCPSocket.open(ip, port)
     @s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1) # nagle's algorithm-
     update_state(STATE_CONNECTING)
-    start_recording() if @cfg.data['autorecord']
+    start_recording if @cfg.data['autorecord']
   end
 
-  def disconnect()
+  def disconnect
     return if @state == STATE_MENU
     return if @s.nil?
 
-    @console.log "disconnecting from server."
+    @console.log 'disconnecting from server.'
     @s.close
     @s = nil
     reset
@@ -89,23 +91,23 @@ class Client
     @console.log "loaded recording containing #{@recording_ticks.size} ticks"
   end
 
-  def start_recording()
-    @recording_file = "autorec.txt"
+  def start_recording
+    @recording_file = 'autorec.txt'
     rec_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
     @is_recording = true
-    File.delete(rec_file) if File.exists? rec_file
+    File.delete(rec_file) if File.exist? rec_file
   end
 
   def recording_record_tick(data)
     return unless @is_recording
 
     recording_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
-    IO.write(recording_file, data + "\n", mode: 'a')
+    IO.write(recording_file, "#{data}\n", mode: 'a')
   end
 
-  def recording_playback_tick()
+  def recording_playback_tick
     if @recording_ticks_len <= @tick
-      @console.log "finished playing back recording"
+      @console.log 'finished playing back recording'
       update_state(STATE_MENU)
       return [[], @flags, nil]
     end
@@ -153,68 +155,70 @@ class Client
 
   def handle_protocol(protocol, p_status, data)
     @console.dbg "HANDLE PROTOCOL=#{protocol} status=#{p_status}"
-    if protocol == 0 # error packet
+    case protocol
+    when 0 # error packet
       code = data[0..2]
       error_msg = data[3..-1]
-      if code == NET_ERR_FULL
-        @console.log "server is full."
-      elsif code == NET_ERR_DISCONNECT
-        @console.log "disconnected by server."
-      elsif code == NET_ERR_KICK
-        @console.log "kicked by server."
-      elsif code == NET_ERR_BAN
-        @console.log "banned by server."
-      elsif code == NET_ERR_SERVER_OUTDATED
-        @console.log "failed to connect to server: server is outdated."
+      case code
+      when NET_ERR_FULL
+        @console.log 'server is full.'
+      when NET_ERR_DISCONNECT
+        @console.log 'disconnected by server.'
+      when NET_ERR_KICK
+        @console.log 'kicked by server.'
+      when NET_ERR_BAN
+        @console.log 'banned by server.'
+      when NET_ERR_SERVER_OUTDATED
+        @console.log 'failed to connect to server: server is outdated.'
         @console.log error_msg
-      elsif code == NET_ERR_CLIENT_OUTDATED
-        @console.log "failed to connect to server: your client is outdated."
+      when NET_ERR_CLIENT_OUTDATED
+        @console.log 'failed to connect to server: your client is outdated.'
       else
         @console.log "ERROR unkown error code code=#{code} data=#{data}"
         return
       end
-      disconnect()
+      disconnect
       @state = STATE_ERROR
       return [0, code, error_msg]
-    elsif protocol == 1 # update package
+    when 1 # update package
       server_package_to_player_array(data)
-    elsif protocol == 2 # id packet
+    when 2 # id packet
       if @id.nil?
         id_packet(data)
       else
         @console.log "WARNING got unexpected id packet=#{data}"
       end
-    elsif protocol == 3 # name packet
+    when 3 # name packet
       protocol_names(data)
-    elsif protocol == 4 # command respond
+    when 4 # command respond
       @console.log "server respond: #{data}"
       return [1, data]
-    elsif protocol == 5 # map info
+    when 5 # map info
       checksum = data[0..39]
       @map = Map.new(@console, @cfg, nil, method(:finished_download_callback), checksum)
-    elsif protocol == 6 # map download init
+    when 6 # map download init
       size = net_unpack_bigint(data[0..5])
-      mapname = data[6..].strip
+      mapname = data[6..-1].strip
       @map.set_name(mapname)
       @map.set_size(size)
-      accept = "0"
+      accept = '0'
       if @map.found?
         @console.log "loading map name='#{mapname}'"
-        finished_download_callback(@map.dl_path())
+        finished_download_callback(@map.dl_path)
       else
         @console.log "downloading map name='#{mapname}' size=#{size} ..."
         update_state(STATE_DOWNLOADING)
         @map.prepare_download
-        accept = "1"
+        accept = '1'
       end
       @force_send = "5l#{@id.to_s(16)}#{accept}b641000"
-    elsif protocol == 7 # map download chunk
+    when 7 # map download chunk
       if @map.nil?
-        @console.wrn "got unexpected map chunk from server (no map)"
-        @force_send = "5l#{@id.to_s(16)}#{"0"}b641000"
+        @console.wrn 'got unexpected map chunk from server (no map)'
+        @force_send = "5l#{@id.to_s(16)}0b641000"
       elsif @state != STATE_DOWNLOADING
-        @console.wrn "got unexpected map chunk from server (wrong client state)"
-        @force_send = "5l#{@id.to_s(16)}#{"0"}b641000"
+        @console.wrn 'got unexpected map chunk from server (wrong client state)'
+        @force_send = "5l#{@id.to_s(16)}0b641000"
       else
         @extra = [@map.download(data), @map.size]
       end
@@ -285,11 +289,11 @@ class Client
     server_data = save_read(@s, 3)
     return nil if server_data == ''
 
-    if server_data[0] == "1"
+    if server_data[0] == '1'
       len = net_unpack_int(server_data[2]) * PLAYER_PACKAGE_LEN
-      server_data += save_read(@s, len+1)
+      server_data += save_read(@s, len + 1)
     else
-      server_data += save_read(@s, SERVER_PACKAGE_LEN-3)
+      server_data += save_read(@s, SERVER_PACKAGE_LEN - 3)
     end
     return nil if server_data == ''
 
@@ -331,7 +335,7 @@ class Client
     players = []
     used_slots.times do |index|
       size = NAME_LEN + 2 # id|score|name
-      players[index] = data[index * size..index * size + size-1]
+      players[index] = data[index * size..index * size + size - 1]
     end
     players
   end
@@ -368,7 +372,7 @@ class Client
   def server_package_to_player_strs(used_slots, data)
     players = []
     used_slots.times do |index|
-      players[index] = data[index * PLAYER_PACKAGE_LEN..index * PLAYER_PACKAGE_LEN + PLAYER_PACKAGE_LEN-1]
+      players[index] = data[index * PLAYER_PACKAGE_LEN..index * PLAYER_PACKAGE_LEN + PLAYER_PACKAGE_LEN - 1]
     end
     players
   end
@@ -379,9 +383,9 @@ class Client
       id = player_str[0].to_i(16)
       score = net_unpack_int(player_str[1])
       net_state = player_str[2]
-      projR = player_str[3]
-      projX = net_unpack_bigint(player_str[4..5])
-      projY = net_unpack_bigint(player_str[6..7])
+      proj_r = player_str[3]
+      proj_x = net_unpack_bigint(player_str[4..5])
+      proj_y = net_unpack_bigint(player_str[6..7])
       aim_x = net_unpack_bigint(player_str[8..9])
       aim_y = net_unpack_bigint(player_str[10..11])
       x = net_unpack_bigint(player_str[12..13])
@@ -397,9 +401,9 @@ class Client
 
       @console.dbg "got player: #{@players[p_index]}"
       new_player = Player.update_player(@players, id, x, y, score, aim_x, aim_y)
-      new_player.projectile.r = projR
-      new_player.projectile.x = projX
-      new_player.projectile.y = projY
+      new_player.projectile.r = proj_r
+      new_player.projectile.x = proj_x
+      new_player.projectile.y = proj_y
       new_player.net_to_state(net_state)
       @players[Player.get_player_index_by_id(@players, id)] = new_player
     end

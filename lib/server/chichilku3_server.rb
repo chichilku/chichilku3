@@ -75,7 +75,7 @@ class ServerCore
     pck.ljust(SERVER_PACKAGE_LEN, '0')
   end
 
-  def get_free_id
+  def next_free_id
     # TODO: do this smarter
     used_ids = @clients.map { |c| c[1] }
     id = 0
@@ -87,7 +87,7 @@ class ServerCore
   end
 
   def add_player(name, version, client, ip)
-    @current_id = get_free_id
+    @current_id = next_free_id
     return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
     @console.dbg "[NEW PLAYER] IP='#{ip}' ID='#{@current_id}' version='#{version}'"
