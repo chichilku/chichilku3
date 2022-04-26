@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
     'server.json',
     'maps'
   ]
-  s.add_dependency 'gosu', '~> 0.15.2'
+  s.add_dependency 'gosu', '~> 1.4.3'
   s.add_dependency 'os', '~> 1.0.1'
   s.add_dependency 'fileutils', '~> 1.2.0'
   s.add_dependency 'rspec', '~> 3.9.0'
