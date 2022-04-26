@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'socket'
 
 require_relative '../share/console'
@@ -28,10 +30,10 @@ class ServerCore
     @tick = 0
     @last_alive_pck_by_client = Time.now
     @console = Console.new
-    @cfg = ServerCfg.new(@console, "server.json")
+    @cfg = ServerCfg.new(@console, 'server.json')
     @gamelogic = GameLogic.new(@console)
 
-    @cfg.data['map'] = 'battle' if @cfg.data['map'] == ""
+    @cfg.data['map'] = 'battle' if @cfg.data['map'] == ''
     @map = Map.new(@console, @cfg, @cfg.data['map'])
     @map.prepare_upload
   end
@@ -75,9 +77,9 @@ class ServerCore
 
   def get_free_id
     # TODO: do this smarter
-    used_ids = @clients.map{ |c| c[1] }
+    used_ids = @clients.map { |c| c[1] }
     id = 0
-    while id < MAX_CLIENTS do
+    while id < MAX_CLIENTS
       id += 1
       return id unless used_ids.include? id
     end
@@ -85,7 +87,7 @@ class ServerCore
   end
 
   def add_player(name, version, client, ip)
-    @current_id = get_free_id()
+    @current_id = get_free_id
     return -1 if @current_id > MAX_CLIENTS || @current_id < 1
 
     @console.dbg "[NEW PLAYER] IP='#{ip}' ID='#{@current_id}' version='#{version}'"
@@ -115,11 +117,11 @@ class ServerCore
     nil # defaults to normal update pck
   end
 
-  def map_info_pck()
+  def map_info_pck
     "5l#{@map.checksum}".ljust(SERVER_PACKAGE_LEN, ' ')
   end
 
-  def map_dl_init_pck()
+  def map_dl_init_pck
     size = net_pack_bigint(@map.size, 6)
     name = @map.name
     "6l#{size}#{name}".ljust(SERVER_PACKAGE_LEN, ' ')
@@ -138,7 +140,7 @@ class ServerCore
       return
     end
     player_version = data[0..3]
-    id = add_player("(connecting)", player_version, client, ip)
+    id = add_player('(connecting)', player_version, client, ip)
     if id == -1
       @console.log "IP='#{ip}' failed to connect (server full)"
       # protocol 0 (error) code=404 slot not found
@@ -153,7 +155,9 @@ class ServerCore
     end
     @console.dbg "[ID-PACKAGE] ID='#{id}' IP='#{ip}'"
     # protocol 2 (id)
-    "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}X#{GAME_VERSION}".ljust(SERVER_PACKAGE_LEN, '0')
+    "2l#{net_pack_int(@players.count)}#{net_pack_int(MAX_CLIENTS)}#{id.to_s(16)}X#{GAME_VERSION}".ljust(
+      SERVER_PACKAGE_LEN, '0'
+    )
   end
 
   def command_package(data, client)
@@ -163,7 +167,7 @@ class ServerCore
     msg = "server_recived_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
     msg = msg[0..SERVER_PACKAGE_LEN - CMD_LEN]
-    if cmd == "test"
+    if cmd == 'test'
       # return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
       msg = "id=#{client[PLAYER_ID]}"
     end
@@ -178,9 +182,9 @@ class ServerCore
     if protocol.zero? # error pck
       @console.err "Error pck=#{data}"
     elsif protocol == 1 # id pck
-      return id_pck(data, client, ip)
+      id_pck(data, client, ip)
     elsif protocol == 3 # initial request names
-      return create_name_package(data, client)
+      create_name_package(data, client)
     else
       if data.nil?
         @console.err "IP=#{ip} invalid data"
@@ -194,38 +198,39 @@ class ServerCore
         disconnect_client(client, "0l#{NET_ERR_DISCONNECT}invalid player id                              ")
         return nil
       end
-      if protocol == 2 # update pck
+      case protocol
+      when 2 # update pck
         return update_pck(data, dt) if @map.nil?
 
         player = Player.get_player_by_id(@players, id)
         if player.map_download == -2
           player.map_download = -1
-          return map_info_pck()
+          map_info_pck
         elsif player.map_download == -1
           # set state to -3 which stops sending
           # any further information
           # wait for the client to respond
           player.map_download = -3
-          return map_dl_init_pck()
-        elsif player.map_download < @map.size() && player.map_download >= 0
-          return map_dl_chunk_pck(player)
+          map_dl_init_pck
+        elsif player.map_download < @map.size && player.map_download >= 0
+          map_dl_chunk_pck(player)
         else
-          return update_pck(data, dt)
+          update_pck(data, dt)
         end
-      elsif protocol == 4 # command
-        return command_package(data, client)
-      elsif protocol == 5 # map info response
+      when 4 # command
+        command_package(data, client)
+      when 5 # map info response
         return update_pck(data, dt) if @map.nil?
 
         player = Player.get_player_by_id(@players, id)
-        if data[1] == "1"
+        if data[1] == '1'
           player.map_download = 0
-          @console.log "player started map download"
-          return map_dl_chunk_pck(player)
+          @console.log 'player started map download'
+          map_dl_chunk_pck(player)
         else
-          @console.log "player rejected map download"
+          @console.log 'player rejected map download'
           player.map_download = @map.size
-          return update_pck(data, dt)
+          update_pck(data, dt)
         end
       else
         @console.err "IP=#{ip} unkown protocol=#{protocol} data=#{data}"
@@ -241,9 +246,7 @@ class ServerCore
     # everything that is after this guard case just overrides update pcks
     return response unless response.nil?
 
-    if (@tick % 100).zero?
-      return create_name_package(nil, nil)
-    end
+    return create_name_package(nil, nil) if (@tick % 100).zero?
 
     # if error occurs or something unexpected
     # just send regular update pck
@@ -276,7 +279,7 @@ class ServerCore
   def disconnect_client(client, server_response = nil)
     player_id = client[PLAYER_ID]
     @gamelogic.on_player_disconnect(client, @players)
-    @console.dbg "client disconnected.#{" (" + server_response + ")" unless server_response.nil?}"
+    @console.dbg "client disconnected.#{" (#{server_response})" unless server_response.nil?}"
     net_write(server_response, client[NET_CLIENT]) unless server_response.nil?
     client[NET_CLIENT].close
     delete_player(player_id)
@@ -302,9 +305,7 @@ class ServerCore
       if $next_tick > t
         sleep $next_tick - t
       else
-        unless @tick.zero?
-          @console.wrn "tick took #{t - $next_tick} too long"
-        end
+        @console.wrn "tick took #{t - $next_tick} too long" unless @tick.zero?
       end
       $next_tick = Time.now + MAX_TICK_SPEED
       @tick += 1
@@ -314,11 +315,9 @@ class ServerCore
       # before the server recieves client data
       # since it is a nonblocking read and server/client are not in perfect sync
       @clients.each do |client|
-        begin
-          client_tick(client, diff)
-        rescue Errno::ECONNRESET, Errno::ENOTCONN, EOFError, IOError
-          disconnect_client(client)
-        end
+        client_tick(client, diff)
+      rescue Errno::ECONNRESET, Errno::ENOTCONN, EOFError, IOError
+        disconnect_client(client)
       end
       @players = @gamelogic.posttick(@players, diff)
     end
@@ -339,7 +338,7 @@ class ServerCore
   def ip_banned?(ip)
     return false if @bans[ip].nil?
 
-    @bans[ip] - Time.now > 0
+    (@bans[ip] - Time.now).positive?
   end
 
   private
@@ -354,7 +353,7 @@ class ServerCore
   end
 
   def accept(server)
-    last_connect = Hash.new([Time.now,0])
+    last_connect = Hash.new([Time.now, 0])
     Socket.accept_loop(server) do |client|
       port, ip = Socket.unpack_sockaddr_in(client.getpeername)
       if ip_banned?(ip)
@@ -367,7 +366,7 @@ class ServerCore
         last_connect[ip][1] += 1
         if last_connect[ip][1] > 2
           last_connect[ip][1] = 0
-          ban_client(client, 10, "banned for 10 seconds (too many reconnects)")
+          ban_client(client, 10, 'banned for 10 seconds (too many reconnects)')
           next
         end
       end

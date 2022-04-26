@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'socket'
 # check doc_network.rb for documentation
 
@@ -12,7 +14,7 @@ MAP_HEIGHT = 9
 WINDOW_SIZE_X = TILE_SIZE * MAP_WIDTH
 WINDOW_SIZE_Y = TILE_SIZE * MAP_HEIGHT
 FULLHD_X = 1920
-UI_SCALE = WINDOW_SIZE_X.to_f / FULLHD_X.to_f
+UI_SCALE = WINDOW_SIZE_X.to_f / FULLHD_X
 SPEED = TILE_SIZE
 
 # networking
@@ -29,38 +31,38 @@ MAX_TIMEOUT = 5
 MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
 # MAX_TICK_SPEED = 0.005
 
-NET_ERR_FULL = "404"
-NET_ERR_DISCONNECT = "001"
-NET_ERR_KICK = "002"
-NET_ERR_BAN = "003"
-NET_ERR_SERVER_OUTDATED = "004"
-NET_ERR_CLIENT_OUTDATED = "005"
+NET_ERR_FULL = '404'
+NET_ERR_DISCONNECT = '001'
+NET_ERR_KICK = '002'
+NET_ERR_BAN = '003'
+NET_ERR_SERVER_OUTDATED = '004'
+NET_ERR_CLIENT_OUTDATED = '005'
 
 NET_ERR = {
-  "404" => "SERVER FULL",
-  "001" => "DISCONNECTED",
-  "002" => "KICKED",
-  "003" => "BANNED",
-  "004" => "SERVER OUTDATED",
-  "005" => "CLIENT OUTDATED"
-}
+  '404' => 'SERVER FULL',
+  '001' => 'DISCONNECTED',
+  '002' => 'KICKED',
+  '003' => 'BANNED',
+  '004' => 'SERVER OUTDATED',
+  '005' => 'CLIENT OUTDATED'
+}.freeze
 
 CLIENT_PCK_TYPE = {
-  :error => "0",
-  :join => "1",
-  :move => "2",
-  :info => "3",
-  :cmd => "4"
-}
+  error: '0',
+  join: '1',
+  move: '2',
+  info: '3',
+  cmd: '4'
+}.freeze
 
 SERVER_PCK_TYPE = {
-  :error => "0",
-  :update => "1",
+  error: '0',
+  update: '1',
   # TODO: find a good name here
-  :info => "3",
-  :cmd => "4",
-  :event => "5"
-}
+  info: '3',
+  cmd: '4',
+  event: '5'
+}.freeze
 
 NET_INT_OFFSET = 33
 NET_INT_BASE = 93
@@ -73,13 +75,13 @@ NET_MIN_INT = 0
 # the base of the network is NET_INT_BASE
 # so the number 93 is the last single character number represented as '~'
 #
-# @param [Integer, #chr] int decimal based number 
+# @param [Integer, #chr] int decimal based number
 # @return [String] the int converted to base NET_INT_BASE
 
 def net_pack_int(int)
   net_error "#{__method__}: '#{int}' is too low allowed range #{NET_MIN_INT}-#{NET_MAX_INT}" if int < NET_MIN_INT
   net_error "#{__method__}: '#{int}' is too high allowed range #{NET_MIN_INT}-#{NET_MAX_INT}" if int > NET_MAX_INT
-  int = int + NET_INT_OFFSET
+  int += NET_INT_OFFSET
   int.chr
 end
 
@@ -104,18 +106,18 @@ end
 # @return [String] the int converted to base NET_INT_BASE
 
 def net_pack_bigint(int, size)
-  sum = ""
+  sum = ''
   div = size - 1
   (size - 1).times do
-    buf = int / ((NET_MAX_INT+1) ** div)
+    buf = int / ((NET_MAX_INT + 1)**div)
     sum += net_pack_int(buf)
-    int = int % ((NET_MAX_INT+1) ** div)
+    int = int % ((NET_MAX_INT + 1)**div)
     div -= 1
   end
   sum += net_pack_int(int)
   # TODO: check reminder and so on
   # throw and error when int is too big for size
-  int = int / NET_MAX_INT
+  int /= NET_MAX_INT
   sum
 end
 
@@ -131,18 +133,16 @@ def net_unpack_bigint(net_int)
     if i.zero?
       sum = net_unpack_int(c)
     else
-      sum += net_unpack_int(c) * (NET_MAX_INT+1) ** i
+      sum += net_unpack_int(c) * (NET_MAX_INT + 1)**i
     end
   end
   sum
 end
 
 def save_read(socket, size)
-  begin
-    return socket.read_nonblock(size)
-  rescue IO::WaitReadable
-    return ''
-  end
+  socket.read_nonblock(size)
+rescue IO::WaitReadable
+  ''
 end
 
 def net_error(err)

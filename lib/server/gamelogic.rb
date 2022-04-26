@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class GameLogic
   def initialize(console)
     @console = console
@@ -22,10 +24,10 @@ class GameLogic
   def check_collide(players, player)
     players.each do |other|
       next if other == player
-      next if !player.collide[:down]
+      next unless player.collide[:down]
 
       x_force = player.check_player_collide(other)
-      player.apply_force(x_force, -8) if !x_force.zero?
+      player.apply_force(x_force, -8) unless x_force.zero?
     end
   end
 
@@ -49,18 +51,14 @@ class GameLogic
     col = map.is_collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
-      if player.state[:crouching]
-        player.y += TILE_SIZE / 2
-      end
+      player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # right bottom
     col = map.is_collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
-      if player.state[:crouching]
-        player.y += TILE_SIZE / 2
-      end
+      player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # left top
@@ -77,14 +75,14 @@ class GameLogic
     end
   end
 
-  def handle_client_requests(data, id, players, dt)
+  def handle_client_requests(data, id, players, _dt)
     player = Player.get_player_by_id(players, id)
     if player.nil?
       @console.log "WARNING failed to update nil player with id=#{id}"
-      if players.count > 0
-        @console.log "connected players:"
+      if players.count.positive?
+        @console.log 'connected players:'
       else
-        @console.log "no players currently connected!"
+        @console.log 'no players currently connected!'
       end
       players.each do |p|
         @console.log "id=#{p.id} name='#{p.name}'"
@@ -125,12 +123,12 @@ class GameLogic
         player.state[:fire] = 1
       end
     else
-      if player.fire_ticks > 0
+      if player.fire_ticks.positive?
         dx = (player.aimX - player.x).clamp(-200, 200) / 20
         dy = (player.aimY - player.y).clamp(-200, 200) / 20
         dx *= (player.fire_ticks / 10).clamp(1, 3)
         dy *= (player.fire_ticks / 10).clamp(1, 3)
-        player.projectile.fire(player.x + TILE_SIZE/4, player.y + TILE_SIZE/2, dx, dy, player)
+        player.projectile.fire(player.x + TILE_SIZE / 4, player.y + TILE_SIZE / 2, dx, dy, player)
       end
       player.fire_ticks = 0
       player.state[:fire] = 0
@@ -146,18 +144,18 @@ class GameLogic
     players
   end
 
-  def posttick(players, dt)
+  def posttick(players, _dt)
     players.each do |player|
       # stopped crouching -> stand up
-      if player.was_crouching && player.state[:crouching] == false
-        player.y -= TILE_SIZE / 2
-        player.x += TILE_SIZE / 4
-        player.was_crouching = false
-      end
+      next unless player.was_crouching && player.state[:crouching] == false
+
+      player.y -= TILE_SIZE / 2
+      player.x += TILE_SIZE / 4
+      player.was_crouching = false
     end
   end
 
-  def gravity(map, player, dt, tick)
+  def gravity(map, player, _dt, _tick)
     if player.dead
       player.dead_ticks += 1
       player.state[:bleeding] = true
@@ -166,11 +164,9 @@ class GameLogic
         player.state[:bleeding] = false
         player.die
       end
-    else
-      if map.is_death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
-        player.dead = true
-        player.dead_ticks = 0
-      end
+    elsif map.is_death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+      player.dead = true
+      player.dead_ticks = 0
     end
 
     # grav = 100000 * dt

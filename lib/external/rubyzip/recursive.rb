@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # https://github.com/rubyzip/rubyzip/blob/9d891f7353e66052283562d3e252fe380bb4b199/samples/example_recursive.rb
 # http://www.ruby-lang.org/en/about/license.txt
 require 'zip'

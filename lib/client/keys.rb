@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 KEY_A = 4
 KEY_B = 5
 KEY_C = 6

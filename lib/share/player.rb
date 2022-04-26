@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Player used by Client and Server
 require_relative 'console'
 require_relative 'network'
@@ -7,8 +9,8 @@ SPAWN_X = 512
 SPAWN_Y = 100
 
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching
-  attr_accessor :aimX, :aimY, :projectile, :fire_ticks, :map_download
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching, :aimX, :aimY,
+                :projectile, :fire_ticks, :map_download
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
   def initialize(id, score, x = nil, y = nil, name = 'def', version = nil, ip = nil)
@@ -23,8 +25,8 @@ class Player
     @dx = 0
     @dy = 0
     @health = 3
-    @collide = {up: false, down: false, right: false, left: false}
-    @state = {bleeding: false, crouching: false, fire: 0}
+    @collide = { up: false, down: false, right: false, left: false }
+    @state = { bleeding: false, crouching: false, fire: 0 }
     @was_crouching = false
     @name = name
     @score = score
@@ -57,9 +59,8 @@ class Player
 
   def update_img
     return if @tick % 5 != 0
-    if @x != @last_x
-      new_x = true
-    end
+
+    new_x = true if @x != @last_x
     if @y != @last_y
       new_y = true
       @not_changed_y = 0
@@ -115,22 +116,21 @@ class Player
     @dx = normalize_zero(@dx)
     # @dy = normalize_zero(@dy)
     check_out_of_world
-    if @bleed_ticks > 0
+    if @bleed_ticks.positive?
       @bleed_ticks -= 1
-      self.state[:bleeding] = @bleed_ticks.zero? == false
+      state[:bleeding] = @bleed_ticks.zero? == false
     end
   end
 
   def check_player_collide(other)
     # $console.log "x: #{@x} y: #{@y} ox: #{other.x} oy: #{other.y}"
     # x crash is more rare so make it the outer condition
-    if other.x + other.w > @x && other.x < @x + @w
-      if other.y + other.h > @y && other.y < @y + @h
-        # $console.log "collide!"
-        return @x < other.x ? -7 : 7
-      end
+    if other.x + other.w > @x && other.x < @x + @w && (other.y + other.h > @y && other.y < @y + @h)
+      # $console.log "collide!"
+      return @x < other.x ? -7 : 7
     end
-    return 0
+
+    0
   end
 
   def damage(attacker)
@@ -154,15 +154,16 @@ class Player
   #     die
   #   end
   # end
-  def check_out_of_world # swap size
+  # swap size
+  def check_out_of_world
     # y
-    if @y < 0
+    if @y.negative?
       die
     elsif @y > WINDOW_SIZE_Y
       die
     end
     # x ( comment me out to add the glitch feature agian )
-    if @x < 0
+    if @x.negative?
       @x = WINDOW_SIZE_X - @w - 2
     elsif @x > WINDOW_SIZE_X - @w - 1
       @x = 0
@@ -173,7 +174,7 @@ class Player
     if killer.nil?
       $console.log("player ID=#{@id} name='#{@name}' died")
     else
-      if killer.id == self.id
+      if killer.id == id
         killer.score -= 1
       else
         killer.score += 1
@@ -186,7 +187,7 @@ class Player
     @health = 3
   end
 
-  #TODO: check for collision before update
+  # TODO: check for collision before update
   # if move_left or move_right set u on a collided field
   # dont update the position or slow down speed
   # idk make sure to not get stuck in walls
@@ -206,13 +207,13 @@ class Player
   end
 
   def do_jump
-    return if !@collide[:down]
+    return unless @collide[:down]
 
-    if @dead 
-      @dy = -5
-    else
-      @dy = state[:crouching] ? -15 : -20
-    end
+    @dy = if @dead
+            -5
+          else
+            state[:crouching] ? -15 : -20
+          end
   end
 
   def add_score(score = 1)
@@ -227,20 +228,20 @@ class Player
   end
 
   def do_collide(position, value)
-    if position == :right && @dx > 0
+    if position == :right && @dx.positive?
       @dx = 0
-    elsif position == :left && @dx < 0
+    elsif position == :left && @dx.negative?
       @dx = 0
-    elsif position == :down && @dy > 0
+    elsif position == :down && @dy.positive?
       @dy = 0
-    elsif position == :up && @dy < 0
+    elsif position == :up && @dy.negative?
       @dy = 0
     end
     @collide[position] = value
   end
 
   def reset_collide
-    @collide = {up: false, down: false, right: false, left: false}
+    @collide = { up: false, down: false, right: false, left: false }
   end
 
   ##
@@ -256,78 +257,79 @@ class Player
   end
 
   def to_s
-    pos="#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}"
-    proj=@projectile.r.to_i.to_s # hack nil to "0"
-    fake_y = @projectile.y > 0 ? @projectile.y : 0
-    proj+="#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(fake_y, 2)}"
-    aim="#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
-    "#{@id.to_s(16)}#{net_pack_int(@score)}#{state_to_net()}#{proj}#{aim}#{pos}"
+    pos = "#{net_pack_bigint(@x, 2)}#{net_pack_bigint(@y, 2)}"
+    proj = @projectile.r.to_i.to_s # HACK: nil to "0"
+    fake_y = @projectile.y.positive? ? @projectile.y : 0
+    proj += "#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(fake_y, 2)}"
+    aim = "#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
+    "#{@id.to_s(16)}#{net_pack_int(@score)}#{state_to_net}#{proj}#{aim}#{pos}"
   end
 
   def state_to_net
     @w = TILE_SIZE / 2
     @h = TILE_SIZE
     if @state[:bleeding] && @state[:crouching]
-      "s"
+      's'
     elsif @state[:bleeding] && @state[:fire] == 1
-      "x"
+      'x'
     elsif @state[:bleeding] && @state[:fire] == 2
-      "y"
+      'y'
     elsif @state[:bleeding] && @state[:fire] == 3
-      "z"
+      'z'
     elsif @state[:bleeding]
-      "b"
+      'b'
     elsif @state[:crouching]
       @w = TILE_SIZE
       @h = TILE_SIZE / 2
-      "c"
+      'c'
     elsif @state[:fire] == 1
-      "1"
+      '1'
     elsif @state[:fire] == 2
-      "2"
+      '2'
     elsif @state[:fire] == 3
-      "3"
+      '3'
     else
-      "0"
+      '0'
     end
   end
 
   def net_to_state(net)
-    if net == "b"
-      @state = {bleeding: true, crouching: false, fire: 0}
-    elsif net == "c"
-      @state = {bleeding: false, crouching: true, fire: 0}
-    elsif net == "s"
-      @state = {bleeding: true, crouching: true, fire: 0}
-    elsif net == "x"
-      @state = {bleeding: true, crouching: false, fire: 1}
-    elsif net == "y"
-      @state = {bleeding: true, crouching: false, fire: 2}
-    elsif net == "z"
-      @state = {bleeding: true, crouching: false, fire: 3}
-    elsif net == "1"
-      @state = {bleeding: false, crouching: false, fire: 1}
-    elsif net == "2"
-      @state = {bleeding: false, crouching: false, fire: 2}
-    elsif net == "3"
-      @state = {bleeding: false, crouching: false, fire: 3}
-    else
-      @state = {bleeding: false, crouching: false, fire: 0}
-    end
+    @state = case net
+             when 'b'
+               { bleeding: true, crouching: false, fire: 0 }
+             when 'c'
+               { bleeding: false, crouching: true, fire: 0 }
+             when 's'
+               { bleeding: true, crouching: true, fire: 0 }
+             when 'x'
+               { bleeding: true, crouching: false, fire: 1 }
+             when 'y'
+               { bleeding: true, crouching: false, fire: 2 }
+             when 'z'
+               { bleeding: true, crouching: false, fire: 3 }
+             when '1'
+               { bleeding: false, crouching: false, fire: 1 }
+             when '2'
+               { bleeding: false, crouching: false, fire: 2 }
+             when '3'
+               { bleeding: false, crouching: false, fire: 3 }
+             else
+               { bleeding: false, crouching: false, fire: 0 }
+             end
   end
 
   private
 
   def move_x(x)
-    return if x < 0 && @collide[:left]
-    return if x > 0 && @collide[:right]
+    return if x.negative? && @collide[:left]
+    return if x.positive? && @collide[:right]
 
     @x += x
   end
 
   def move_y(y)
-    return if y < 0 && @collide[:up]
-    return if y > 0 && @collide[:down]
+    return if y.negative? && @collide[:up]
+    return if y.positive? && @collide[:down]
 
     @y += y
   end
@@ -337,7 +339,8 @@ class Player
   def normalize_zero(x)
     return x if x.zero?
 
-    return x - 1 if x > 0
+    return x - 1 if x.positive?
+
     x + 1
   end
 end
