@@ -124,8 +124,8 @@ class GameLogic
       end
     else
       if player.fire_ticks.positive?
-        dx = (player.aimX - player.x).clamp(-200, 200) / 20
-        dy = (player.aimY - player.y).clamp(-200, 200) / 20
+        dx = (player.aim_x - player.x).clamp(-200, 200) / 20
+        dy = (player.aim_y - player.y).clamp(-200, 200) / 20
         dx *= (player.fire_ticks / 10).clamp(1, 3)
         dy *= (player.fire_ticks / 10).clamp(1, 3)
         player.projectile.fire(player.x + TILE_SIZE / 4, player.y + TILE_SIZE / 2, dx, dy, player)
@@ -133,10 +133,10 @@ class GameLogic
       player.fire_ticks = 0
       player.state[:fire] = 0
     end
-    player.aimX = net_unpack_bigint(data[4..5])
-    player.aimY = net_unpack_bigint(data[6..7])
-    # player.projectile.x = player.aimX + 20
-    # player.projectile.y = player.aimY + 20
+    player.aim_x = net_unpack_bigint(data[4..5])
+    player.aim_y = net_unpack_bigint(data[6..7])
+    # player.projectile.x = player.aim_x + 20
+    # player.projectile.y = player.aim_y + 20
 
     player.check_out_of_world
 

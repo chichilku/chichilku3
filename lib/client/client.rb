@@ -382,8 +382,8 @@ class Client
       projR = player_str[3]
       projX = net_unpack_bigint(player_str[4..5])
       projY = net_unpack_bigint(player_str[6..7])
-      aimX = net_unpack_bigint(player_str[8..9])
-      aimY = net_unpack_bigint(player_str[10..11])
+      aim_x = net_unpack_bigint(player_str[8..9])
+      aim_y = net_unpack_bigint(player_str[10..11])
       x = net_unpack_bigint(player_str[12..13])
       y = net_unpack_bigint(player_str[14..15])
       # puts "'#{player_str}' id: #{id} x: #{x} '#{player_str[12..13]}' y: #{y} '#{player_str[14..15]}'"
@@ -396,7 +396,7 @@ class Client
       next if p_index.nil?
 
       @console.dbg "got player: #{@players[p_index]}"
-      new_player = Player.update_player(@players, id, x, y, score, aimX, aimY)
+      new_player = Player.update_player(@players, id, x, y, score, aim_x, aim_y)
       new_player.projectile.r = projR
       new_player.projectile.x = projX
       new_player.projectile.y = projY

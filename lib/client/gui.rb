@@ -424,8 +424,8 @@ class Gui < Gosu::Window
           @stick_crouching[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
-          x = player.aimX - player.x
-          y = player.aimY - player.y
+          x = player.aim_x - player.x
+          y = player.aim_y - player.y
           rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
           rot2 = Math.atan2(x, y) * 180 / Math::PI * -1 + 270 * -1
           stick_center_x = player.x + TILE_SIZE / 4
@@ -454,10 +454,10 @@ class Gui < Gosu::Window
         end
         if @is_debug # print id
           # aim
-          draw_rect(player.aimX - 2, player.aimY - 16, 4, 32, 0xCC33FF33)
-          draw_rect(player.aimX - 16, player.aimY - 2, 32, 4, 0xCC33FF33)
-          draw_rect(player.aimX, player.aimY - 15, 1, 30, 0xAA000000)
-          draw_rect(player.aimX - 15, player.aimY, 30, 1, 0xAA000000)
+          draw_rect(player.aim_x - 2, player.aim_y - 16, 4, 32, 0xCC33FF33)
+          draw_rect(player.aim_x - 16, player.aim_y - 2, 32, 4, 0xCC33FF33)
+          draw_rect(player.aim_x, player.aim_y - 15, 1, 30, 0xAA000000)
+          draw_rect(player.aim_x - 15, player.aim_y, 30, 1, 0xAA000000)
           # text background
           draw_rect(player.x - 2, player.y - 60, 32, 20, 0xAA000000)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - 60, 0, 1, 1)
@@ -488,7 +488,7 @@ class Gui < Gosu::Window
           draw_rect(5, 10, 290, 85, 0xAA000000)
           @font.draw_text('Press m to deactivate debug mode', 10, 10, 0, 1, 1)
           @font.draw_text("x: #{player.x} y: #{player.y}", 10, 30, 0, 1, 1)
-          @font.draw_text("aimX: #{player.aimX} aimY: #{player.aimY}", 10, 45, 0, 1, 1)
+          @font.draw_text("aim_x: #{player.aim_x} aim_y: #{player.aim_y}", 10, 45, 0, 1, 1)
           @font.draw_text("gamestate: #{@flags[:gamestate]}", 10, 60, 0, 1, 1)
           @font.draw_text("server version: #{@net_client.server_version}", 10, 75, 0, 1, 1)
           # thats useless because collide/delta speed is not sent over the network

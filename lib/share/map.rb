@@ -178,7 +178,7 @@ class Map
     return nil if @mapname == "" || @mapname.nil?
 
     if offset + size > @b64_size
-      @b64_data[offset ..].ljust(size, ' ')
+      @b64_data[offset..-1].ljust(size, ' ')
     else
       @b64_data[offset ... offset + size]
     end

@@ -3,7 +3,7 @@
 require_relative '../lib/share/network'
 
 describe 'Network', :network do
-  context 'With valid input' do
+  context 'With valid input should not crash' do
     it 'should pack valid small range without errors' do
       (0..NET_MAX_INT).each do |i|
         net_pack_int(i)
@@ -30,7 +30,9 @@ describe 'Network', :network do
         net_pack_bigint(i, 2)
       end
     end
+  end
 
+  context 'With vaid input should unpack correctly' do
     it 'should pack and unpack same value (small)' do
       (0..NET_MAX_INT).each do |i|
         expect(net_unpack_int(net_pack_int(i))).to eq(i)

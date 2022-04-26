@@ -8,8 +8,9 @@ require_relative 'projectile'
 SPAWN_X = 512
 SPAWN_Y = 100
 
+# Player objects represent stick figures
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching, :aimX, :aimY,
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching, :aim_x, :aim_y,
                 :projectile, :fire_ticks, :map_download
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
@@ -19,8 +20,8 @@ class Player
     @y = y.nil? ? SPAWN_Y : y
     @w = TILE_SIZE / 2
     @h = TILE_SIZE
-    @aimX = 0
-    @aimY = 0
+    @aim_x = 0
+    @aim_y = 0
     @projectile = Projectile.new
     @dx = 0
     @dy = 0
@@ -92,13 +93,13 @@ class Player
     players.find { |player| id == player.id }
   end
 
-  def self.update_player(players, id, x, y, score, aimX, aimY)
+  def self.update_player(players, id, x, y, score, aim_x, aim_y)
     player = get_player_by_id(players, id)
     player.x = x
     player.y = y
     player.score = score
-    player.aimX = aimX
-    player.aimY = aimY
+    player.aim_x = aim_x
+    player.aim_y = aim_y
     player
   end
 
@@ -106,20 +107,16 @@ class Player
   # server only #
   ###############
 
-  def set_name(name)
-    @name = name
-  end
-
   def tick
     move_x(@dx)
     move_y(@dy)
     @dx = normalize_zero(@dx)
     # @dy = normalize_zero(@dy)
     check_out_of_world
-    if @bleed_ticks.positive?
-      @bleed_ticks -= 1
-      state[:bleeding] = @bleed_ticks.zero? == false
-    end
+    return unless @bleed_ticks.positive?
+
+    @bleed_ticks -= 1
+    state[:bleeding] = @bleed_ticks.zero? == false
   end
 
   def check_player_collide(other)
@@ -261,7 +258,7 @@ class Player
     proj = @projectile.r.to_i.to_s # HACK: nil to "0"
     fake_y = @projectile.y.positive? ? @projectile.y : 0
     proj += "#{net_pack_bigint(@projectile.x, 2)}#{net_pack_bigint(fake_y, 2)}"
-    aim = "#{net_pack_bigint(@aimX, 2)}#{net_pack_bigint(@aimY, 2)}"
+    aim = "#{net_pack_bigint(@aim_x, 2)}#{net_pack_bigint(@aim_y, 2)}"
     "#{@id.to_s(16)}#{net_pack_int(@score)}#{state_to_net}#{proj}#{aim}#{pos}"
   end
 

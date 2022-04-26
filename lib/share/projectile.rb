@@ -2,6 +2,7 @@
 
 require_relative 'console'
 
+# Projectile class handles arrow logic
 class Projectile
   attr_accessor :x, :y, :dx, :dy, :r, :w, :h, :owner_id
 
@@ -88,26 +89,31 @@ class Projectile
   # 3 /      7 /
   #  v
   def calc_rotation
-    @r = if @dy > -3 && @dy < 3
-           if @dx.negative?
-             4
-           else
-             0
-           end
-         elsif @dy.negative?
-           if @dx > -3 && @dx < 3
-             6
-           elsif @dx.negative?
-             5
-           else
-             7
-           end
-         elsif @dx > -3 && @dx < 3
-           2
-         elsif @dx.negative?
-           3
-         else
-           1
-         end
+    @r = xy_to_rotation(@x, @y)
+  end
+
+  private
+
+  def xy_to_rotation(delta_x, delta_y)
+    if delta_y > -3 && delta_y < 3
+      if x.negative?
+        4
+      else
+        0
+      end
+    elsif delta_y.negative?
+      if delta_x > -3 && delta_x < 3
+        6
+      elsif delta_x.negative?
+        5
+      else
+        7
+      end
+    elsif delta_x > -3 && delta_x < 3
+      2
+    elsif delta_x.negative?
+      3
+    end
+    1
   end
 end
