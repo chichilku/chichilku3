@@ -21,7 +21,7 @@ class Map
     @cfg = cfg
     @mapname = mapname
     @b64_size = -1
-    @b64_data = ""
+    @b64_data = ''
     @sha1sum = checksum
     @gametiles = []
     @ready = false
@@ -33,11 +33,11 @@ class Map
     @tmpfile = nil
   end
 
-  def checksum()
+  def checksum
     @sha1sum
   end
 
-  def name()
+  def name
     @mapname
   end
 
@@ -47,7 +47,7 @@ class Map
     @mapname = name
   end
 
-  def size()
+  def size
     @b64_size
   end
 
@@ -59,7 +59,7 @@ class Map
 
   def load_gametiles(map_dir)
     gamefile = "#{map_dir}/gametiles.txt"
-    unless File.exists? gamefile
+    unless File.exist? gamefile
       @console.err "could not load gametiles '#{gamefile}'"
       exit 1
     end
@@ -68,9 +68,10 @@ class Map
     @gametiles = []
     File.readlines(gamefile).each_with_index do |data, i|
       gamerow = data[0..-2] # cut off newline
-      is_skip = !is_skip if gamerow =~ /\+\-+\+/
+      is_skip = !is_skip if gamerow =~ /\+-+\+/
       gamerow = gamerow.match(/\|(.*)\|/)
       next if gamerow.nil?
+
       gamerow = gamerow[1]
       next if is_skip
 
@@ -88,7 +89,7 @@ class Map
 
   def load_metadata(map_dir)
     metafile = "#{map_dir}/metadata.json"
-    unless File.exists? metafile
+    unless File.exist? metafile
       @console.err "could not load gametiles '#{metafile}'"
       exit 1
     end
@@ -109,46 +110,46 @@ class Map
   end
 
   def is_death?(x, y)
-    {x: x, y: y} if @gametiles[y][x] == "X"
+    { x: x, y: y } if @gametiles[y][x] == 'X'
   end
 
   def is_collision?(x, y)
-    {x: x, y: y} if @gametiles[y][x] == "O"
+    { x: x, y: y } if @gametiles[y][x] == 'O'
   end
 
   # SERVER
 
-  def prepare_upload()
-    return if @mapname == "" || @mapname.nil?
+  def prepare_upload
+    return if @mapname == '' || @mapname.nil?
 
     map_dir = "#{@cfg.chichilku3_dir}maps/#{@mapname}"
     unless File.directory? map_dir
       @console.err "failed to load map '#{@mapname}' (directory not found)"
       exit 1
     end
-    unless File.exists? "#{map_dir}/background.png"
+    unless File.exist? "#{map_dir}/background.png"
       @console.err "failed to load map '#{@mapname}' (no background.png)"
       exit 1
     end
-    unless File.exists? "#{map_dir}/gametiles.txt"
+    unless File.exist? "#{map_dir}/gametiles.txt"
       @console.err "failed to load map '#{@mapname}' (no gametiles.txt)"
       exit 1
     end
     load_data(map_dir)
-    zip()
-    encode()
+    zip
+    encode
   end
 
-  def zip()
+  def zip
     map_dir = "#{@cfg.chichilku3_dir}maps/#{@mapname}"
     map_zip = "#{@cfg.chichilku3_dir}maps/#{@mapname}.zip"
-    File.delete map_zip if File.exists? map_zip
+    File.delete map_zip if File.exist? map_zip
 
     @console.log "archiving map '#{map_zip}' ..."
     Zip::File.open(map_zip, Zip::File::CREATE) do |zipfile|
       MAP_FILES.each do |filename|
         filepath = File.join(map_dir, filename)
-        unless File.exists? filepath
+        unless File.exist? filepath
           @console.err "failed to zip map '#{@mapname}' missing file:"
           @console.err filepath
           exit 1
@@ -158,41 +159,41 @@ class Map
     end
   end
 
-  def encode()
+  def encode
     rawfile = "#{@cfg.chichilku3_dir}maps/#{@mapname}.zip"
     @console.log "encoding map archive '#{@mapname}' ..."
     File.open(rawfile, 'rb') do |map_png|
       raw_content = map_png.read
       @sha1sum = Digest::SHA1.hexdigest raw_content
-      encodefile = "#{@cfg.chichilku3_dir}maps_b64/#{@mapname}_#{checksum()}.zip"
+      encodefile = "#{@cfg.chichilku3_dir}maps_b64/#{@mapname}_#{checksum}.zip"
       File.open(encodefile, 'wb') do |map_encoded|
         @b64_data = Base64.encode64(raw_content).delete! "\n"
-        @b64_size = @b64_data.size()
+        @b64_size = @b64_data.size
         map_encoded.write(@b64_data)
       end
     end
-    @console.log "finished encoding size=#{@b64_size} checksum=#{checksum()}"
+    @console.log "finished encoding size=#{@b64_size} checksum=#{checksum}"
   end
 
   def get_data(offset, size)
-    return nil if @mapname == "" || @mapname.nil?
+    return nil if @mapname == '' || @mapname.nil?
 
     if offset + size > @b64_size
       @b64_data[offset..-1].ljust(size, ' ')
     else
-      @b64_data[offset ... offset + size]
+      @b64_data[offset...offset + size]
     end
   end
 
   # CLIENT
 
-  def dl_path()
-    "#{@cfg.chichilku3_dir}downloadedmaps/#{@mapname}_#{checksum()}"
+  def dl_path
+    "#{@cfg.chichilku3_dir}downloadedmaps/#{@mapname}_#{checksum}"
   end
 
-  def prepare_download()
+  def prepare_download
     @tmpfile = "#{@cfg.chichilku3_dir}tmp/#{@mapname}"
-    File.delete @tmpfile if File.exists? @tmpfile
+    File.delete @tmpfile if File.exist? @tmpfile
   end
 
   def download(data)
@@ -201,19 +202,19 @@ class Map
     @console.dbg "downloading #{@progress} / #{@b64_size} ..."
     IO.write(@tmpfile, data, mode: 'a')
     if @progress >= @b64_size
-      @console.log "finished download"
+      @console.log 'finished download'
       @callback.call(load)
     end
     @progress
   end
 
-  def has_map?()
-    File.directory? dl_path()
+  def has_map?
+    File.directory? dl_path
   end
 
-  def unzip()
-    map_archive = "#{dl_path()}.zip"
-    map_dir = dl_path()
+  def unzip
+    map_archive = "#{dl_path}.zip"
+    map_dir = dl_path
     FileUtils.mkdir_p map_dir
     Dir.chdir map_dir do
       Zip::File.open(map_archive) do |zip_file|
@@ -225,13 +226,13 @@ class Map
         end
       end
     end
-    File.delete map_archive if File.exists? map_archive
+    File.delete map_archive if File.exist? map_archive
     map_dir
   end
 
-  def load()
-    outfile = "#{dl_path()}.zip"
-    @console.log "converting downloaded map ..."
+  def load
+    outfile = "#{dl_path}.zip"
+    @console.log 'converting downloaded map ...'
     File.open(@tmpfile, 'rb') do |map_encoded|
       File.open(outfile, 'wb') do |map_png|
         map_png.write(
@@ -239,6 +240,6 @@ class Map
         )
       end
     end
-    unzip()
+    unzip
   end
 end
