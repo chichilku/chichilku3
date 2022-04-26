@@ -17,7 +17,7 @@ MOUSE_RADIUS = 200
 $time_point = Time.now
 $time_buffer = 0
 
-def get_frame_time
+def frame_time
   diff = Time.now - $time_point
   $time_point = Time.now
   diff
@@ -98,14 +98,12 @@ class Gui < Gosu::Window
 
     @last_pressed_button = {}
 
-    # depreciated ._.
-    # @con_msg = Gosu::Image.from_text(self, "connecting to #{@cfg.data['ip']}:#{@cfg.data['port']}...", Gosu.default_font_name, 45)
     init_menu
 
-    unless ARGV.empty?
-      port = ARGV.length > 1 ? ARGV[1].to_i : 9900
-      connect(ARGV[0], port)
-    end
+    return if ARGV.empty?
+
+    port = ARGV.length > 1 ? ARGV[1].to_i : 9900
+    connect(ARGV[0], port)
   end
 
   def img(path)
@@ -315,12 +313,12 @@ class Gui < Gosu::Window
   end
 
   def update
-    $time_buffer += get_frame_time
-    if $time_buffer > MAX_TICK_SPEED
-      @tick += 1
-      main_tick
-      $time_buffer = 0
-    end
+    $time_buffer += frame_time
+    return unless $time_buffer > MAX_TICK_SPEED
+
+    @tick += 1
+    main_tick
+    $time_buffer = 0
   end
 
   def draw_main_menu
@@ -384,7 +382,6 @@ class Gui < Gosu::Window
   end
 
   def draw
-    # draw_quad(0, 0, 0xffff8888, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0, 0, 0xffffffff, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0xffffffff, 0)
     case @state
     when STATE_MENU
       case @menu_page

@@ -266,7 +266,7 @@ class ServerCore
     end
 
     @last_alive_pck_by_client = Time.now
-    port, ip = Socket.unpack_sockaddr_in(cli[NET_CLIENT].getpeername)
+    _port, ip = Socket.unpack_sockaddr_in(cli[NET_CLIENT].getpeername)
     server_response = handle_client_data(cli, client_data, ip, dt)
     pck_type = server_response[0]
     if pck_type == SERVER_PCK_TYPE[:error]
@@ -324,7 +324,7 @@ class ServerCore
   end
 
   def ban_client(client, seconds, message = 'banned')
-    port, ip = Socket.unpack_sockaddr_in(client.getpeername)
+    _port, ip = Socket.unpack_sockaddr_in(client.getpeername)
     ban_ip(ip, seconds, message)
     net_write("0l#{NET_ERR_BAN}#{message}"[0..SERVER_PACKAGE_LEN].ljust(SERVER_PACKAGE_LEN, ' '), client)
     client.close
@@ -346,7 +346,7 @@ class ServerCore
   def num_ip_connected(ip)
     connected = 0
     @clients.each do |client|
-      port, conencted_ip = Socket.unpack_sockaddr_in(client[NET_CLIENT].getpeername)
+      _port, conencted_ip = Socket.unpack_sockaddr_in(client[NET_CLIENT].getpeername)
       connected += 1 if conencted_ip == ip
     end
     connected
@@ -355,7 +355,7 @@ class ServerCore
   def accept(server)
     last_connect = Hash.new([Time.now, 0])
     Socket.accept_loop(server) do |client|
-      port, ip = Socket.unpack_sockaddr_in(client.getpeername)
+      _port, ip = Socket.unpack_sockaddr_in(client.getpeername)
       if ip_banned?(ip)
         net_write("0l#{NET_ERR_BAN}banned".ljust(SERVER_PACKAGE_LEN, ' '), client)
         client.close

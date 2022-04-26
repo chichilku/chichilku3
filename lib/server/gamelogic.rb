@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# high level game logic
 class GameLogic
   def initialize(console)
     @console = console

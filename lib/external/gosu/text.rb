@@ -4,6 +4,7 @@
 # Gosu is released under the MIT license.
 require 'gosu'
 
+# Input text boxes
 class TextField < Gosu::TextInput
   FONT = Gosu::Font.new(60)
   WIDTH = 800
