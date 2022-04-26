@@ -89,31 +89,28 @@ class Projectile
   # 3 /      7 /
   #  v
   def calc_rotation
-    @r = xy_to_rotation(@x, @y)
-  end
-
-  private
-
-  def xy_to_rotation(delta_x, delta_y)
-    if delta_y > -3 && delta_y < 3
-      if x.negative?
-        4
-      else
-        0
-      end
-    elsif delta_y.negative?
-      if delta_x > -3 && delta_x < 3
-        6
-      elsif delta_x.negative?
-        5
-      else
-        7
-      end
-    elsif delta_x > -3 && delta_x < 3
-      2
-    elsif delta_x.negative?
-      3
+    if @dy > -3 && @dy < 3
+        if @dx < 0
+            @r = 4
+        else
+            @r = 0
+        end
+    elsif @dy < 0
+        if @dx > -3 && @dx < 3
+            @r = 6
+        elsif @dx < 0
+            @r = 5
+        else
+            @r = 7
+        end
+    else
+        if @dx > -3 && @dx < 3
+            @r = 2
+        elsif @dx < 0
+            @r = 3
+        else
+            @r = 1
+        end
     end
-    1
   end
 end
