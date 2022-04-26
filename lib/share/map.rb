@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'base64'
 require 'digest/sha1'
 require 'zip'
@@ -11,7 +13,7 @@ MAP_FILES = [
   'background.png',
   'gametiles.txt',
   'metadata.json'
-]
+].freeze
 
 # Map class handles the world file format
 class Map

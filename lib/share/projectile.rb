@@ -89,28 +89,26 @@ class Projectile
   # 3 /      7 /
   #  v
   def calc_rotation
-    if @dy > -3 && @dy < 3
-        if @dx < 0
-            @r = 4
-        else
-            @r = 0
-        end
-    elsif @dy < 0
-        if @dx > -3 && @dx < 3
-            @r = 6
-        elsif @dx < 0
-            @r = 5
-        else
-            @r = 7
-        end
-    else
-        if @dx > -3 && @dx < 3
-            @r = 2
-        elsif @dx < 0
-            @r = 3
-        else
-            @r = 1
-        end
-    end
+    @r = if @dy > -3 && @dy < 3
+           if @dx.negative?
+             4
+           else
+             0
+           end
+         elsif @dy.negative?
+           if @dx > -3 && @dx < 3
+             6
+           elsif @dx.negative?
+             5
+           else
+             7
+           end
+         elsif @dx > -3 && @dx < 3
+           2
+         elsif @dx.negative?
+           3
+         else
+           1
+         end
   end
 end
