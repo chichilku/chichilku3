@@ -147,5 +147,4 @@ end
 
 def net_error(err)
   raise "NetError: #{err}"
-  exit 1
 end

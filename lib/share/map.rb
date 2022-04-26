@@ -13,6 +13,7 @@ MAP_FILES = [
   'metadata.json'
 ]
 
+# Map class handles the world file format
 class Map
   attr_reader :gametiles, :ready, :metadata
 
@@ -41,6 +42,8 @@ class Map
     @mapname
   end
 
+  # TODO: fix this rubocop
+  # rubocop:disable Naming/AccessorMethodName
   def set_name(name)
     raise unless @mapname.nil?
 
@@ -56,6 +59,7 @@ class Map
 
     @b64_size = size
   end
+  # rubocop:enable Naming/AccessorMethodName
 
   def load_gametiles(map_dir)
     gamefile = "#{map_dir}/gametiles.txt"
@@ -81,10 +85,12 @@ class Map
       end
       @gametiles << gamerow
     end
+    # rubocop:disable Style/GuardClause
     if @gametiles.length != MAP_HEIGHT
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
+    # rubocop:enable Style/GuardClause
   end
 
   def load_metadata(map_dir)
@@ -109,11 +115,11 @@ class Map
     @ready = true
   end
 
-  def is_death?(x, y)
+  def death?(x, y)
     { x: x, y: y } if @gametiles[y][x] == 'X'
   end
 
-  def is_collision?(x, y)
+  def collision?(x, y)
     { x: x, y: y } if @gametiles[y][x] == 'O'
   end
 
@@ -208,7 +214,7 @@ class Map
     @progress
   end
 
-  def has_map?
+  def found?
     File.directory? dl_path
   end
 

@@ -48,27 +48,27 @@ class GameLogic
 
   def map_collision(map, player)
     # left bottom
-    col = map.is_collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    col = map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
       player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # right bottom
-    col = map.is_collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    col = map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
       player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # left top
-    col = map.is_collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
+    col = map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
     if col
       player.y = (col[:y] * TILE_SIZE) + player.h
       player.do_collide(:up, true)
     end
     # right top
-    col = map.is_collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
+    col = map.collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
     if col
       player.y = (col[:y] * TILE_SIZE) + player.h
       player.do_collide(:up, true)
@@ -164,7 +164,7 @@ class GameLogic
         player.state[:bleeding] = false
         player.die
       end
-    elsif map.is_death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    elsif map.death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
       player.dead = true
       player.dead_ticks = 0
     end

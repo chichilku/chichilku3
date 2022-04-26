@@ -198,7 +198,7 @@ class Client
       @map.set_name(mapname)
       @map.set_size(size)
       accept = "0"
-      if @map.has_map?
+      if @map.found?
         @console.log "loading map name='#{mapname}'"
         finished_download_callback(@map.dl_path())
       else

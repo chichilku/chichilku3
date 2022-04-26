@@ -507,9 +507,9 @@ class Gui < Gosu::Window
           if @net_client.map&.ready
             (0..(MAP_HEIGHT - 1)).each do |gy|
               (0..(MAP_WIDTH - 1)).each do |gx|
-                if @net_client.map.is_collision?(gx, gy)
+                if @net_client.map.collision?(gx, gy)
                   draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
-                elsif @net_client.map.is_death?(gx, gy)
+                elsif @net_client.map.death?(gx, gy)
                   draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAAEE0000)
                 end
               end

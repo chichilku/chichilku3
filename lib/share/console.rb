@@ -27,7 +27,12 @@ class Console
 
   def log_type(type, message)
     t = Time.now
-    puts format('[%02d:%02d:%02d][%s] %s', t.hour, t.min, t.sec, type, message)
+    puts format('[%<hour>02d:%<min>02d:%<sec>02d][%<type>s] %<msg>s',
+      hour: t.hour,
+      min: t.min,
+      sec: t.sec,
+      type: type,
+      msg: message)
   end
 end
 
