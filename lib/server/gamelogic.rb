@@ -32,13 +32,13 @@ class GameLogic
     end
   end
 
-  def tick(map, players, dt, tick)
+  def tick(game_map, players, dt, tick)
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
 
-      map_collision(map, player)
-      gravity(map, player, dt, tick)
+      game_map_collision(game_map, player)
+      gravity(game_map, player, dt, tick)
       player.tick
       player.projectile.tick(players)
       # player collsions works
@@ -47,29 +47,29 @@ class GameLogic
     end
   end
 
-  def map_collision(map, player)
+  def game_map_collision(game_map, player)
     # left bottom
-    col = map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
       player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # right bottom
-    col = map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = (col[:y] - 1) * TILE_SIZE
       player.y += TILE_SIZE / 2 if player.state[:crouching]
       player.do_collide(:down, true)
     end
     # left top
-    col = map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
+    col = game_map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
     if col
       player.y = (col[:y] * TILE_SIZE) + player.h
       player.do_collide(:up, true)
     end
     # right top
-    col = map.collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
+    col = game_map.collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
     if col
       player.y = (col[:y] * TILE_SIZE) + player.h
       player.do_collide(:up, true)
@@ -140,7 +140,7 @@ class GameLogic
     # player.projectile.x = player.aim_x + 20
     # player.projectile.y = player.aim_y + 20
 
-    player.check_out_of_world
+    player.check_out_of_game_map
 
     # return updated players
     players
@@ -157,7 +157,7 @@ class GameLogic
     end
   end
 
-  def gravity(map, player, _dt, _tick)
+  def gravity(game_map, player, _dt, _tick)
     if player.dead
       player.dead_ticks += 1
       player.state[:bleeding] = true
@@ -166,7 +166,7 @@ class GameLogic
         player.state[:bleeding] = false
         player.die
       end
-    elsif map.death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+    elsif game_map.death?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
       player.dead = true
       player.dead_ticks = 0
     end

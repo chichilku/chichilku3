@@ -15,8 +15,8 @@ MAP_FILES = [
   'metadata.json'
 ].freeze
 
-# Map class handles the world file format
-class Map
+# GameMap class handles the game_map file format
+class GameMap
   attr_reader :gametiles, :ready, :metadata
 
   def initialize(console, cfg, mapname, callback = nil, checksum = nil)

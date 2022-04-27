@@ -3,7 +3,7 @@
 require 'socket'
 require_relative '../share/network'
 require_relative '../share/player'
-require_relative '../share/map'
+require_relative '../share/game_map'
 
 STATE_ERROR = -2
 STATE_MENU = -1
@@ -15,7 +15,7 @@ STATE_REC_PLAYBACK = 4
 
 # Networking part of the game clientside
 class Client
-  attr_reader :id, :state, :server_version, :map
+  attr_reader :id, :state, :server_version, :game_map
 
   def initialize(console, cfg, gui)
     @id = nil
@@ -36,7 +36,7 @@ class Client
 
     @server_version = nil
 
-    @map = nil
+    @game_map = nil
 
     # @force_send
     # used by client to send data regardless of what the gui
@@ -195,32 +195,32 @@ class Client
       return [1, data]
     when 5 # map info
       checksum = data[0..39]
-      @map = Map.new(@console, @cfg, nil, method(:finished_download_callback), checksum)
+      @game_map = GameMap.new(@console, @cfg, nil, method(:finished_download_callback), checksum)
     when 6 # map download init
       size = net_unpack_bigint(data[0..5])
       mapname = data[6..-1].strip
-      @map.set_name(mapname)
-      @map.set_size(size)
+      @game_map.set_name(mapname)
+      @game_map.set_size(size)
       accept = '0'
-      if @map.found?
+      if @game_map.found?
         @console.log "loading map name='#{mapname}'"
-        finished_download_callback(@map.dl_path)
+        finished_download_callback(@game_map.dl_path)
       else
         @console.log "downloading map name='#{mapname}' size=#{size} ..."
         update_state(STATE_DOWNLOADING)
-        @map.prepare_download
+        @game_map.prepare_download
         accept = '1'
       end
       @force_send = "5l#{@id.to_s(16)}#{accept}b641000"
     when 7 # map download chunk
-      if @map.nil?
+      if @game_map.nil?
         @console.wrn 'got unexpected map chunk from server (no map)'
         @force_send = "5l#{@id.to_s(16)}0b641000"
       elsif @state != STATE_DOWNLOADING
         @console.wrn 'got unexpected map chunk from server (wrong client state)'
         @force_send = "5l#{@id.to_s(16)}0b641000"
       else
-        @extra = [@map.download(data), @map.size]
+        @extra = [@game_map.download(data), @game_map.size]
       end
     else
       @console.log "ERROR unkown protocol=#{protocol} data='#{data}'"
@@ -313,7 +313,7 @@ class Client
   def finished_download_callback(map_dir)
     update_state(STATE_INGAME)
     @gui.load_background_image(map_dir)
-    @map.load_data(map_dir)
+    @game_map.load_data(map_dir)
   end
 
   # TODO: add protocol class for this

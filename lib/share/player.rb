@@ -112,7 +112,7 @@ class Player
     move_y(@dy)
     @dx = normalize_zero(@dx)
     # @dy = normalize_zero(@dy)
-    check_out_of_world
+    check_out_of_game_map
     return unless @bleed_ticks.positive?
 
     @bleed_ticks -= 1
@@ -137,7 +137,7 @@ class Player
     die(attacker) if @health <= 0
   end
 
-  # def check_out_of_world #die
+  # def check_out_of_game_map #die
   #   # y
   #   if @y < 0
   #     die
@@ -152,7 +152,7 @@ class Player
   #   end
   # end
   # swap size
-  def check_out_of_world
+  def check_out_of_game_map
     # y
     if @y.negative?
       die

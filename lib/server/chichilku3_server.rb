@@ -5,7 +5,7 @@ require 'socket'
 require_relative '../share/console'
 require_relative '../share/network'
 require_relative '../share/player'
-require_relative '../share/map'
+require_relative '../share/game_map'
 
 require_relative 'gamelogic'
 require_relative 'server_cfg'
@@ -34,8 +34,8 @@ class ServerCore
     @gamelogic = GameLogic.new(@console)
 
     @cfg.data['map'] = 'battle' if @cfg.data['map'] == ''
-    @map = Map.new(@console, @cfg, @cfg.data['map'])
-    @map.prepare_upload
+    @game_map = GameMap.new(@console, @cfg, @cfg.data['map'])
+    @game_map.prepare_upload
   end
 
   def parse_client_version(data)
@@ -118,18 +118,18 @@ class ServerCore
   end
 
   def map_info_pck
-    "5l#{@map.checksum}".ljust(SERVER_PACKAGE_LEN, ' ')
+    "5l#{@game_map.checksum}".ljust(SERVER_PACKAGE_LEN, ' ')
   end
 
   def map_dl_init_pck
-    size = net_pack_bigint(@map.size, 6)
-    name = @map.name
+    size = net_pack_bigint(@game_map.size, 6)
+    name = @game_map.name
     "6l#{size}#{name}".ljust(SERVER_PACKAGE_LEN, ' ')
   end
 
   def map_dl_chunk_pck(player)
     size = SERVER_PACKAGE_LEN - 2
-    map_chunk = @map.get_data(player.map_download, size)
+    map_chunk = @game_map.get_data(player.map_download, size)
     player.map_download += size
     "7l#{map_chunk}"
   end
@@ -200,7 +200,7 @@ class ServerCore
       end
       case protocol
       when 2 # update pck
-        return update_pck(data, dt) if @map.nil?
+        return update_pck(data, dt) if @game_map.nil?
 
         player = Player.get_player_by_id(@players, id)
         if player.map_download == -2
@@ -212,7 +212,7 @@ class ServerCore
           # wait for the client to respond
           player.map_download = -3
           map_dl_init_pck
-        elsif player.map_download < @map.size && player.map_download >= 0
+        elsif player.map_download < @game_map.size && player.map_download >= 0
           map_dl_chunk_pck(player)
         else
           update_pck(data, dt)
@@ -220,7 +220,7 @@ class ServerCore
       when 4 # command
         command_package(data, client)
       when 5 # map info response
-        return update_pck(data, dt) if @map.nil?
+        return update_pck(data, dt) if @game_map.nil?
 
         player = Player.get_player_by_id(@players, id)
         if data[1] == '1'
@@ -229,7 +229,7 @@ class ServerCore
           map_dl_chunk_pck(player)
         else
           @console.log 'player rejected map download'
-          player.map_download = @map.size
+          player.map_download = @game_map.size
           update_pck(data, dt)
         end
       else
@@ -309,7 +309,7 @@ class ServerCore
       end
       $next_tick = Time.now + MAX_TICK_SPEED
       @tick += 1
-      @players = @gamelogic.tick(@map, @players, diff, @tick)
+      @players = @gamelogic.tick(@game_map, @players, diff, @tick)
       # there is no gurantee the client will tick here
       # there might be 2 gamelogic ticks and posticks
       # before the server recieves client data
