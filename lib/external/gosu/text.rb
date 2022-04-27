@@ -74,17 +74,4 @@ class TextField < Gosu::TextInput
     @window.mouse_x > x - PADDING and @window.mouse_x < x + WIDTH + PADDING and
       @window.mouse_y > y - PADDING and @window.mouse_y < y + height + PADDING
   end
-
-  # Tries to move the caret to the position specifies by mouse_x
-  def move_caret_to_mouse
-    # Test character by character
-    1.upto(text.length) do |i|
-      if @window.mouse_x < x + FONT.text_width(text[0...i])
-        self.caret_pos = self.selection_start = i - 1
-        return
-      end
-    end
-    # Default case: user must have clicked the right edge
-    self.caret_pos = self.selection_start = text.length
-  end
 end

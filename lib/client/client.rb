@@ -254,7 +254,7 @@ class Client
     net_write(data)
   end
 
-  def set_id(id)
+  def update_id(id)
     if id > MAX_CLIENTS || id < 1
       @console.log "Errornous id=#{id}"
       return false
@@ -269,7 +269,7 @@ class Client
     @console.log 'Trying to read id...'
     @playercount = net_unpack_int(data[0..1])
     id = data[2].to_i(16)
-    set_id(id)
+    update_id(id)
   end
 
   def id_packet(data)

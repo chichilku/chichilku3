@@ -74,6 +74,7 @@ class GameLogic
       player.y = (col[:y] * TILE_SIZE) + player.h
       player.do_collide(:up, true)
     end
+    nil
   end
 
   def handle_client_requests(data, id, players, _dt)

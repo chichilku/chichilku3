@@ -316,7 +316,7 @@ class ServerCore
       # since it is a nonblocking read and server/client are not in perfect sync
       @clients.each do |client|
         client_tick(client, diff)
-      rescue Errno::ECONNRESET, Errno::ENOTCONN, EOFError, IOError
+      rescue Errno::ECONNRESET, Errno::ENOTCONN, IOError
         disconnect_client(client)
       end
       @players = @gamelogic.posttick(@players, diff)
