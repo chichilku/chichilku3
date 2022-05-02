@@ -17,10 +17,15 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
-    - name: Build and test with rspec
+    - name: Prepare
       run: |
         sudo apt-get update
-        sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
+        sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev shellcheck
         gem install bundler
+        gem install rubocop
         bundle install --jobs 4 --retry 3
-        bundle exec rspec
+    - name: Check ruby with rubocop
+      run: |
+        rubocop
+    - name: Shellcheck
+      run: find . -type f -name '*.sh' -print0 | xargs -0 shellcheck
