@@ -37,7 +37,7 @@ class GameLogic
       # reset values (should stay first)
       player.reset_collide
 
-      game_map_collision(game_map, player)
+      game_map_collision_vertical(game_map, player)
       gravity(game_map, player, dt, tick)
       player.tick
       player.projectile.tick(players)
@@ -47,7 +47,37 @@ class GameLogic
     end
   end
 
-  def game_map_collision(game_map, player)
+  def game_map_collision_horizontal(game_map, player, dir)
+    # left bottom
+    col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h - 1) / TILE_SIZE)
+    if col
+      player.x = (col[:x] - 1) * TILE_SIZE
+      player.x += dir * (TILE_SIZE / 2) if player.state[:crouching]
+      player.do_collide(:left, true)
+    end
+    # # right bottom
+    # col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h - 1) / TILE_SIZE)
+    # if col
+    #   player.x = (col[:x] - 1) * TILE_SIZE
+    #   player.x += dir * (TILE_SIZE / 2) if player.state[:crouching]
+    #   player.do_collide(:down, true)
+    # end
+    # # left top
+    # col = game_map.collision?(player.x / TILE_SIZE, (player.y + 1) / TILE_SIZE)
+    # if col
+    #   player.x = (col[:x] * TILE_SIZE) + player.h
+    #   player.do_collide(:up, true)
+    # end
+    # # right top
+    # col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + 1) / TILE_SIZE)
+    # if col
+    #   player.x = (col[:x] * TILE_SIZE) + player.h
+    #   player.do_collide(:up, true)
+    # end
+    nil
+  end
+
+  def game_map_collision_vertical(game_map, player)
     # left bottom
     col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
@@ -77,7 +107,7 @@ class GameLogic
     nil
   end
 
-  def handle_client_requests(data, id, players, _dt)
+  def handle_client_requests(game_map, data, id, players, _dt)
     player = Player.get_player_by_id(players, id)
     if player.nil?
       @console.log "WARNING failed to update nil player with id=#{id}"
@@ -104,11 +134,13 @@ class GameLogic
     end
     if data[1] == 'l'
       @console.dbg "player=#{id} wants to walk left"
-      player.move_left
+      player.move_left(game_map)
+      # game_map_collision_horizontal(game_map, player, -1)
     end
     if data[1] == 'r'
       @console.dbg "player=#{id} wants to walk right"
-      player.move_right
+      player.move_right(game_map)
+      # game_map_collision_horizontal(game_map, player, 1)
     end
     if data[2] == '1'
       @console.dbg "player=#{id} wants to jump"

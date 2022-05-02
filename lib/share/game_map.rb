@@ -87,12 +87,11 @@ class GameMap
       end
       @gametiles << gamerow
     end
-    # rubocop:disable Style/GuardClause
     if @gametiles.length != MAP_HEIGHT
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
-    # rubocop:enable Style/GuardClause
+    @console.log "load gametiles #{@gametiles}"
   end
 
   def load_metadata(map_dir)

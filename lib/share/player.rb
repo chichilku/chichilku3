@@ -156,7 +156,7 @@ class Player
     # y
     if @y.negative?
       die
-    elsif @y > WINDOW_SIZE_Y
+    elsif @y >= WINDOW_SIZE_Y - TILE_SIZE
       die
     end
     # x ( comment me out to add the glitch feature agian )
@@ -188,14 +188,54 @@ class Player
   # if move_left or move_right set u on a collided field
   # dont update the position or slow down speed
   # idk make sure to not get stuck in walls
-  def move_left
-    # @dx = -8
-    @x -= state[:crouching] ? 4 : 8
+
+  def check_move_left(game_map)
+    # left bottom
+    col = game_map.collision?(@x / TILE_SIZE, (@y + @h - 1) / TILE_SIZE)
+    if col
+      @x = (col[:x] + 1) * TILE_SIZE
+      @x += TILE_SIZE / 2 if @state[:crouching]
+      do_collide(:left, true)
+    end
+    # left top
+    col = game_map.collision?(@x / TILE_SIZE, (@y + 1) / TILE_SIZE)
+    if col
+      @x = (col[:x] * TILE_SIZE) + @h
+      do_collide(:left, true)
+    end
+    nil
   end
 
-  def move_right
+  def check_move_right(game_map)
+    # right bottom
+    col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + @h - 1) / TILE_SIZE)
+    if col
+      @x = (col[:x] - 1) * TILE_SIZE
+      @x += TILE_SIZE / 2 unless state[:crouching]
+      @x -= 1
+      do_collide(:right, true)
+    end
+    # right top
+    col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + 1) / TILE_SIZE)
+    if col
+      @x = (col[:x] - 1) * TILE_SIZE
+      @x += TILE_SIZE / 2 unless state[:crouching]
+      @x -= 1
+      do_collide(:right, true)
+    end
+    nil
+  end
+
+  def move_left(game_map)
+    # @dx = -8
+    @x -= state[:crouching] ? 4 : 8
+    check_move_left(game_map)
+  end
+
+  def move_right(game_map)
     # @dx = 8
     @x += state[:crouching] ? 4 : 8
+    check_move_right(game_map)
   end
 
   def apply_force(x, y)
