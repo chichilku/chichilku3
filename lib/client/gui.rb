@@ -106,6 +106,10 @@ class Gui < Gosu::Window
     connect(ARGV[0], port)
   end
 
+  def needs_cursor?
+    @state != STATE_INGAME
+  end
+
   def img(path)
     File.join(File.dirname(__FILE__), '../../lib/client/img/', path)
   end
