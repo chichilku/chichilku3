@@ -385,6 +385,20 @@ class Gui < Gosu::Window
     draw_rect(x + 1 * s, y + 1 * s, 2 * s, 2 * s, 0xFF00FF00, 1)
   end
 
+  def draw_debug_gametiles
+    return unless @net_client.game_map&.ready
+
+    (0..(MAP_HEIGHT - 1)).each do |gy|
+      (0..(MAP_WIDTH - 1)).each do |gx|
+        if @net_client.game_map.collision?(gx, gy)
+          draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
+        elsif @net_client.game_map.death?(gx, gy)
+          draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAAEE0000)
+        end
+      end
+    end
+  end
+
   def draw
     case @state
     when STATE_MENU
@@ -504,18 +518,7 @@ class Gui < Gosu::Window
           (1..MAP_HEIGHT).each do |gy|
             draw_rect(0, gy * TILE_SIZE, WINDOW_SIZE_X, 1, 0xAA00EE00)
           end
-          # gametiles
-          if @net_client.game_map&.ready
-            (0..(MAP_HEIGHT - 1)).each do |gy|
-              (0..(MAP_WIDTH - 1)).each do |gx|
-                if @net_client.game_map.collision?(gx, gy)
-                  draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAA00EE00)
-                elsif @net_client.game_map.death?(gx, gy)
-                  draw_rect(gx * TILE_SIZE, gy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0xAAEE0000)
-                end
-              end
-            end
-          end
+          draw_debug_gametiles
         end
       end
 
