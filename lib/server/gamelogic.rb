@@ -37,9 +37,9 @@ class GameLogic
       # reset values (should stay first)
       player.reset_collide
 
-      game_map_collision_vertical(game_map, player)
       gravity(game_map, player, dt, tick)
       player.tick
+      game_map_collision_vertical(game_map, player)
       player.projectile.tick(players)
       # player collsions works
       # but it eats performance and delays jumping
@@ -100,15 +100,17 @@ class GameLogic
       @console.dbg "player=#{id} wants to crouch"
       player.state[:crouching] = true
       player.x -= PLAYER_SIZE / 4 unless player.was_crouching
-      player.check_move_left(game_map)
+      player.check_move_right(game_map)
       player.was_crouching = true
     end
     if data[1] == 'l'
+      game_map_collision_vertical(game_map, player)
       @console.dbg "player=#{id} wants to walk left"
       player.move_left(game_map)
     end
     if data[1] == 'r'
       @console.dbg "player=#{id} wants to walk right"
+      game_map_collision_vertical(game_map, player)
       player.move_right(game_map)
     end
     if data[2] == '1'
