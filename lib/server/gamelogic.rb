@@ -81,15 +81,15 @@ class GameLogic
     # left bottom
     col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
-      player.y = (col[:y] - 1) * TILE_SIZE
-      player.y += TILE_SIZE / 2 if player.state[:crouching]
+      player.y = col[:y] * TILE_SIZE
+      player.y -= player.state[:crouching] ? PLAYER_SIZE / 2 : PLAYER_SIZE
       player.do_collide(:down, true)
     end
     # right bottom
     col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
-      player.y = (col[:y] - 1) * TILE_SIZE
-      player.y += TILE_SIZE / 2 if player.state[:crouching]
+      player.y = col[:y] * TILE_SIZE
+      player.y -= player.state[:crouching] ? PLAYER_SIZE / 2 : PLAYER_SIZE
       player.do_collide(:down, true)
     end
     # left top

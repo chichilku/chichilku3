@@ -18,8 +18,8 @@ class Player
     @id = id
     @x = x.nil? ? SPAWN_X : x
     @y = y.nil? ? SPAWN_Y : y
-    @w = TILE_SIZE / 2
-    @h = TILE_SIZE
+    @w = PLAYER_SIZE / 2
+    @h = PLAYER_SIZE
     @aim_x = 0
     @aim_y = 0
     @projectile = Projectile.new
@@ -212,8 +212,8 @@ class Player
     # right bottom
     col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + @h - 1) / TILE_SIZE)
     if col
-      @x = (col[:x] - 1) * TILE_SIZE
-      @x += TILE_SIZE / 2 unless state[:crouching]
+      @x = col[:x] * TILE_SIZE
+      @x -= state[:crouching] ? PLAYER_SIZE : PLAYER_SIZE / 2
       @x -= 1
       do_collide(:right, true)
     end
@@ -221,8 +221,8 @@ class Player
     # right top
     col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + 1) / TILE_SIZE)
     if col
-      @x = (col[:x] - 1) * TILE_SIZE
-      @x += TILE_SIZE / 2 unless state[:crouching]
+      @x = col[:x] * TILE_SIZE
+      @x -= state[:crouching] ? PLAYER_SIZE : PLAYER_SIZE / 2
       @x -= 1
       do_collide(:right, true)
     end
@@ -306,8 +306,8 @@ class Player
   end
 
   def state_to_net
-    @w = TILE_SIZE / 2
-    @h = TILE_SIZE
+    @w = PLAYER_SIZE / 2
+    @h = PLAYER_SIZE
     if @state[:bleeding] && @state[:crouching]
       's'
     elsif @state[:bleeding] && @state[:fire] == 1
@@ -319,8 +319,8 @@ class Player
     elsif @state[:bleeding]
       'b'
     elsif @state[:crouching]
-      @w = TILE_SIZE
-      @h = TILE_SIZE / 2
+      @w = PLAYER_SIZE
+      @h = PLAYER_SIZE / 2
       'c'
     elsif @state[:fire] == 1
       '1'

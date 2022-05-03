@@ -478,9 +478,9 @@ class Gui < Gosu::Window
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - 60, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
           if player.state[:crouching]
-            draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE / 2, 0xAA00EE00)
+            draw_rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE / 2, 0xAA00EE00)
           else
-            draw_rect(player.x, player.y, TILE_SIZE / 2, TILE_SIZE, 0xAA00EE00)
+            draw_rect(player.x, player.y, PLAYER_SIZE / 2, PLAYER_SIZE, 0xAA00EE00)
           end
           unless player.projectile.x.zero? || player.projectile.y.zero?
             draw_rect(player.projectile.x, player.projectile.y, player.projectile.w, player.projectile.h, 0xAA00EE00)
