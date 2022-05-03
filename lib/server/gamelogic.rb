@@ -154,7 +154,6 @@ class GameLogic
       # stopped crouching -> stand up
       next unless player.was_crouching && player.state[:crouching] == false
 
-      player.y -= PLAYER_SIZE / 2
       player.x += PLAYER_SIZE / 4
       player.was_crouching = false
     end
