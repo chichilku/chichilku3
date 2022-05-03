@@ -91,7 +91,7 @@ class GameMap
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
     end
-    @console.log "load gametiles #{@gametiles}"
+    nil
   end
 
   def load_metadata(map_dir)
