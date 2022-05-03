@@ -119,6 +119,22 @@ class Player
     state[:bleeding] = @bleed_ticks.zero? == false
   end
 
+  def crouch!
+    @state[:crouching] = true
+    @w = PLAYER_SIZE
+    @h = PLAYER_SIZE / 2
+  end
+
+  def stop_crouch!
+    @state[:crouching] = false
+    @w = PLAYER_SIZE / 2
+    @h = PLAYER_SIZE
+  end
+
+  def crouching?
+    @state[:crouching]
+  end
+
   def check_player_collide(other)
     # $console.log "x: #{@x} y: #{@y} ox: #{other.x} oy: #{other.y}"
     # x crash is more rare so make it the outer condition
@@ -213,7 +229,7 @@ class Player
     col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + @h - 1) / TILE_SIZE)
     if col
       @x = col[:x] * TILE_SIZE
-      @x -= state[:crouching] ? PLAYER_SIZE : PLAYER_SIZE / 2
+      @x -= crouching? ? PLAYER_SIZE : PLAYER_SIZE / 2
       @x -= 1
       do_collide(:right, true)
     end
@@ -222,7 +238,7 @@ class Player
     col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + 1) / TILE_SIZE)
     if col
       @x = col[:x] * TILE_SIZE
-      @x -= state[:crouching] ? PLAYER_SIZE : PLAYER_SIZE / 2
+      @x -= crouching? ? PLAYER_SIZE : PLAYER_SIZE / 2
       @x -= 1
       do_collide(:right, true)
     end
@@ -231,13 +247,13 @@ class Player
 
   def move_left(game_map)
     # @dx = -8
-    @x -= state[:crouching] ? 4 : 8
+    @x -= crouching? ? 4 : 8
     check_move_left(game_map)
   end
 
   def move_right(game_map)
     # @dx = 8
-    @x += state[:crouching] ? 4 : 8
+    @x += crouching? ? 4 : 8
     check_move_right(game_map)
   end
 
@@ -252,7 +268,7 @@ class Player
     @dy = if @dead
             -5
           else
-            state[:crouching] ? -15 : -20
+            crouching? ? -15 : -20
           end
   end
 
@@ -308,7 +324,7 @@ class Player
   def state_to_net
     @w = PLAYER_SIZE / 2
     @h = PLAYER_SIZE
-    if @state[:bleeding] && @state[:crouching]
+    if @state[:bleeding] && crouching?
       's'
     elsif @state[:bleeding] && @state[:fire] == 1
       'x'
@@ -318,7 +334,7 @@ class Player
       'z'
     elsif @state[:bleeding]
       'b'
-    elsif @state[:crouching]
+    elsif crouching?
       @w = PLAYER_SIZE
       @h = PLAYER_SIZE / 2
       'c'

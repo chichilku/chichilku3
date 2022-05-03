@@ -30,6 +30,7 @@ SERVER_PACKAGE_LEN = MAX_CLIENTS * PLAYER_PACKAGE_LEN + 4 # used by client
 
 MAX_TIMEOUT = 5
 MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
+# MAX_TICK_SPEED = 0.07
 # MAX_TICK_SPEED = 0.005
 
 NET_ERR_FULL = '404'

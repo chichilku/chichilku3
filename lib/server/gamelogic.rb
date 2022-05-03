@@ -52,14 +52,14 @@ class GameLogic
     col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = col[:y] * TILE_SIZE
-      player.y -= player.state[:crouching] ? PLAYER_SIZE / 2 : PLAYER_SIZE
+      player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
       player.do_collide(:down, true)
     end
     # right bottom
     col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
     if col
       player.y = col[:y] * TILE_SIZE
-      player.y -= player.state[:crouching] ? PLAYER_SIZE / 2 : PLAYER_SIZE
+      player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
       player.do_collide(:down, true)
     end
     # left top
@@ -93,12 +93,12 @@ class GameLogic
     end
 
     # reset values (should stay first)
-    player.state[:crouching] = false
+    player.stop_crouch!
 
     # move request
     if data[0] == '1'
       @console.dbg "player=#{id} wants to crouch"
-      player.state[:crouching] = true
+      player.crouch!
       player.x -= PLAYER_SIZE / 4 unless player.was_crouching
       player.check_move_right(game_map)
       player.was_crouching = true
@@ -117,7 +117,7 @@ class GameLogic
       @console.dbg "player=#{id} wants to jump"
       player.do_jump
     end
-    if data[3] == '1' && player.state[:crouching] == false
+    if data[3] == '1' && player.crouching? == false
       @console.dbg "player=#{id} wants to fire"
       player.fire_ticks += 1
       if player.fire_ticks > 29
@@ -152,7 +152,7 @@ class GameLogic
   def posttick(players, _dt)
     players.each do |player|
       # stopped crouching -> stand up
-      next unless player.was_crouching && player.state[:crouching] == false
+      next unless player.was_crouching && player.crouching? == false
 
       player.x += PLAYER_SIZE / 4
       player.was_crouching = false

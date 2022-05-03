@@ -435,7 +435,7 @@ class Gui < Gosu::Window
         player.draw_tick
         @console.dbg "drawing player id=#{player.id} pos=#{player.x}/#{player.y}"
         # draw_rect(player.x, player.y, TILE_SIZE, TILE_SIZE, Gosu::Color::WHITE)
-        if player.state[:crouching]
+        if player.crouching?
           @stick_crouching[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
         else
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
@@ -477,7 +477,7 @@ class Gui < Gosu::Window
           draw_rect(player.x - 2, player.y - 60, 32, 20, 0xAA000000)
           @font.draw_text("#{player.id}:#{player.score}", player.x, player.y - 60, 0, 1, 1)
           # @font.draw_text("#{player.id}:#{player.img_index}", player.x, player.y - TILE_SIZE * 2, 0, 1, 1)
-          if player.state[:crouching]
+          if player.crouching?
             draw_rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE / 2, 0xAA00EE00)
           else
             draw_rect(player.x, player.y, PLAYER_SIZE / 2, PLAYER_SIZE, 0xAA00EE00)
