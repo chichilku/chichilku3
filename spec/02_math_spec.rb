@@ -23,6 +23,26 @@ describe 'Math', :math do
     end
   end
 
+  context 'Intervals SIDE_ constants left' do
+    it 'Should get get left points for interval 64 correct' do
+      expect(closest_interval_side(64, 65)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(64, 66)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(64, 67)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(64, 68)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(64, 69)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(64, 70)).to eq(SIDE_LEFT)
+    end
+
+    it 'Should get get left points for interval 128 correct' do
+      expect(closest_interval_side(128, 129)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(128, 130)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(128, 131)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(128, 132)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(128, 133)).to eq(SIDE_LEFT)
+      expect(closest_interval_side(128, 134)).to eq(SIDE_LEFT)
+    end
+  end
+
   context 'Intervals right' do
     it 'Should get get right points for interval 64 correct' do
       expect(closest_interval_side(64, 127)).to eq(1)

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../share/math'
+
 # high level game logic
 class GameLogic
   def initialize(console)
@@ -100,7 +102,12 @@ class GameLogic
       @console.dbg "player=#{id} wants to crouch"
       player.crouch!
       player.x -= PLAYER_SIZE / 4 unless player.was_crouching
-      player.check_move_right(game_map)
+      # TODO: why is it checking right when on left side!?
+      if closest_interval_side(TILE_SIZE, player.x) == SIDE_LEFT
+        player.check_move_right(game_map)
+      else
+        player.check_move_left(game_map)
+      end
       player.was_crouching = true
     end
     if data[1] == 'l'
