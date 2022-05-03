@@ -194,13 +194,15 @@ class Player
     col = game_map.collision?(@x / TILE_SIZE, (@y + @h - 1) / TILE_SIZE)
     if col
       @x = (col[:x] + 1) * TILE_SIZE
-      @x += TILE_SIZE / 2 if @state[:crouching]
+      @x += 1
       do_collide(:left, true)
     end
+
     # left top
     col = game_map.collision?(@x / TILE_SIZE, (@y + 1) / TILE_SIZE)
     if col
-      @x = (col[:x] * TILE_SIZE) + @h
+      @x = (col[:x] + 1) * TILE_SIZE
+      @x += 1
       do_collide(:left, true)
     end
     nil
@@ -215,6 +217,7 @@ class Player
       @x -= 1
       do_collide(:right, true)
     end
+
     # right top
     col = game_map.collision?((@x + @w) / TILE_SIZE, (@y + 1) / TILE_SIZE)
     if col
