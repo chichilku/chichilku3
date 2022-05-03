@@ -99,7 +99,7 @@ class GameLogic
     if data[0] == '1'
       @console.dbg "player=#{id} wants to crouch"
       player.state[:crouching] = true
-      player.x -= TILE_SIZE / 4 unless player.was_crouching
+      player.x -= PLAYER_SIZE / 4 unless player.was_crouching
       player.check_move_left(game_map)
       player.was_crouching = true
     end
@@ -152,8 +152,8 @@ class GameLogic
       # stopped crouching -> stand up
       next unless player.was_crouching && player.state[:crouching] == false
 
-      player.y -= TILE_SIZE / 2
-      player.x += TILE_SIZE / 4
+      player.y -= PLAYER_SIZE / 2
+      player.x += PLAYER_SIZE / 4
       player.was_crouching = false
     end
   end
