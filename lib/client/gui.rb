@@ -421,7 +421,13 @@ class Gui < Gosu::Window
       @connecting_image.draw(0, 0, 0)
       @font.draw_text("downloading map #{@download_progress[0]} / #{@download_progress[1]} ...", 20, 20, 0, 3, 3)
     when STATE_INGAME, STATE_REC_PLAYBACK
-      @background_image.draw(0, 0, 0)
+      # TODO: remove this dirty nil check
+      # this is used for demo recordings
+      # there seems to be some sort of race coniditon when repaying and already rendering
+      # before the map packet was parsed
+      # just render black background for a few ticks
+      # but what should be done is adding a loading state for demos
+      @background_image.draw(0, 0, 0) unless @background_image.nil?
       @crosshair.draw(mouse_x - 16, mouse_y - 16, 0, 0.25, 0.25)
       # useless mouse trap
       # since its buggo and your character moves maybe keep it free
