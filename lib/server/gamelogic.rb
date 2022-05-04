@@ -50,31 +50,36 @@ class GameLogic
   end
 
   def game_map_collision_vertical(game_map, player)
-    # left bottom
-    col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
-    if col
-      player.y = col[:y] * TILE_SIZE
-      player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
-      player.do_collide(:down, true)
-    end
-    # right bottom
-    col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
-    if col
-      player.y = col[:y] * TILE_SIZE
-      player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
-      player.do_collide(:down, true)
-    end
-    # left top
-    col = game_map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
-    if col
-      player.y = (col[:y] * TILE_SIZE) + player.h
-      player.do_collide(:up, true)
-    end
-    # right top
-    col = game_map.collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
-    if col
-      player.y = (col[:y] * TILE_SIZE) + player.h
-      player.do_collide(:up, true)
+    if player.dy.positive?
+      # left bottom
+      col = game_map.collision?(player.x / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+      if col
+        player.y = col[:y] * TILE_SIZE
+        player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
+        player.do_collide(:down, true)
+      end
+      # right bottom
+      col = game_map.collision?((player.x + player.w) / TILE_SIZE, (player.y + player.h) / TILE_SIZE)
+      if col
+        player.y = col[:y] * TILE_SIZE
+        player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
+        player.do_collide(:down, true)
+      end
+    else
+      # left top
+      col = game_map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
+      if col
+        player.y = (col[:y] * TILE_SIZE) + player.h
+        player.y += 1
+        player.do_collide(:up, true)
+      end
+      # right top
+      col = game_map.collision?((player.x + player.w) / TILE_SIZE, player.y / TILE_SIZE)
+      if col
+        player.y = (col[:y] * TILE_SIZE) + player.h
+        player.y += 1
+        player.do_collide(:up, true)
+      end
     end
     nil
   end
