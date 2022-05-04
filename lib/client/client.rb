@@ -112,10 +112,6 @@ class Client
       return [[], @flags, nil]
     end
     data = @recording_ticks[@tick]
-    if data.length != SERVER_PACKAGE_LEN
-      @console.err "failed to parse recording data=#{data.length} server=#{SERVER_PACKAGE_LEN}"
-      return nil
-    end
 
     @tick += 1
     @flags[:skip] = false
@@ -311,7 +307,7 @@ class Client
   end
 
   def finished_download_callback(map_dir)
-    update_state(STATE_INGAME)
+    update_state(STATE_INGAME) unless @state == STATE_REC_PLAYBACK
     @gui.load_background_image(map_dir)
     @game_map.load_data(map_dir)
   end
