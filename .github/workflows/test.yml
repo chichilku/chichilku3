@@ -1,0 +1,28 @@
+name: Integration tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-server:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - name: Prepare
+      run: |
+        sudo apt-get update
+        sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+    - name: Run server
+      run: |
+        ./tools/test.sh
