@@ -10,7 +10,8 @@ SPAWN_Y = 100
 
 # Player objects represent stick figures
 class Player
-  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks, :was_crouching, :aim_x, :aim_y,
+  attr_accessor :x, :y, :dy, :dx, :id, :name, :score, :state, :dead, :dead_ticks,
+                :was_crouching, :wants_crouch, :aim_x, :aim_y,
                 :projectile, :fire_ticks, :map_download
   attr_reader :collide, :collide_str, :img_index, :version, :w, :h
 
@@ -29,6 +30,7 @@ class Player
     @collide = { up: false, down: false, right: false, left: false }
     @state = { bleeding: false, crouching: false, fire: 0 }
     @was_crouching = false
+    @wants_crouch = false
     @name = name
     @score = score
     @dead = false # only used by server for now

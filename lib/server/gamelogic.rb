@@ -65,7 +65,7 @@ class GameLogic
         player.y -= player.crouching? ? PLAYER_SIZE / 2 : PLAYER_SIZE
         player.do_collide(:down, true)
       end
-    else
+    elsif player.dy.negative?
       # left top
       col = game_map.collision?(player.x / TILE_SIZE, player.y / TILE_SIZE)
       if col
@@ -102,12 +102,13 @@ class GameLogic
     end
 
     # reset values (should stay first)
-    player.stop_crouch!
+    player.wants_crouch = false
 
     # move request
     if data[0] == '1'
       @console.dbg "player=#{id} wants to crouch"
       player.crouch!
+      player.wants_crouch = true
       player.x -= PLAYER_SIZE / 4 unless player.was_crouching
       # TODO: why is it checking right when on left side!?
       if closest_interval_side(TILE_SIZE, player.x) == SIDE_LEFT
@@ -163,13 +164,15 @@ class GameLogic
     players
   end
 
-  def posttick(players, _dt)
+  def posttick(game_map, players, _dt)
     players.each do |player|
       # stopped crouching -> stand up
-      next unless player.was_crouching && player.crouching? == false
+      next unless player.was_crouching && player.wants_crouch == false
 
       player.x += PLAYER_SIZE / 4
       player.was_crouching = false
+      player.stop_crouch!
+      game_map_collision_vertical(game_map, player)
     end
   end
 

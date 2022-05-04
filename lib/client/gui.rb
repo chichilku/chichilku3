@@ -427,7 +427,7 @@ class Gui < Gosu::Window
       # before the map packet was parsed
       # just render black background for a few ticks
       # but what should be done is adding a loading state for demos
-      @background_image.draw(0, 0, 0) unless @background_image.nil?
+      @background_image&.draw(0, 0, 0)
       @crosshair.draw(mouse_x - 16, mouse_y - 16, 0, 0.25, 0.25)
       # useless mouse trap
       # since its buggo and your character moves maybe keep it free

@@ -319,7 +319,7 @@ class ServerCore
       rescue Errno::ECONNRESET, Errno::ENOTCONN, IOError
         disconnect_client(client)
       end
-      @players = @gamelogic.posttick(@players, diff)
+      @players = @gamelogic.posttick(@game_map, @players, diff)
     end
   end
 
