@@ -256,7 +256,7 @@ class Gui < Gosu::Window
       msg = chat_tick
       unless msg.nil?
         # @console.dbg "rawmsg: #{msg}"
-        msg = msg.ljust(8, '0')
+        msg = msg.ljust(8, ' ')
         net_request = msg[0..CMD_LEN].split('')
         # @console.dbg "prepedmsg: #{net_request}"
         protocol = 4

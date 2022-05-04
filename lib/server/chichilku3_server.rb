@@ -162,7 +162,7 @@ class ServerCore
 
   def command_package(data, client)
     id = data[0..1].to_i(16)
-    cmd = data[1..-1]
+    cmd = data[1..-1].strip
     @console.log "[chat] ID=#{id} command='#{cmd}'"
     msg = "server_recived_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
@@ -170,6 +170,9 @@ class ServerCore
     if cmd == 'test'
       # return "0l#{NET_ERR_DISCONNECT}    SAMPLE MESSAGE     "
       msg = "id=#{client[PLAYER_ID]}"
+    elsif cmd == 'exit'
+      msg = 'ok'
+      shutdown
     end
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, ' ')
     msg = msg[0..SERVER_PACKAGE_LEN - 2]
@@ -291,6 +294,14 @@ class ServerCore
     @clients.find do |client|
       client[PLAYER_ID] == player_id
     end
+  end
+
+  def shutdown
+    @clients.each do |client|
+      disconnect_client(client)
+    end
+    @console.log 'server shutdown.'
+    exit
   end
 
   def run
