@@ -42,6 +42,11 @@ class GameLogic
       gravity(game_map, player, dt, tick)
       player.tick
       game_map_collision_vertical(game_map, player)
+      if player.dx.positive?
+        player.check_move_right(game_map)
+      elsif player.dx.negative?
+        player.check_move_left(game_map)
+      end
       player.projectile.tick(players)
       # player collsions works
       # but it eats performance and delays jumping
