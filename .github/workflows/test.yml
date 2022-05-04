@@ -23,6 +23,9 @@ jobs:
         sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev
         gem install bundler
         bundle install --jobs 4 --retry 3
+        mkdir -p ~/.chichilku/chichilku3
+        cd ~/.chichilku/chichilku3 || exit 1
+        git clone https://github.com/chichilku/chichilku3-maps.git maps
     - name: Run server
       run: |
         ./tools/test.sh
