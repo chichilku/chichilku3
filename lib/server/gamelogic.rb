@@ -71,6 +71,7 @@ class GameLogic
       if col
         player.y = (col[:y] * TILE_SIZE) + player.h
         player.y += 1
+        player.y += PLAYER_SIZE / 2 if player.crouching?
         player.do_collide(:up, true)
       end
       # right top
@@ -78,6 +79,7 @@ class GameLogic
       if col
         player.y = (col[:y] * TILE_SIZE) + player.h
         player.y += 1
+        player.y += PLAYER_SIZE / 2 if player.crouching?
         player.do_collide(:up, true)
       end
     end
