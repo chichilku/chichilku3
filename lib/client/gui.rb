@@ -7,6 +7,7 @@ require_relative 'scoreboard'
 require_relative '../share/console'
 require_relative '../share/player'
 require_relative 'keys'
+require_relative 'particles'
 
 MENU_MAIN = 0
 MENU_CONNECT = 1
@@ -72,6 +73,7 @@ class Gui < Gosu::Window
     @tick = 0
     @console = Console.new
     @net_client = Client.new(@console, @cfg, self)
+    @particles = Particles.new(@console)
     @net_err = nil
     @state = @net_client.state
     @menu_page = MENU_MAIN
@@ -473,6 +475,7 @@ class Gui < Gosu::Window
           rot = player.projectile.r.to_i * 45
           @arrow_image.draw_rot(player.projectile.x, player.projectile.y, 0, rot, 0.5, 0.5, 0.5, 0.5)
         end
+        # @particles.draw(@players.first.x)
         if @is_debug # print id
           # aim
           draw_rect(player.aim_x - 2, player.aim_y - 16, 4, 32, 0xCC33FF33)
