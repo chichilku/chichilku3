@@ -501,7 +501,7 @@ class Gui < Gosu::Window
         end
       end
 
-      @particles.draw(@net_client.game_map, @players.first.x, @players.first.y) if @net_client.game_map&.ready
+      @particles.draw(@net_client.game_map, @players) if @net_client.game_map&.ready
 
       # chat input
       @font.draw_text("> #{@chat_msg}", 10, WINDOW_SIZE_Y - 30, 0, 1, 1) if @is_chat
