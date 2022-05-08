@@ -22,7 +22,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev shellcheck
         gem install bundler
-        gem install rubocop
+        gem install rubocop:1.27.0
         bundle install --jobs 4 --retry 3
     - name: Check ruby with rubocop
       run: |
