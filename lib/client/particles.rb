@@ -7,11 +7,15 @@ class Particles
     @grass_img = Gosu::Image.new(img('grass/single_64.png'))
   end
 
-  def draw(move)
-    y = MAP_HEIGHT * TILE_SIZE - TILE_SIZE * 3
-    y += TILE_SIZE / 2
-    y += 2
-    grass(0, TILE_SIZE * 5, y, move)
+  def draw(game_map, move_x, move_y)
+    # y = MAP_HEIGHT * TILE_SIZE - TILE_SIZE * 3
+    # y += TILE_SIZE / 2
+    # y += 2
+    # grass(0, TILE_SIZE * 5, y, move_x, move_y)
+
+    game_map.grass_rows.each do |grass_row|
+      grass(grass_row[:x1], grass_row[:x2], grass_row[:y], move_x, move_y)
+    end
   end
 
   private
@@ -20,14 +24,15 @@ class Particles
     File.join(File.dirname(__FILE__), '../../lib/client/img/', path)
   end
 
-  def grass(x1, x2, y, move, density = 3)
+  def grass(x1, x2, y, move_x, move_y, density = 3)
+    # @console.log(x1.to_s + " " + x2.to_s + " " + y.to_s + " " + move_x.to_s + " " + move_y.to_s)
     srand(0)
     x = x1
     amount = (x2 - x1) / density
     amount.times do
       x += density
       rot = rand(-8..8)
-      if move > x - 10 && move < x + 10
+      if move_x > x - 10 && move_x < x + 10 && move_y > y - 128 && move_y < y + 128
         if rot.positive?
           rot += 2
         else

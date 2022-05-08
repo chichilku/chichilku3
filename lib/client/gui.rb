@@ -475,7 +475,6 @@ class Gui < Gosu::Window
           rot = player.projectile.r.to_i * 45
           @arrow_image.draw_rot(player.projectile.x, player.projectile.y, 0, rot, 0.5, 0.5, 0.5, 0.5)
         end
-        # @particles.draw(@players.first.x)
         if @is_debug # print id
           # aim
           draw_rect(player.aim_x - 2, player.aim_y - 16, 4, 32, 0xCC33FF33)
@@ -495,8 +494,14 @@ class Gui < Gosu::Window
             draw_rect(player.projectile.x, player.projectile.y, player.projectile.w, player.projectile.h, 0xAA00EE00)
           end
         end
-        @font.draw_text(player.name, player.x - (TILE_SIZE / 6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
+        next unless @net_client.game_map&.ready
+
+        unless @net_client.game_map.grass?(player.x / TILE_SIZE, player.y / TILE_SIZE)
+          @font.draw_text(player.name, player.x - (TILE_SIZE / 6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
+        end
       end
+
+      @particles.draw(@net_client.game_map, @players.first.x, @players.first.y) if @net_client.game_map&.ready
 
       # chat input
       @font.draw_text("> #{@chat_msg}", 10, WINDOW_SIZE_Y - 30, 0, 1, 1) if @is_chat

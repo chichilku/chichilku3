@@ -17,7 +17,7 @@ MAP_FILES = [
 
 # GameMap class handles the game_map file format
 class GameMap
-  attr_reader :gametiles, :ready, :metadata
+  attr_reader :gametiles, :grass_rows, :ready, :metadata
 
   def initialize(console, cfg, mapname, callback = nil, checksum = nil)
     @console = console
@@ -27,6 +27,11 @@ class GameMap
     @b64_data = ''
     @sha1sum = checksum
     @gametiles = []
+    # grass_rows
+    #   array of hashes containing connected grass tiles
+    #   a row of grass from x 0 to x 10 at the height 2 would look like this
+    #   {x1: 0, x2: 10, y: 2}
+    @grass_rows = []
     @ready = false
     @metadata = nil
 
@@ -72,6 +77,7 @@ class GameMap
 
     is_skip = true
     @gametiles = []
+    @grass_rows = []
     File.readlines(gamefile).each_with_index do |data, i|
       gamerow = data[0..-2] # cut off newline
       is_skip = !is_skip if gamerow =~ /\+-+\+/
@@ -90,6 +96,23 @@ class GameMap
     if @gametiles.length != MAP_HEIGHT
       @console.err "invalid gametiles rows=#{@gametiles.length}/#{MAP_HEIGHT}"
       exit 1
+    end
+    y = 0
+    grass = {}
+    @gametiles.each do |gamerow|
+      x = 0
+      gamerow.chars.each do |tile|
+        if tile == 'i'
+          grass[:x2] = x * TILE_SIZE + TILE_SIZE
+          grass[:y] = y * TILE_SIZE + TILE_SIZE / 2 + 2
+          grass[:x1] = x * TILE_SIZE if grass[:x1].nil?
+        else
+          @grass_rows.push(grass) unless grass == {}
+          grass = {}
+        end
+        x += 1
+      end
+      y += 1
     end
     nil
   end
@@ -122,6 +145,10 @@ class GameMap
 
   def collision?(x, y)
     { x: x, y: y } if @gametiles[y][x] == 'O'
+  end
+
+  def grass?(x, y)
+    { x: x, y: y } if @gametiles[y][x] == 'i'
   end
 
   # SERVER

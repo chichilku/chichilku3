@@ -61,6 +61,7 @@ gametiles:
 
     'X'     kill tile
     'O'     collision
+    'i'     grass
     ' '     air
 
 The gametiles are surrounded by + - and | to better work with spaces
