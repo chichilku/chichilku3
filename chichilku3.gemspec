@@ -4,9 +4,9 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name        = 'chichilku3'
-  s.version     = '15.0.0'
+  s.version     = '15.0.1'
   s.executables = %w[chichilku3 chichilku3-server]
-  s.date        = '2020-07-03'
+  s.date        = '2022-05-26'
   s.summary     = 'Stick battle game'
   s.description = <<-DESC
   Simple 2d online multiplayer stick figure battle game using the gosu (SDL2 based) gem for client side graphics.
@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
     'lib/client/*.rb',
     'lib/server/*.rb',
     'lib/share/*.rb',
+    'lib/external/gosu/*.rb',
+    'lib/external/rubyzip/*.rb',
     'lib/client/img/*.png',
     'lib/client/img/stick128/*.png',
     'lib/client/img/stick128/arm64/*.png',
