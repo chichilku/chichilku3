@@ -33,8 +33,8 @@ class Config
         FileUtils.mkdir_p "#{@chichilku3_dir}maps"
       end
     end
-    create_default_cfg(file, "#{@chichilku3_dir}/#{file}")
-    @source_file = file
+    @source_file = File.join(File.dirname(__FILE__), '../../', file)
+    create_default_cfg(@source_file, "#{@chichilku3_dir}/#{file}")
     @file = @chichilku3_dir + file
     @console = console
     @data = load

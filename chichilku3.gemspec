@@ -4,7 +4,7 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name        = 'chichilku3'
-  s.version     = '15.0.1'
+  s.version     = '15.0.2'
   s.executables = %w[chichilku3 chichilku3-server]
   s.date        = '2022-05-26'
   s.summary     = 'Stick battle game'
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     'lib/client/img/stick128/*.png',
     'lib/client/img/stick128/arm64/*.png',
     'lib/client/img/stick128/noarms/*.png',
+    'lib/client/img/grass/*.png',
     'lib/client/img/bow64/*.png',
     'client.json',
     'server.json',
