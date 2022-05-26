@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chichilku3 (14.0.4)
+    chichilku3 (15.0.2)
       fileutils (~> 1.2.0)
       gosu (~> 1.4.3)
       os (~> 1.0.1)
