@@ -538,6 +538,11 @@ class Gui < Gosu::Window
 
       draw_events
 
+      if @flags[:gamestate] == 'e'
+        @font.draw_text('GAME OVER', (WINDOW_SIZE_X / 2) - 160, 20, 0, 3, 3)
+        @is_scoreboard = true
+      end
+
       draw_scoreboard(WINDOW_SIZE_X, WINDOW_SIZE_Y, @players, @font, @is_debug) if @is_scoreboard
       if @state == STATE_REC_PLAYBACK && !@demo_ticks.nil?
         @font.draw_text("#{@demo_ticks[0]}/#{@demo_ticks[1]}", 10, WINDOW_SIZE_Y - 20, 0)

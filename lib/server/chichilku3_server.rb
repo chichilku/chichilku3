@@ -66,9 +66,7 @@ class ServerCore
     end
 
     # protocol 3 name prot
-    #                                   gamestate
-    #                                       |
-    pck = "3l#{net_pack_int(@players.count)}g"
+    pck = "3l#{net_pack_int(@players.count)}#{@gamelogic.gamestate}"
     @players.each do |p|
       pck += p.to_n_pck
     end
@@ -103,7 +101,7 @@ class ServerCore
   def players_to_packet
     # player count
     packet = net_pack_int(@players.empty? ? 0 : @players.count)
-    packet += 'g' # gamestate
+    packet += @gamelogic.gamestate
     @players.each do |player|
       packet += player.to_s
     end

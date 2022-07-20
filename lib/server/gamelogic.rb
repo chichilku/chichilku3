@@ -4,9 +4,14 @@ require_relative '../share/math'
 
 # high level game logic
 class GameLogic
+  attr_reader :gamestate
+
   def initialize(console)
     @console = console
     @alive_players = 0
+    @scorelimit = 10
+    @gamestate = 'g'
+    @ticks_till_new_round = 0
   end
 
   def on_player_connect(client, players)
@@ -34,7 +39,27 @@ class GameLogic
     end
   end
 
+  def start_round(players)
+    @gamestate = 'g'
+    players.each do |player|
+      player.score = 0
+      player.die
+    end
+  end
+
+  def end_round
+    @console.log 'round end'
+    @gamestate = 'e'
+    @ticks_till_new_round = (5 / MAX_TICK_SPEED).to_i
+  end
+
   def tick(game_map, players, dt, tick)
+    if @gamestate == 'e'
+      @ticks_till_new_round -= 1
+      return players if @ticks_till_new_round.positive?
+
+      start_round(players)
+    end
     players.each do |player|
       # reset values (should stay first)
       player.reset_collide
@@ -51,7 +76,10 @@ class GameLogic
       # player collsions works
       # but it eats performance and delays jumping
       check_collide(players, player)
+
+      end_round if player.score >= @scorelimit
     end
+    players
   end
 
   def game_map_collision_vertical(game_map, player)

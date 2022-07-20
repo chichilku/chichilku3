@@ -18,6 +18,7 @@ def draw_scoreboard(win_size_x, win_size_y, players, font, debug)
     # row borders
     draw_rect(pad_x + 3, pad_y + (i * slot_height), size_x - 6, 3, 0xaa000000)
   end
+  players.sort_by! { |player| -player.score }
   players.each_with_index do |player, i|
     score_offset = text_scale * 10 * player.score.to_s.length
     dbg = 0
