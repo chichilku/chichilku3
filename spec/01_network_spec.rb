@@ -26,7 +26,7 @@ describe 'Network', :network do
       # ~! * ~! - " = ~~
       # 94 * 94 - 1 = 8835
       # net_pack_bigint(8835, 2) = ~~
-      (0..((NET_MAX_INT + 1) * (NET_MAX_INT + 1) - 1)).each do |i|
+      (0..(((NET_MAX_INT + 1) * (NET_MAX_INT + 1)) - 1)).each do |i|
         net_pack_bigint(i, 2)
       end
     end
@@ -40,14 +40,14 @@ describe 'Network', :network do
     end
 
     it 'should pack and unpack same value (big)' do
-      (0..((NET_MAX_INT + 1) * (NET_MAX_INT + 1) - 1)).each do |i|
+      (0..(((NET_MAX_INT + 1) * (NET_MAX_INT + 1)) - 1)).each do |i|
         expect(net_unpack_bigint(net_pack_bigint(i, 2))).to eq(i)
       end
     end
 
     it 'should pack and unpack same value in any buffer size' do
       (2..10).each do |buffersize|
-        (0..((NET_MAX_INT + 1) * (NET_MAX_INT + 1) - 1)).each do |i|
+        (0..(((NET_MAX_INT + 1) * (NET_MAX_INT + 1)) - 1)).each do |i|
           expect(net_unpack_bigint(net_pack_bigint(i, buffersize))).to eq(i)
         end
       end

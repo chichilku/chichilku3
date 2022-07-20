@@ -6,7 +6,6 @@ Gem::Specification.new do |s|
   s.name        = 'chichilku3'
   s.version     = '15.0.2'
   s.executables = %w[chichilku3 chichilku3-server]
-  s.date        = '2022-05-26'
   s.summary     = 'Stick battle game'
   s.description = <<-DESC
   Simple 2d online multiplayer stick figure battle game using the gosu (SDL2 based) gem for client side graphics.
@@ -30,7 +29,7 @@ Gem::Specification.new do |s|
     'server.json',
     'maps'
   ]
-  s.required_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 3.1.2'
   s.add_dependency 'fileutils', '~> 1.2.0'
   s.add_dependency 'gosu', '~> 1.4.3'
   s.add_dependency 'os', '~> 1.0.1'
@@ -38,4 +37,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubyzip', '~> 2.3.0'
   s.homepage    = 'https://github.com/chichilku/chichilku3'
   s.license     = 'Unlicense'
+  s.metadata['rubygems_mfa_required'] = 'true'
 end

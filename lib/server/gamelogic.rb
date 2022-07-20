@@ -153,7 +153,7 @@ class GameLogic
         dy = (player.aim_y - player.y).clamp(-200, 200) / 20
         dx *= (player.fire_ticks / 10).clamp(1, 3)
         dy *= (player.fire_ticks / 10).clamp(1, 3)
-        player.projectile.fire(player.x + TILE_SIZE / 4, player.y + TILE_SIZE / 2, dx, dy, player)
+        player.projectile.fire(player.x + (TILE_SIZE / 4), player.y + (TILE_SIZE / 2), dx, dy, player)
       end
       player.fire_ticks = 0
       player.state[:fire] = 0

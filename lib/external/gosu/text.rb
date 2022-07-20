@@ -45,9 +45,10 @@ class TextField < Gosu::TextInput
               INACTIVE_COLOR
             end
     # ChillerDragon's epic shadow to at least have edited the stolen sample a lil bit
-    Gosu.draw_rect (x - PADDING) + 5, (y - PADDING) + 5, WIDTH + 2 * PADDING, height + 2 * PADDING, INACTIVE_COLOR, z
-    Gosu.draw_rect x - PADDING, y - PADDING, WIDTH + 2 * PADDING, height + 2 * PADDING, color, z
-    Gosu.draw_rect x - PADDING, y - PADDING, WIDTH + 2 * PADDING, height + 2 * PADDING, color, z
+    Gosu.draw_rect (x - PADDING) + 5, (y - PADDING) + 5, WIDTH + (2 * PADDING), height + (2 * PADDING), INACTIVE_COLOR,
+                   z
+    Gosu.draw_rect x - PADDING, y - PADDING, WIDTH + (2 * PADDING), height + (2 * PADDING), color, z
+    Gosu.draw_rect x - PADDING, y - PADDING, WIDTH + (2 * PADDING), height + (2 * PADDING), color, z
 
     # Calculate the position of the caret and the selection start.
     pos_x = x + FONT.text_width(text[0...caret_pos])

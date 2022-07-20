@@ -103,8 +103,8 @@ class GameMap
       x = 0
       gamerow.chars.each do |tile|
         if tile == 'i'
-          grass[:x2] = x * TILE_SIZE + TILE_SIZE
-          grass[:y] = y * TILE_SIZE + TILE_SIZE / 2 + 2
+          grass[:x2] = (x * TILE_SIZE) + TILE_SIZE
+          grass[:y] = (y * TILE_SIZE) + (TILE_SIZE / 2) + 2
           grass[:x1] = x * TILE_SIZE if grass[:x1].nil?
         else
           @grass_rows.push(grass) unless grass == {}
@@ -140,15 +140,15 @@ class GameMap
   end
 
   def death?(x, y)
-    { x: x, y: y } if @gametiles[y][x] == 'X'
+    { x:, y: } if @gametiles[y][x] == 'X'
   end
 
   def collision?(x, y)
-    { x: x, y: y } if @gametiles[y][x] == 'O'
+    { x:, y: } if @gametiles[y][x] == 'O'
   end
 
   def grass?(x, y)
-    { x: x, y: y } if @gametiles[y][x] == 'i'
+    { x:, y: } if @gametiles[y][x] == 'i'
   end
 
   # SERVER
@@ -177,7 +177,7 @@ class GameMap
   def zip
     map_dir = "#{@cfg.chichilku3_dir}maps/#{@mapname}"
     map_zip = "#{@cfg.chichilku3_dir}maps/#{@mapname}.zip"
-    File.delete map_zip if File.exist? map_zip
+    FileUtils.rm_rf map_zip
 
     @console.log "archiving map '#{map_zip}' ..."
     Zip::File.open(map_zip, Zip::File::CREATE) do |zipfile|
@@ -213,7 +213,7 @@ class GameMap
     return nil if @mapname == '' || @mapname.nil?
 
     if offset + size > @b64_size
-      @b64_data[offset..-1].ljust(size, ' ')
+      @b64_data[offset..].ljust(size, ' ')
     else
       @b64_data[offset...offset + size]
     end
@@ -227,14 +227,14 @@ class GameMap
 
   def prepare_download
     @tmpfile = "#{@cfg.chichilku3_dir}tmp/#{@mapname}"
-    File.delete @tmpfile if File.exist? @tmpfile
+    FileUtils.rm_rf @tmpfile
   end
 
   def download(data)
     data.strip!
     @progress += data.size
     @console.dbg "downloading #{@progress} / #{@b64_size} ..."
-    IO.write(@tmpfile, data, mode: 'a')
+    File.write(@tmpfile, data, mode: 'a')
     if @progress >= @b64_size
       @console.log 'finished download'
       @callback.call(load)
@@ -260,7 +260,7 @@ class GameMap
         end
       end
     end
-    File.delete map_archive if File.exist? map_archive
+    FileUtils.rm_rf map_archive
     map_dir
   end
 
@@ -268,11 +268,7 @@ class GameMap
     outfile = "#{dl_path}.zip"
     @console.log 'converting downloaded map ...'
     File.open(@tmpfile, 'rb') do |map_encoded|
-      File.open(outfile, 'wb') do |map_png|
-        map_png.write(
-          Base64.decode64(map_encoded.read)
-        )
-      end
+      File.binwrite(outfile, Base64.decode64(map_encoded.read))
     end
     unzip
   end

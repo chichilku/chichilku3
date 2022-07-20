@@ -64,11 +64,11 @@ class Player
     return if @tick % 5 != 0
 
     new_x = true if @x != @last_x
-    if @y != @last_y
+    if @y == @last_y
+      @not_changed_y += 1
+    else
       new_y = true
       @not_changed_y = 0
-    else
-      @not_changed_y += 1
     end
 
     if new_x || new_y

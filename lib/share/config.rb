@@ -11,9 +11,9 @@ class Config
   def initialize(console, file)
     @chichilku3_dir = ''
     if OS.linux?
-      @chichilku3_dir = "#{ENV['HOME']}/.chichilku/chichilku3/"
+      @chichilku3_dir = "#{Dir.home}/.chichilku/chichilku3/"
     elsif OS.mac?
-      @chichilku3_dir = "#{ENV['HOME']}/Library/Application Support/chichilku/chichilku3/"
+      @chichilku3_dir = "#{Dir.home}/Library/Application Support/chichilku/chichilku3/"
     # elsif OS.windows?
     #   @chichilku3_dir = "%APPDATA%\\chichilku\\chichilku3\\"
     else
@@ -44,9 +44,7 @@ class Config
     return if File.file?(to)
 
     tmp = JSON.parse(File.read(from))
-    File.open(to, 'w') do |f|
-      f.write(tmp.to_json)
-    end
+    File.write(to, tmp.to_json)
   end
 
   def sanitize_data(data)
@@ -61,8 +59,6 @@ class Config
   end
 
   def save
-    File.open(@file, 'w') do |f|
-      f.write(JSON.pretty_generate(data))
-    end
+    File.write(@file, JSON.pretty_generate(data))
   end
 end

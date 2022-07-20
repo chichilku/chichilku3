@@ -95,14 +95,14 @@ class Client
     @recording_file = 'autorec.txt'
     rec_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
     @is_recording = true
-    File.delete(rec_file) if File.exist? rec_file
+    FileUtils.rm_rf(rec_file)
   end
 
   def recording_record_tick(data)
     return unless @is_recording
 
     recording_file = "#{@cfg.chichilku3_dir}recordings/#{@recording_file}"
-    IO.write(recording_file, "#{data}\n", mode: 'a')
+    File.write(recording_file, "#{data}\n", mode: 'a')
   end
 
   def recording_playback_tick
@@ -117,7 +117,7 @@ class Client
     @flags[:skip] = false
 
     # save protocol and cut it off
-    msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
+    msg = handle_protocol(data[0].to_i, data[1], data[2..])
     [@players, @flags, msg, [@tick, @recording_ticks_len]]
   end
 
@@ -138,7 +138,7 @@ class Client
     recording_record_tick(data)
 
     # save protocol and cut it off
-    msg = handle_protocol(data[0].to_i, data[1], data[2..-1])
+    msg = handle_protocol(data[0].to_i, data[1], data[2..])
     [@players, @flags, msg, @extra]
   end
 
@@ -154,7 +154,7 @@ class Client
     case protocol
     when 0 # error packet
       code = data[0..2]
-      error_msg = data[3..-1]
+      error_msg = data[3..]
       case code
       when NET_ERR_FULL
         @console.log 'server is full.'
@@ -194,7 +194,7 @@ class Client
       @game_map = GameMap.new(@console, @cfg, nil, method(:finished_download_callback), checksum)
     when 6 # map download init
       size = net_unpack_bigint(data[0..5])
-      mapname = data[6..-1].strip
+      mapname = data[6..].strip
       @game_map.set_name(mapname)
       @game_map.set_size(size)
       accept = '0'
@@ -246,7 +246,7 @@ class Client
       @force_send = nil
     end
 
-    data = "#{protocol}l#{@id.to_s(16)}#{data.join('')}"
+    data = "#{protocol}l#{@id.to_s(16)}#{data.join}"
     net_write(data)
   end
 
@@ -322,7 +322,7 @@ class Client
     #     3 0          00 00000 00 00000 00 00000 000
     playercount = net_unpack_int(data[0])
     @flags[:gamestate] = data[1]
-    data = data[2..-1]
+    data = data[2..]
     p_strs = protocol_names_to_player_strs(playercount, data)
     protocol_names_strs_to_objs(p_strs)
   end
@@ -331,7 +331,7 @@ class Client
     players = []
     used_slots.times do |index|
       size = NAME_LEN + 2 # id|score|name
-      players[index] = data[index * size..index * size + size - 1]
+      players[index] = data[index * size..(index * size) + size - 1]
     end
     players
   end
@@ -341,7 +341,7 @@ class Client
     player_strs.each do |player_str|
       id = player_str[0].to_i(16)
       score = net_unpack_int(player_str[1])
-      name = player_str[2..-1].strip
+      name = player_str[2..].strip
       players << Player.new(id, 0, 0, score, name) unless id.zero?
     end
     # debug
@@ -359,7 +359,7 @@ class Client
     # gamestate = data[1].to_i # save gamestate
     @flags[:gamestate] = data[1]
     # @console.log "gamestate: " + @flags[:gamestate]
-    data = data[2..-1] # cut slots and gamestate off
+    data = data[2..] # cut slots and gamestate off
     players = server_package_to_player_strs(used_slots, data)
     # @console.log "players: \n#{players}"
     player_strs_to_objects(players)
@@ -368,7 +368,7 @@ class Client
   def server_package_to_player_strs(used_slots, data)
     players = []
     used_slots.times do |index|
-      players[index] = data[index * PLAYER_PACKAGE_LEN..index * PLAYER_PACKAGE_LEN + PLAYER_PACKAGE_LEN - 1]
+      players[index] = data[index * PLAYER_PACKAGE_LEN..(index * PLAYER_PACKAGE_LEN) + PLAYER_PACKAGE_LEN - 1]
     end
     players
   end

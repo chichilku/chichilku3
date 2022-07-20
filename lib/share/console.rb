@@ -32,7 +32,7 @@ class Console
                 hour: t.hour,
                 min: t.min,
                 sec: t.sec,
-                type: type,
+                type:,
                 msg: message)
   end
 end

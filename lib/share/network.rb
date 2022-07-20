@@ -26,7 +26,7 @@ MAX_MAPNAME_LEN = 43
 MAX_CLIENTS = 12
 PLAYER_PACKAGE_LEN = 16
 CLIENT_PACKAGE_LEN = 11 # used by server
-SERVER_PACKAGE_LEN = MAX_CLIENTS * PLAYER_PACKAGE_LEN + 4 # used by client
+SERVER_PACKAGE_LEN = (MAX_CLIENTS * PLAYER_PACKAGE_LEN) + 4 # used by client
 
 MAX_TIMEOUT = 5
 MAX_TICK_SPEED = 0.01 # the lower the faster client and server tick
@@ -135,7 +135,7 @@ def net_unpack_bigint(net_int)
     if i.zero?
       sum = net_unpack_int(c)
     else
-      sum += net_unpack_int(c) * (NET_MAX_INT + 1)**i
+      sum += net_unpack_int(c) * ((NET_MAX_INT + 1)**i)
     end
   end
   sum

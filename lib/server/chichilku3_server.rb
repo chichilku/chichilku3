@@ -113,7 +113,7 @@ class ServerCore
   def update_pck(data, dt)
     id = data[0].to_i(16)
     @console.dbg "[UPDATE] got player with id: #{id}"
-    @players = @gamelogic.handle_client_requests(@game_map, data[1..-1], id, @players, dt)
+    @players = @gamelogic.handle_client_requests(@game_map, data[1..], id, @players, dt)
     nil # defaults to normal update pck
   end
 
@@ -162,7 +162,7 @@ class ServerCore
 
   def command_package(data, client)
     id = data[0..1].to_i(16)
-    cmd = data[1..-1].strip
+    cmd = data[1..].strip
     @console.log "[chat] ID=#{id} command='#{cmd}'"
     msg = "server_recived_cmd: #{cmd}"
     msg = msg.ljust(SERVER_PACKAGE_LEN - 2, '0')
@@ -243,7 +243,7 @@ class ServerCore
   end
 
   def handle_client_data(client, data, ip, dt)
-    response = handle_protocol(client, data[0].to_i, data[1], data[2..-1], ip, dt)
+    response = handle_protocol(client, data[0].to_i, data[1], data[2..], ip, dt)
     # the response is a direct respond to an protocol
     # everything above this could override important responds
     # like id assignment

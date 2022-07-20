@@ -250,7 +250,7 @@ class Gui < Gosu::Window
         return
       end
     end
-    net_request = '0000'.split('')
+    net_request = '0000'.chars
     net_request << '!!!!'
     protocol = 2
 
@@ -259,7 +259,7 @@ class Gui < Gosu::Window
       unless msg.nil?
         # @console.dbg "rawmsg: #{msg}"
         msg = msg.ljust(8, ' ')
-        net_request = msg[0..CMD_LEN].split('')
+        net_request = msg[0..CMD_LEN].chars
         # @console.dbg "prepedmsg: #{net_request}"
         protocol = 4
       end
@@ -305,7 +305,7 @@ class Gui < Gosu::Window
       type = msg[0]
       case type
       when 0
-        @net_err = msg[1..-1]
+        @net_err = msg[1..]
         @state = STATE_ERROR
       when 1
         @server_chat_msg = msg[1]
@@ -384,7 +384,7 @@ class Gui < Gosu::Window
     return unless @is_debug
 
     draw_rect(x, y, 4 * s, 4 * s, 0xFFFF0000, 1)
-    draw_rect(x + 1 * s, y + 1 * s, 2 * s, 2 * s, 0xFF00FF00, 1)
+    draw_rect(x + (1 * s), y + (1 * s), 2 * s, 2 * s, 0xFF00FF00, 1)
   end
 
   def draw_debug_gametiles
@@ -449,10 +449,10 @@ class Gui < Gosu::Window
           @stick_images[player.img_index].draw(player.x, player.y, 0, 0.5, 0.5)
           x = player.aim_x - player.x
           y = player.aim_y - player.y
-          rot = Math.atan2(x, y) * 180 / Math::PI * -1 + 90 * -1
-          rot2 = Math.atan2(x, y) * 180 / Math::PI * -1 + 270 * -1
-          stick_center_x = player.x + TILE_SIZE / 4
-          stick_center_y = player.y + TILE_SIZE / 2
+          rot = (Math.atan2(x, y) * 180 / Math::PI * -1) + (90 * -1)
+          rot2 = (Math.atan2(x, y) * 180 / Math::PI * -1) + (270 * -1)
+          stick_center_x = player.x + (TILE_SIZE / 4)
+          stick_center_y = player.y + (TILE_SIZE / 2)
           d = -8
           d += player.state[:fire] * 3
           arr_x = stick_center_x + (d * Math.cos((rot2 + 180) / 180 * Math::PI))
@@ -497,7 +497,7 @@ class Gui < Gosu::Window
         next unless @net_client.game_map&.ready
 
         unless @net_client.game_map.grass?(player.x / TILE_SIZE, player.y / TILE_SIZE)
-          @font.draw_text(player.name, player.x - (TILE_SIZE / 6), player.y - TILE_SIZE / 2, 0, 1, 1, 0xff_000000)
+          @font.draw_text(player.name, player.x - (TILE_SIZE / 6), player.y - (TILE_SIZE / 2), 0, 1, 1, 0xff_000000)
         end
       end
 
@@ -548,7 +548,7 @@ class Gui < Gosu::Window
       @connecting_image.draw(0, 0, 0)
       if [NET_ERR_SERVER_OUTDATED, NET_ERR_CLIENT_OUTDATED].include?(net_err_code)
         server_version = net_err_msg[0..4]
-        net_err_msg = net_err_msg[5..-1]
+        net_err_msg = net_err_msg[5..]
         @font.draw_text("Server version: #{server_version} Your version: #{GAME_VERSION}", 50, 150, 0, 2, 2)
       end
       @font.draw_text((NET_ERR[net_err_code]).to_s, 50, 30, 0, 5, 5)
