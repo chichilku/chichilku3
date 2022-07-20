@@ -4,7 +4,7 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name        = 'chichilku3'
-  s.version     = '15.0.2'
+  s.version     = '15.0.3'
   s.executables = %w[chichilku3 chichilku3-server]
   s.summary     = 'Stick battle game'
   s.description = <<-DESC
