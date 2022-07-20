@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     chichilku3 (15.0.2)
-      fileutils (~> 1.2.0)
+      fileutils (~> 1.6.0)
       gosu (~> 1.4.3)
       os (~> 1.0.1)
       rspec (~> 3.9.0)
@@ -12,7 +12,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.5.0)
-    fileutils (1.2.0)
+    fileutils (1.6.0)
     gosu (1.4.3)
     os (1.0.1)
     rspec (3.9.0)
@@ -31,7 +31,7 @@ GEM
     rubyzip (2.3.2)
 
 PLATFORMS
-  ruby
+  x86_64-linux
 
 DEPENDENCIES
   chichilku3!
