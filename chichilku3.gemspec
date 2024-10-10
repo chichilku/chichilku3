@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rake'
-
 Gem::Specification.new do |s|
   s.name        = 'chichilku3'
   s.version     = '15.0.3'
@@ -13,7 +11,7 @@ Gem::Specification.new do |s|
   DESC
   s.authors     = ['ChillerDragon']
   s.email       = 'ChillerDragon@gmail.com'
-  s.files       = FileList[
+  s.files       = [
     'lib/client/*.rb',
     'lib/server/*.rb',
     'lib/share/*.rb',
@@ -28,7 +26,7 @@ Gem::Specification.new do |s|
     'client.json',
     'server.json',
     'maps'
-  ]
+  ].map { |glob| Dir[glob] }.flatten
   s.required_ruby_version = '>= 3.1.2'
   s.add_dependency 'fileutils', '~> 1.6.0'
   s.add_dependency 'gosu', '~> 1.4.3'

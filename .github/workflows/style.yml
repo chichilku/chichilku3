@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby 3.1
-      uses: actions/setup-ruby@v1
+    - uses: actions/checkout@v4
+    - name: Set up Ruby 3.3.5
+      uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1.x
+        ruby-version: '3.3.5'
     - name: Prepare
       run: |
         sudo apt-get update
         sudo apt-get install git libfontconfig1-dev libsndfile1-dev libsdl2-dev libmpg123-dev libopenal1 libopenal-dev shellcheck
         gem install bundler
-        gem install rubocop:1.31.2
+        gem install rubocop:1.66.1
         bundle install --jobs 4 --retry 3
     - name: Check ruby with rubocop
       run: |

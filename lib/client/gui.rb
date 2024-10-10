@@ -27,7 +27,7 @@ end
 # Main Game getting gui form gosu
 class Gui < Gosu::Window
   def initialize(cfg)
-    super WINDOW_SIZE_X, WINDOW_SIZE_Y
+    super(WINDOW_SIZE_X, WINDOW_SIZE_Y)
     self.caption = 'chichilku3'
     self.fullscreen = true if cfg.data['fullscreen']
     # images
